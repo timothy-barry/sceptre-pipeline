@@ -1,0 +1,85 @@
+Nov-27 14:06:36.120 [main] DEBUG nextflow.cli.Launcher - $> nextflow run ../main.nf --sceptre_object_fp /Users/timbarry/research_offsite/external/replogle-2022//processed/rd7/small/sceptre_object.rds --response_odm_fp /Users/timbarry/research_offsite/external/replogle-2022//processed/rd7/small/gene.odm --grna_odm_fp /Users/timbarry/research_offsite/external/replogle-2022//processed/rd7/small/grna.odm
+Nov-27 14:06:36.157 [main] INFO  nextflow.cli.CmdRun - N E X T F L O W  ~  version 23.10.0
+Nov-27 14:06:36.165 [main] DEBUG nextflow.plugin.PluginsFacade - Setting up plugin manager > mode=prod; embedded=false; plugins-dir=/Users/timbarry/.nextflow/plugins; core-plugins: nf-amazon@2.1.4,nf-azure@1.3.2,nf-cloudcache@0.3.0,nf-codecommit@0.1.5,nf-console@1.0.6,nf-ga4gh@1.1.0,nf-google@1.8.3,nf-tower@1.6.3,nf-wave@1.0.0
+Nov-27 14:06:36.170 [main] INFO  o.pf4j.DefaultPluginStatusProvider - Enabled plugins: []
+Nov-27 14:06:36.170 [main] INFO  o.pf4j.DefaultPluginStatusProvider - Disabled plugins: []
+Nov-27 14:06:36.172 [main] INFO  org.pf4j.DefaultPluginManager - PF4J version 3.4.1 in 'deployment' mode
+Nov-27 14:06:36.178 [main] INFO  org.pf4j.AbstractPluginManager - No plugins
+Nov-27 14:06:36.217 [main] DEBUG nextflow.cli.CmdRun - Applied DSL=2 from script declararion
+Nov-27 14:06:36.223 [main] INFO  nextflow.cli.CmdRun - Launching `../main.nf` [tiny_cori] DSL2 - revision: 048e067166
+Nov-27 14:06:36.223 [main] DEBUG nextflow.plugin.PluginsFacade - Plugins default=[]
+Nov-27 14:06:36.223 [main] DEBUG nextflow.plugin.PluginsFacade - Plugins resolved requirement=[]
+Nov-27 14:06:36.228 [main] DEBUG n.secret.LocalSecretsProvider - Secrets store: /Users/timbarry/.nextflow/secrets/store.json
+Nov-27 14:06:36.231 [main] DEBUG nextflow.secret.SecretsLoader - Discovered secrets providers: [nextflow.secret.LocalSecretsProvider@1d782abe] - activable => nextflow.secret.LocalSecretsProvider@1d782abe
+Nov-27 14:06:36.259 [main] DEBUG nextflow.Session - Session UUID: 8bee2834-136f-4099-930b-6872e6c81b02
+Nov-27 14:06:36.260 [main] DEBUG nextflow.Session - Run name: tiny_cori
+Nov-27 14:06:36.260 [main] DEBUG nextflow.Session - Executor pool size: 8
+Nov-27 14:06:36.264 [main] DEBUG nextflow.file.FilePorter - File porter settings maxRetries=3; maxTransfers=50; pollTimeout=null
+Nov-27 14:06:36.266 [main] DEBUG nextflow.util.ThreadPoolBuilder - Creating thread pool 'FileTransfer' minSize=10; maxSize=24; workQueue=LinkedBlockingQueue[10000]; allowCoreThreadTimeout=false
+Nov-27 14:06:36.315 [main] DEBUG nextflow.cli.CmdRun - 
+  Version: 23.10.0 build 5889
+  Created: 15-10-2023 15:07 UTC (11:07 EDT)
+  System: Mac OS X 14.1.1
+  Runtime: Groovy 3.0.19 on OpenJDK 64-Bit Server VM 17.0.6+10-LTS
+  Encoding: UTF-8 (UTF-8)
+  Process: 26661@Tims-MBP [192.168.1.205]
+  CPUs: 8 - Mem: 16 GB (1.7 GB) - Swap: 0 (0)
+Nov-27 14:06:36.321 [main] DEBUG nextflow.Session - Work-dir: /Users/timbarry/research_code/sceptre-pipeline/examples/work [Mac OS X]
+Nov-27 14:06:36.338 [main] DEBUG nextflow.executor.ExecutorFactory - Extension executors providers=[]
+Nov-27 14:06:36.341 [main] DEBUG nextflow.Session - Observer factory: DefaultObserverFactory
+Nov-27 14:06:36.352 [main] DEBUG nextflow.cache.CacheFactory - Using Nextflow cache factory: nextflow.cache.DefaultCacheFactory
+Nov-27 14:06:36.356 [main] DEBUG nextflow.util.CustomThreadPool - Creating default thread pool > poolSize: 9; maxThreads: 1000
+Nov-27 14:06:36.379 [main] DEBUG nextflow.Session - Session start
+Nov-27 14:06:36.616 [main] DEBUG nextflow.script.ScriptRunner - > Launching execution
+Nov-27 14:06:36.652 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: null
+Nov-27 14:06:36.653 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'local'
+Nov-27 14:06:36.655 [main] DEBUG nextflow.executor.Executor - [warm up] executor > local
+Nov-27 14:06:36.657 [main] DEBUG n.processor.LocalPollingMonitor - Creating local task monitor for executor 'local' > cpus=8; memory=16 GB; capacity=8; pollInterval=100ms; dumpInterval=5m
+Nov-27 14:06:36.658 [main] DEBUG n.processor.TaskPollingMonitor - >>> barrier register (monitor: local)
+Nov-27 14:06:36.694 [main] DEBUG nextflow.Session - Workflow process names [dsl2]: output_grna_info
+Nov-27 14:06:36.695 [main] DEBUG nextflow.Session - Igniting dataflow network (4)
+Nov-27 14:06:36.698 [main] DEBUG nextflow.processor.TaskProcessor - Starting process > output_grna_info
+Nov-27 14:06:36.699 [main] DEBUG nextflow.script.ScriptRunner - Parsed script files:
+  Script_976180f09e6e6a48: /Users/timbarry/research_code/sceptre-pipeline/main.nf
+Nov-27 14:06:36.699 [main] DEBUG nextflow.script.ScriptRunner - > Awaiting termination 
+Nov-27 14:06:36.699 [main] DEBUG nextflow.Session - Session await
+Nov-27 14:06:36.753 [Task submitter] DEBUG n.executor.local.LocalTaskHandler - Launch cmd line: /bin/bash -ue .command.run
+Nov-27 14:06:36.754 [Task submitter] INFO  nextflow.Session - [af/2be89f] Submitted process > output_grna_info (1)
+Nov-27 14:06:37.225 [Task monitor] DEBUG n.processor.TaskPollingMonitor - Task completed > TaskHandler[id: 1; name: output_grna_info (1); status: COMPLETED; exit: 1; error: -; workDir: /Users/timbarry/research_code/sceptre-pipeline/examples/work/af/2be89fcb40651b0ad92a73e23fa518]
+Nov-27 14:06:37.226 [Task monitor] DEBUG nextflow.processor.TaskProcessor - Handling unexpected condition for
+  task: name=output_grna_info (1); work-dir=/Users/timbarry/research_code/sceptre-pipeline/examples/work/af/2be89fcb40651b0ad92a73e23fa518
+  error [nextflow.exception.ProcessFailedException]: Process `output_grna_info (1)` terminated with an error exit status (1)
+Nov-27 14:06:37.231 [Task monitor] ERROR nextflow.processor.TaskProcessor - Error executing process > 'output_grna_info (1)'
+
+Caused by:
+  Process `output_grna_info (1)` terminated with an error exit status (1)
+
+Command executed:
+
+  output_grna_info.R sceptre_object response_odm_fp grna_odm_fp
+
+Command exit status:
+  1
+
+Command output:
+  (empty)
+
+Command error:
+  Welcome to sceptre.
+  Submit issues on the sceptre website: github.com/Katsevich-Lab/sceptre
+  Read the sceptre manual: timothy-barry.github.io/sceptre-book/
+  Error in sceptre::read_ondisc_backed_sceptre_object(sceptre_object_fp = sceptre_object_fp,  : 
+    unused arguments (response_odm_fp = response_odm_fp, grna_odm_fp = grna_odm_fp)
+  Execution halted
+
+Work dir:
+  /Users/timbarry/research_code/sceptre-pipeline/examples/work/af/2be89fcb40651b0ad92a73e23fa518
+
+Tip: when you have fixed the problem you can continue the execution adding the option `-resume` to the run command line
+Nov-27 14:06:37.234 [main] DEBUG nextflow.Session - Session await > all processes finished
+Nov-27 14:06:37.235 [Task monitor] DEBUG nextflow.Session - Session aborted -- Cause: Process `output_grna_info (1)` terminated with an error exit status (1)
+Nov-27 14:06:37.243 [main] DEBUG nextflow.Session - Session await > all barriers passed
+Nov-27 14:06:37.243 [Task monitor] DEBUG n.processor.TaskPollingMonitor - <<< barrier arrives (monitor: local) - terminating tasks monitor poll loop
+Nov-27 14:06:37.245 [main] DEBUG n.trace.WorkflowStatsObserver - Workflow completed > WorkflowStats[succeededCount=0; failedCount=1; ignoredCount=0; cachedCount=0; pendingCount=0; submittedCount=0; runningCount=0; retriesCount=0; abortedCount=0; succeedDuration=0ms; failedDuration=459ms; cachedDuration=0ms;loadCpus=0; loadMemory=0; peakRunning=1; peakCpus=1; peakMemory=5 GB; ]
+Nov-27 14:06:37.444 [main] DEBUG nextflow.cache.CacheDB - Closing CacheDB done
+Nov-27 14:06:37.452 [main] DEBUG nextflow.script.ScriptRunner - > Execution complete -- Goodbye
