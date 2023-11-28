@@ -47,7 +47,7 @@ process assign_grnas {
   
   output:
   path "grna_assignments.rds", emit: grna_assignments_ch
-  
+
   """
   assign_grnas.R $sceptre_object_fp $response_odm_fp $grna_odm_fp $grna_to_pod_map $grna_pod ${params.grna_assignment_method}
   """
@@ -58,6 +58,7 @@ process assign_grnas {
 process process_grna_assignments {
   time "5m"
   memory "5 GB"
+  debug true
   
   input:
   path "sceptre_object_fp"
@@ -65,8 +66,12 @@ process process_grna_assignments {
   path "grna_odm_fp"
   path "grna_assignments"
   
+  //"""
+  //process_grna_assignments.R $sceptre_object_fp $response_odm_fp $grna_odm_fp ${params.grna_assignment_method} grna_assignments*
+  //"""
+  
   """
-  process_grna_assignments.R $sceptre_object_fp $response_odm_fp $grna_odm_fp grna_assignments*
+  echo $sceptre_object_fp $response_odm_fp $grna_odm_fp ${params.grna_assignment_method} grna_assignments*
   """
 }
 
@@ -95,6 +100,7 @@ workflow {
     low_moi_ch
   )
 
+  
   // 4. process output from the above
   grna_assignments_ch = assign_grnas.out.grna_assignments_ch.ifEmpty(params.sceptre_object_fp).collect()
   

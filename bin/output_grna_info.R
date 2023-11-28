@@ -35,7 +35,6 @@ grna_to_pod_map <- data.frame(grna_id = grnas_in_use,
 grna_pods <- unique(grna_to_pod_map$pod_id)
 
 # write and save outputs
-# write_vector(sceptre_object@low_moi, "low_moi.txt")
 write_vector(grna_pods, "grna_pods.txt")
 saveRDS(grna_to_pod_map, "grna_to_pod_map.rds")
 write_vector(tolower(sceptre_object@low_moi), "low_moi.txt")

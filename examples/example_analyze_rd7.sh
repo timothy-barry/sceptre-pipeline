@@ -20,11 +20,6 @@ grna_odm_fp=$rd7_data_dir"grna.odm"
 ##################
 output_dir="~/rd7_pipeline_outputs"
 
-###############
-# OPTIONAL ARGS
-###############
-
-
 #################
 # Invoke pipeline
 #################
@@ -32,4 +27,5 @@ nextflow run ../main.nf \
  --sceptre_object_fp $sceptre_object_fp \
  --response_odm_fp $response_odm_fp \
  --grna_odm_fp $grna_odm_fp \
- --grna_assignment_method "default"
+ --grna_assignment_method "mixture" \
+ -resume
