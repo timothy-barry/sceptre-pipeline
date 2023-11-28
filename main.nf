@@ -11,7 +11,7 @@ params.pair_pod_size = 500
 // PROCESS A: output gRNA info
 process output_grna_info {
   time "5m"
-  memory "5 GB"
+  memory "4 GB"
   
   input:
   path "sceptre_object_fp"
@@ -31,9 +31,8 @@ process output_grna_info {
 
 // PROCESS B: assign gRNAs
 process assign_grnas {
-  debug true
-  time "5m"
-  memory "5 GB"
+  time {1.m * params.grna_pod_size}
+  memory "4 GB"
   
   when:
   !(params.grna_assignment_method == "maximum" || (low_moi == "true" && params.grna_assignment_method == "default"))
@@ -46,11 +45,28 @@ process assign_grnas {
   val "grna_pod"
   val "low_moi"
   
-  //output:
-  //"grna_assignments.rds"
+  output:
+  path "grna_assignments.rds", emit: grna_assignments_ch
   
   """
   assign_grnas.R $sceptre_object_fp $response_odm_fp $grna_odm_fp $grna_to_pod_map $grna_pod ${params.grna_assignment_method}
+  """
+}
+
+
+// PROCESS C: process gRNA assignments
+process process_grna_assignments {
+  time "5m"
+  memory "5 GB"
+  
+  input:
+  path "sceptre_object_fp"
+  path "response_odm_fp"
+  path "grna_odm_fp"
+  path "grna_assignments"
+  
+  """
+  process_grna_assignments.R $sceptre_object_fp $response_odm_fp $grna_odm_fp grna_assignments*
   """
 }
 
@@ -77,5 +93,16 @@ workflow {
     grna_to_pod_map_ch,
     grna_pods_ch,
     low_moi_ch
+  )
+
+  // 4. process output from the above
+  grna_assignments_ch = assign_grnas.out.grna_assignments_ch.ifEmpty(params.sceptre_object_fp).collect()
+  
+  // 5. process the gRNA assignments
+  process_grna_assignments(
+    Channel.fromPath(params.sceptre_object_fp).first(),
+    Channel.fromPath(params.response_odm_fp).first(),
+    Channel.fromPath(params.grna_odm_fp).first(),
+    grna_assignments_ch
   )
 }
