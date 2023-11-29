@@ -74,7 +74,7 @@ process assign_grnas {
   ${params.n_em_rep} \
   ${params.n_nonzero_cells_cutoff} \
   ${params.backup_threshold} \
-  ${params.probability_threshold} \
+  ${params.probability_threshold}
   """
 }
 
@@ -82,7 +82,7 @@ process assign_grnas {
 process process_grna_assignments {
   time "5m"
   memory "5 GB"
-  debug true
+  publishDir "${params.output_directory}", mode: 'copy', overwrite: true
   
   input:
   path "sceptre_object_fp"
@@ -90,15 +90,14 @@ process process_grna_assignments {
   path "grna_odm_fp"
   path "grna_assignments"
   
-  //output:
-  // path 
-  
-  //"""
-  //process_grna_assignments.R $sceptre_object_fp $response_odm_fp $grna_odm_fp ${params.grna_assignment_method} grna_assignments*
-  //"""
-  
+  output:
+  path "plot_grna_count_distributions.png"
+  path "plot_assign_grnas.png"
+  path "analysis_summary.txt"
+  path "sceptre_object.rds"
+
   """
-  echo $sceptre_object_fp \
+  process_grna_assignments.R $sceptre_object_fp \
   $response_odm_fp \
   $grna_odm_fp \
   ${params.grna_assignment_method} \
