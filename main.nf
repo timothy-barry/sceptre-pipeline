@@ -1,14 +1,25 @@
 // Use DSL 2
 nextflow.enable.dsl = 2
 
-// method parameter default values
+/*************************
+* DEFAULT PARAMETER VALUES
+*************************/
+// gRNA assignment
 params.grna_assignment_method = "default"
+params.threshold = "default"
+params.umi_fraction_threshold = "default"
+params.n_em_rep = "default"
+params.n_nonzero_cells_cutoff = "default"
+params.backup_threshold = "default"
+params.probability_threshold = "default"
 
-// parallelization default values
+// parallelization
 params.grna_pod_size = 100
 params.pair_pod_size = 500
 
-
+/**********
+* PROCESSES
+**********/
 // PROCESS A: output gRNA info
 process output_grna_info {
   time "5m"
@@ -25,15 +36,18 @@ process output_grna_info {
   path "low_moi.txt", emit: low_moi_ch
   
   """
-  output_grna_info.R $sceptre_object_fp $response_odm_fp $grna_odm_fp ${params.grna_pod_size}
+  output_grna_info.R $sceptre_object_fp \
+  $response_odm_fp \
+  $grna_odm_fp \
+  ${params.grna_pod_size}
   """
 }
-
 
 // PROCESS B: assign gRNAs
 process assign_grnas {
   time {1.m * params.grna_pod_size}
   memory "4 GB"
+  debug true
   
   when:
   !(params.grna_assignment_method == "maximum" || (low_moi == "true" && params.grna_assignment_method == "default"))
@@ -50,10 +64,19 @@ process assign_grnas {
   path "grna_assignments.rds", emit: grna_assignments_ch
 
   """
-  assign_grnas.R $sceptre_object_fp $response_odm_fp $grna_odm_fp $grna_to_pod_map $grna_pod ${params.grna_assignment_method}
+  assign_grnas.R $sceptre_object_fp \
+  $response_odm_fp \
+  $grna_odm_fp \
+  $grna_to_pod_map \
+  $grna_pod \
+  ${params.grna_assignment_method} \
+  ${params.threshold} \
+  ${params.n_em_rep} \
+  ${params.n_nonzero_cells_cutoff} \
+  ${params.backup_threshold} \
+  ${params.probability_threshold} \
   """
 }
-
 
 // PROCESS C: process gRNA assignments
 process process_grna_assignments {
@@ -67,12 +90,19 @@ process process_grna_assignments {
   path "grna_odm_fp"
   path "grna_assignments"
   
+  //output:
+  // path 
+  
   //"""
   //process_grna_assignments.R $sceptre_object_fp $response_odm_fp $grna_odm_fp ${params.grna_assignment_method} grna_assignments*
   //"""
   
   """
-  echo $sceptre_object_fp $response_odm_fp $grna_odm_fp ${params.grna_assignment_method} grna_assignments*
+  echo $sceptre_object_fp \
+  $response_odm_fp \
+  $grna_odm_fp \
+  ${params.grna_assignment_method} \
+  grna_assignments*
   """
 }
 
@@ -100,11 +130,11 @@ workflow {
     grna_pods_ch,
     low_moi_ch
   )
-
   
   // 4. process output from the above
   grna_assignments_ch = assign_grnas.out.grna_assignments_ch.ifEmpty(params.sceptre_object_fp).collect()
   
+  /*
   // 5. process the gRNA assignments
   process_grna_assignments(
     Channel.fromPath(params.sceptre_object_fp).first(),
@@ -112,4 +142,5 @@ workflow {
     Channel.fromPath(params.grna_odm_fp).first(),
     grna_assignments_ch
   )
+  */
 }

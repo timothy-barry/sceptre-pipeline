@@ -28,4 +28,5 @@ nextflow run ../main.nf \
  --response_odm_fp $response_odm_fp \
  --grna_odm_fp $grna_odm_fp \
  --grna_assignment_method "thresholding" \
+ --threshold "5" \
  -resume
