@@ -27,5 +27,5 @@ nextflow run ../main.nf \
  --sceptre_object_fp $sceptre_object_fp \
  --response_odm_fp $response_odm_fp \
  --grna_odm_fp $grna_odm_fp \
- --grna_assignment_method "mixture" \
+ --grna_assignment_method "thresholding" \
  -resume

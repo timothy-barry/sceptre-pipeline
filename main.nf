@@ -8,6 +8,7 @@ params.grna_assignment_method = "default"
 params.grna_pod_size = 100
 params.pair_pod_size = 500
 
+
 // PROCESS A: output gRNA info
 process output_grna_info {
   time "5m"
