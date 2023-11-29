@@ -134,7 +134,6 @@ workflow {
   // 4. process output from the above
   grna_assignments_ch = assign_grnas.out.grna_assignments_ch.ifEmpty(params.sceptre_object_fp).collect()
   
-  /*
   // 5. process the gRNA assignments
   process_grna_assignments(
     Channel.fromPath(params.sceptre_object_fp).first(),
@@ -142,5 +141,4 @@ workflow {
     Channel.fromPath(params.grna_odm_fp).first(),
     grna_assignments_ch
   )
-  */
 }
