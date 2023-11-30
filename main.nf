@@ -108,6 +108,8 @@ process process_grna_assignments {
   """
 }
 
+// PROCESS D: quality control
+
 
 /**********
 * WORKFLOW
