@@ -6,7 +6,9 @@ sceptre_object_fp <- args[1]
 response_odm_fp <- args[2]
 grna_odm_fp <- args[3]
 method <- args[4]
-grna_assignment_fps <- args[seq(5, length(args))]
+umi_fraction_threshold <- args[5]
+grna_assignment_fps <- args[seq(6, length(args))]
+UMI_FRACTION_THRESHOLD_DEFAULT <- 0.8
 
 # load the sceptre object
 sceptre_object <- sceptre::read_ondisc_backed_sceptre_object(sceptre_object_fp = sceptre_object_fp,
@@ -19,13 +21,20 @@ sceptre_object@functs_called[["assign_grnas"]] <- TRUE
 
 # obtain the list of initial gRNA assignments (treating maximum as a special case)
 if (method == "maximum") {
+  if (identical(umi_fraction_threshold, "default")) {
+    umi_fraction_threshold <- UMI_FRACTION_THRESHOLD_DEFAULT 
+  } else {
+    umi_fraction_threshold <- as.numeric(umi_fraction_threshold)
+  }
   grna_ids <- unique(sceptre_object@ondisc_grna_assignment_info$max_grna)
   initial_assignment_list <- lapply(grna_ids, function(grna_id) {
     which(sceptre_object@ondisc_grna_assignment_info$max_grna == grna_id) 
   }) |> stats::setNames(grna_ids)
+  cells_w_multiple_grnas <- which(sceptre_object@ondisc_grna_assignment_info$max_grna_frac_umis > umi_fraction_threshold)
 } else {
   initial_assignment_list <- lapply(X = grna_assignment_fps, FUN = readRDS) |> unlist(recursive = FALSE)
 }
+sceptre_object@ondisc_grna_assignment_info <- list()
 
 # obtain the list of processed gRNA assignments
 processed_assignment_out <- sceptre:::process_initial_assignment_list(initial_assignment_list = initial_assignment_list,
@@ -35,7 +44,7 @@ processed_assignment_out <- sceptre:::process_initial_assignment_list(initial_as
                                                                       maximum_assignment = (method == "maximum"))
 sceptre_object@grna_assignments_raw <- processed_assignment_out$grna_assignments_raw
 sceptre_object@grnas_per_cell <- processed_assignment_out$grnas_per_cell
-sceptre_object@cells_w_multiple_grnas <- if (method != "maximum") processed_assignment_out$cells_w_multiple_grnas else max_result$cells_w_multiple_grnas
+sceptre_object@cells_w_multiple_grnas <- if (method != "maximum") processed_assignment_out$cells_w_multiple_grnas else cells_w_multiple_grnas
 sceptre_object@initial_grna_assignment_list <- initial_assignment_list
 
 # write outputs to disk

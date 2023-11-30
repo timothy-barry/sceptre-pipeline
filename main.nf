@@ -82,7 +82,9 @@ process assign_grnas {
 process process_grna_assignments {
   time "5m"
   memory "5 GB"
-  publishDir "${params.output_directory}", mode: 'copy', overwrite: true
+  publishDir "${params.output_directory}", mode: 'copy', overwrite: true, pattern: "*.png"
+  publishDir "${params.output_directory}", mode: 'copy', overwrite: true, pattern: "*.txt"
+  debug true
   
   input:
   path "sceptre_object_fp"
@@ -95,18 +97,21 @@ process process_grna_assignments {
   path "plot_assign_grnas.png"
   path "analysis_summary.txt"
   path "sceptre_object.rds"
-
+  
   """
   process_grna_assignments.R $sceptre_object_fp \
   $response_odm_fp \
   $grna_odm_fp \
   ${params.grna_assignment_method} \
+  ${params.umi_fraction_threshold} \
   grna_assignments*
   """
 }
 
 
-// WORKFLOW
+/**********
+* WORKFLOW
+**********/
 workflow {
   // 1. obtain the gRNA info
   output_grna_info(
