@@ -12,6 +12,14 @@ params.n_em_rep = "default"
 params.n_nonzero_cells_cutoff = "default"
 params.backup_threshold = "default"
 params.probability_threshold = "default"
+// QC
+params.n_nonzero_trt_thresh = "default"
+params.n_nonzero_cntrl_thresh = "default"
+params.response_n_umis_range_lower = "default"
+params.response_n_umis_range_uppper = "default"
+params.response_n_nonzero_range_lower = "default"
+params.response_n_nonzero_range_upper = "default"
+params.p_mito_threshold = "default"
 
 // parallelization
 params.grna_pod_size = 100
@@ -120,10 +128,23 @@ process run_qc {
   path "response_odm_fp"
   path "grna_odm_fp"
   
+  output:
+  path "plot_covariates.png"
+  path "plot_run_qc.png"
+  path "analysis_summary.txt"
+  path "sceptre_object.rds", emit: sceptre_object_ch_2
+  
   """
-  echo $sceptre_object_fp \
+  run_qc.R $sceptre_object_fp \
   $response_odm_fp \
-  $grna_odm_fp
+  $grna_odm_fp \
+  ${params.n_nonzero_trt_thresh} \
+  ${params.n_nonzero_cntrl_thresh} \
+  ${params.response_n_umis_range_lower} \
+  ${params.response_n_umis_range_uppper} \
+  ${params.response_n_nonzero_range_lower} \
+  ${params.response_n_nonzero_range_upper} \
+  ${params.p_mito_threshold}
   """
 }
 
@@ -171,4 +192,5 @@ workflow {
     Channel.fromPath(params.grna_odm_fp).first(),
   )
   
+  // 7. run 
 }
