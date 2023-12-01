@@ -29,4 +29,5 @@ nextflow run ../main.nf \
  --grna_odm_fp $grna_odm_fp \
  --output_directory $output_directory \
  --grna_assignment_method "thresholding" \
- --threshold "8"
+ --threshold "8" \
+ -resume

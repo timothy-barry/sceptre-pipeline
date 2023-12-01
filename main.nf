@@ -84,7 +84,6 @@ process process_grna_assignments {
   memory "5 GB"
   publishDir "${params.output_directory}", mode: 'copy', overwrite: true, pattern: "*.png"
   publishDir "${params.output_directory}", mode: 'copy', overwrite: true, pattern: "*.txt"
-  debug true
   
   input:
   path "sceptre_object_fp"
@@ -96,7 +95,7 @@ process process_grna_assignments {
   path "plot_grna_count_distributions.png"
   path "plot_assign_grnas.png"
   path "analysis_summary.txt"
-  path "sceptre_object.rds"
+  path "sceptre_object.rds", emit: sceptre_object_ch_1
   
   """
   process_grna_assignments.R $sceptre_object_fp \
@@ -109,7 +108,24 @@ process process_grna_assignments {
 }
 
 // PROCESS D: quality control
-
+process run_qc {
+  time "30m"
+  memory "5 GB"
+  publishDir "${params.output_directory}", mode: 'copy', overwrite: true, pattern: "*.png"
+  publishDir "${params.output_directory}", mode: 'copy', overwrite: true, pattern: "*.txt"
+  debug true
+  
+  input:
+  path "sceptre_object_fp"
+  path "response_odm_fp"
+  path "grna_odm_fp"
+  
+  """
+  echo $sceptre_object_fp \
+  $response_odm_fp \
+  $grna_odm_fp
+  """
+}
 
 /**********
 * WORKFLOW
@@ -147,4 +163,12 @@ workflow {
     Channel.fromPath(params.grna_odm_fp).first(),
     grna_assignments_ch
   )
+  
+  // 6. run quality control
+  run_qc(
+    process_grna_assignments.out.sceptre_object_ch_1,
+    Channel.fromPath(params.response_odm_fp).first(),
+    Channel.fromPath(params.grna_odm_fp).first(),
+  )
+  
 }
