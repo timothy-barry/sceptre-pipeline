@@ -8,7 +8,6 @@ grna_odm_fp <- args[3]
 method <- args[4]
 umi_fraction_threshold <- args[5]
 grna_assignment_fps <- args[seq(6, length(args))]
-UMI_FRACTION_THRESHOLD_DEFAULT <- 0.8
 
 # load the sceptre object
 sceptre_object <- sceptre::read_ondisc_backed_sceptre_object(sceptre_object_fp = sceptre_object_fp,
@@ -16,36 +15,23 @@ sceptre_object <- sceptre::read_ondisc_backed_sceptre_object(sceptre_object_fp =
                                                              grna_odm_file_fp = grna_odm_fp)
 # determine the grna assignment method
 if (identical(method, "default")) method <- if (sceptre_object@low_moi) "maximum" else "mixture"
-sceptre_object@grna_assignment_method <- method
-sceptre_object@functs_called[["assign_grnas"]] <- TRUE
 
-# obtain the list of initial gRNA assignments (treating maximum as a special case)
+# if method is maximum, carry out the standard assignment strategy
 if (method == "maximum") {
-  if (identical(umi_fraction_threshold, "default")) {
-    umi_fraction_threshold <- UMI_FRACTION_THRESHOLD_DEFAULT 
-  } else {
-    umi_fraction_threshold <- as.numeric(umi_fraction_threshold)
+  sceptre_object@nf_pipeline <- FALSE
+  args_to_pass <- list(sceptre_object = sceptre_object, method = "maximum")
+  if (!identical(umi_fraction_threshold, "default")) {
+    args_to_pass[["umi_fraction_threshold"]] <- as.numeric(umi_fraction_threshold)
   }
-  grna_ids <- unique(sceptre_object@ondisc_grna_assignment_info$max_grna)
-  initial_assignment_list <- lapply(grna_ids, function(grna_id) {
-    which(sceptre_object@ondisc_grna_assignment_info$max_grna == grna_id) 
-  }) |> stats::setNames(grna_ids)
-  cells_w_multiple_grnas <- which(sceptre_object@ondisc_grna_assignment_info$max_grna_frac_umis > umi_fraction_threshold)
+  sceptre_object <- do.call(sceptre::assign_grnas, args = args_to_pass)
 } else {
-  initial_assignment_list <- lapply(X = grna_assignment_fps, FUN = readRDS) |> unlist(recursive = FALSE)
+  # combine initial assignment list across grnas; update fields of sceptre_object
+  sceptre_object@initial_grna_assignment_list <- lapply(grna_assignment_fps, readRDS) |>
+    unlist(recursive = FALSE)
+  sceptre_object@functs_called[["assign_grnas"]] <- TRUE
+  sceptre_object@grna_assignment_method <- method
+  sceptre_object <- sceptre:::process_initial_assignment_list(sceptre_object)
 }
-sceptre_object@ondisc_grna_assignment_info <- list()
-
-# obtain the list of processed gRNA assignments
-processed_assignment_out <- sceptre:::process_initial_assignment_list(initial_assignment_list = initial_assignment_list,
-                                                                      grna_target_data_frame = sceptre_object@grna_target_data_frame,
-                                                                      n_cells = ncol(sceptre_object@grna_matrix),
-                                                                      low_moi = sceptre_object@low_moi,
-                                                                      maximum_assignment = (method == "maximum"))
-sceptre_object@grna_assignments_raw <- processed_assignment_out$grna_assignments_raw
-sceptre_object@grnas_per_cell <- processed_assignment_out$grnas_per_cell
-sceptre_object@cells_w_multiple_grnas <- if (method != "maximum") processed_assignment_out$cells_w_multiple_grnas else cells_w_multiple_grnas
-sceptre_object@initial_grna_assignment_list <- initial_assignment_list
 
 # write outputs to disk
 sceptre:::write_ondisc_backed_sceptre_object(sceptre_object = sceptre_object, "sceptre_object.rds")

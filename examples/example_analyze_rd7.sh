@@ -28,5 +28,6 @@ nextflow run ../main.nf \
  --response_odm_fp $response_odm_fp \
  --grna_odm_fp $grna_odm_fp \
  --output_directory $output_directory \
- --grna_assignment_method "mixture" \
+ --grna_assignment_method "maximum" \
+ --umi_fraction_threshold "0.95" \
  -resume
