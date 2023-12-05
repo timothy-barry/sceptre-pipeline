@@ -24,8 +24,7 @@ for (optional_arg_name in optional_args_names) {
 }
 
 # generate the negative control pairs
-sceptre_object <- do.call(sceptre:::run_calibration_check_pt_1,
-                          args = args_to_pass)
+sceptre_object <- do.call(sceptre:::run_calibration_check_pt_1, args = args_to_pass)
 
 # assign pods to negative control, positive control, and discovery pairs
 data_table_list <- list(calibration_check = sceptre_object@negative_control_pairs,
@@ -35,7 +34,7 @@ data_table_list <- list(calibration_check = sceptre_object@negative_control_pair
 # process each of the data tables
 process_pair_data_table <- function(data_table) {
   if (nrow(data_table) >= 1L) {
-    data_table <- data_table[data_table$pass_qc, c("response_id", "grna_group")]
+    data_table <- data_table[data_table$pass_qc,]
     data.table::setorderv(data_table, "response_id")
     data_table$pod <- sceptre:::get_id_vect(v = data_table$response_id, pod_size = pair_pod_size)
     rownames(data_table) <- NULL 
@@ -43,12 +42,15 @@ process_pair_data_table <- function(data_table) {
   return(data_table)
 }
 processed_data_table_list <- lapply(data_table_list, process_pair_data_table)
+sceptre_object@negative_control_pairs <- processed_data_table_list$calibration_check
+sceptre_object@positive_control_pairs_with_info <- processed_data_table_list$power_check
+sceptre_object@discovery_pairs_with_info <- processed_data_table_list$discovery_analysis
 
 # save the output
 for (analysis_name in names(processed_data_table_list)) {
   data_table <- processed_data_table_list[[analysis_name]]
-  saveRDS(data_table, paste0(analysis_name, "_pair_to_pod_map.rds"))
   run_analysis <- tolower(nrow(data_table) >= 1L)
   sceptre:::write_vector(run_analysis, paste0("run_", analysis_name))
   sceptre:::write_vector(unique(data_table$pod), paste0(analysis_name, "_pods"))
 }
+saveRDS(sceptre_object, "sceptre_object.rds")

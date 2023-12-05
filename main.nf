@@ -128,7 +128,7 @@ process run_qc {
   path "sceptre_object_fp"
   path "response_odm_fp"
   path "grna_odm_fp"
-
+  
   output:
   path "plot_covariates.png"
   path "plot_run_qc.png"
@@ -160,16 +160,14 @@ process prepare_association_analyses {
   path "grna_odm_fp"
   
   output:
-  path "calibration_check_pair_to_pod_map.rds", emit: calibration_check_pair_to_pod_map_ch
-  path "discovery_analysis_pair_to_pod_map.rds", emit: discovery_analysis_pair_to_pod_map_ch
-  path "power_check_pair_to_pod_map.rds", emit: power_check_pair_to_pod_map_ch
   path "run_calibration_check", emit: run_calibration_check_ch
   path "run_discovery_analysis", emit: run_discovery_analysis_ch
   path "run_power_check", emit: run_power_check_ch
   path "calibration_check_pods", emit: calibration_check_pods_ch
   path "power_check_pods", emit: power_check_pods_ch
   path "discovery_analysis_pods", emit: discovery_analysis_pods_ch
-
+  path "sceptre_object.rds", emit: sceptre_object_ch_3
+  
   """
   prepare_association_analyses.R $sceptre_object_fp \
   $response_odm_fp \
@@ -184,28 +182,56 @@ process prepare_association_analyses {
 process run_calibration_check {
   time {1.m * params.pair_pod_size}
   memory "4 GB"
-  debug true
   
   when:
   run_calibration_check == "true"
+  
+  output:
+  path "result.rds", emit: result_ch
+  path "precomputations.rds", emit: precomputations_ch
   
   input:
   path "sceptre_object_fp"
   path "response_odm_fp"
   path "grna_odm_fp"
-  path "calibration_check_pair_to_pod_map"
   val "pair_pod"
   val "run_calibration_check"
   
   """
-  echo $sceptre_object_fp \
+  run_calibration_check.R $sceptre_object_fp \
   $response_odm_fp \
   $grna_odm_fp \
-  $calibration_check_pair_to_pod_map \
   $pair_pod
   """
 }
 
+// PROCESS F: process calibration check results
+process process_calibration_check_results {
+  time "5m"
+  memory "4 GB"
+  publishDir "${params.output_directory}", mode: 'copy', overwrite: true, pattern: "*.png"
+  publishDir "${params.output_directory}", mode: 'copy', overwrite: true, pattern: "*.txt"
+  
+  when:
+  run_calibration_check == "true"
+  
+  output:
+  path "sceptre_object.rds", emit: sceptre_object_ch_4
+  path "plot_run_calibration_check.png"
+  path "analysis_summary.txt"
+
+  input:
+  path "sceptre_object_fp"
+  path "results"
+  path "precomputations"
+  val "run_calibration_check"
+  
+  """
+  echo $sceptre_object_fp \
+  results* \
+  precomputations*
+  """
+}
 
 /**********
 * WORKFLOW
@@ -219,11 +245,10 @@ workflow {
   )
 
   // 2. process output from above process
-  grna_to_pod_map_ch = output_grna_info.out.grna_to_pod_map_ch
+  grna_to_pod_map_ch = output_grna_info.out.grna_to_pod_map_ch.first()
   grna_pods_ch = output_grna_info.out.grna_pods_ch.splitText().map{it.trim()}
   low_moi_ch = output_grna_info.out.low_moi_ch.splitText().map{it.trim()}.first()
   
-  /*
   // 3. assign gRNAs
   assign_grnas(
     Channel.fromPath(params.sceptre_object_fp).first(),
@@ -260,26 +285,22 @@ workflow {
   )
 
   // 8. run calibration check
-  calibration_check_pair_to_pod_map_ch = prepare_association_analyses.out.calibration_check_pair_to_pod_map_ch
+  sceptre_object_ch_3 = prepare_association_analyses.out.sceptre_object_ch_3
   calibration_check_pods_ch = prepare_association_analyses.out.calibration_check_pods_ch.splitText().map{it.trim()}
   run_calibration_check_ch = prepare_association_analyses.out.run_calibration_check_ch.splitText().map{it.trim()}.first()
-  
   run_calibration_check(
-    run_qc.out.sceptre_object_ch_2,
+    sceptre_object_ch_3,
     Channel.fromPath(params.response_odm_fp).first(),
     Channel.fromPath(params.grna_odm_fp).first(),
-    calibration_check_pair_to_pod_map_ch,
     calibration_check_pods_ch,
     run_calibration_check_ch
   )
-
-  discovery_analysis_pair_to_pod_map_ch = prepare_association_analyses.out.discovery_analysis_pair_to_pod_map_ch.first()
-  power_check_pair_to_pod_map_ch = prepare_association_analyses.out.power_check_pair_to_pod_map.first()
   
-  run_power_check_ch = prepare_association_analyses.out.run_power_check_ch.splitText().map{it.trim()}.first()
-  run_discovery_analysis_ch = prepare_association_analyses.out.run_discovery_analysis_ch.splitText().map{it.trim()}.first()
-  
-  // 9. run calibration check
-
-  */
+  // 9. process outputs from above process
+  process_calibration_check_results(
+    sceptre_object_ch_3,
+    run_calibration_check.out.result_ch.collect(),
+    run_calibration_check.out.precomputations_ch.collect(),
+    run_calibration_check_ch
+  )
 }
