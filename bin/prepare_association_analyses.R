@@ -2,4 +2,53 @@
 
 args <- commandArgs(trailingOnly = TRUE)
 sceptre_object_fp <- args[1]
-pair_pod_size <- as.integer(args[2])
+response_odm_fp <- args[2]
+grna_odm_fp <- args[3]
+n_calibration_pairs <- args[4]
+calibration_group_size <- args[5]
+pair_pod_size <- as.integer(args[6])
+
+# load the sceptre object
+sceptre_object <- sceptre::read_ondisc_backed_sceptre_object(sceptre_object_fp = sceptre_object_fp,
+                                                             response_odm_file_fp = response_odm_fp,
+                                                             grna_odm_file_fp = grna_odm_fp)
+
+# handle the default arguments
+args_to_pass <- list(sceptre_object = sceptre_object)
+optional_args_names <- c("n_calibration_pairs", "calibration_group_size")
+for (optional_arg_name in optional_args_names) {
+  optional_arg_value <- get(x = optional_arg_name)
+  if (!identical(optional_arg_value, "default")) {
+    args_to_pass[[optional_arg_name]] <- as.numeric(optional_arg_value)
+  }
+}
+
+# generate the negative control pairs
+sceptre_object <- do.call(sceptre:::run_calibration_check_pt_1,
+                          args = args_to_pass)
+
+# assign pods to negative control, positive control, and discovery pairs
+data_table_list <- list(calibration_check = sceptre_object@negative_control_pairs,
+                        power_check = sceptre_object@positive_control_pairs_with_info,
+                        discovery_analysis = sceptre_object@discovery_pairs_with_info)
+
+# process each of the data tables
+process_pair_data_table <- function(data_table) {
+  if (nrow(data_table) >= 1L) {
+    data_table <- data_table[data_table$pass_qc, c("response_id", "grna_group")]
+    data.table::setorderv(data_table, "response_id")
+    data_table$pod <- sceptre:::get_id_vect(v = data_table$response_id, pod_size = pair_pod_size)
+    rownames(data_table) <- NULL 
+  }
+  return(data_table)
+}
+processed_data_table_list <- lapply(data_table_list, process_pair_data_table)
+
+# save the output
+for (analysis_name in names(processed_data_table_list)) {
+  data_table <- processed_data_table_list[[analysis_name]]
+  saveRDS(data_table, paste0(analysis_name, "_pair_to_pod_map.rds"))
+  run_analysis <- tolower(nrow(data_table) >= 1L)
+  sceptre:::write_vector(run_analysis, paste0("run_", analysis_name))
+  sceptre:::write_vector(unique(data_table$pod), paste0(analysis_name, "_pods"))
+}

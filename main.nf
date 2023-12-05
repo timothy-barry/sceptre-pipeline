@@ -4,6 +4,7 @@ nextflow.enable.dsl = 2
 /*************************
 * DEFAULT PARAMETER VALUES
 *************************/
+// set analysis parameters
 // gRNA assignment
 params.grna_assignment_method = "default"
 params.threshold = "default"
@@ -20,6 +21,9 @@ params.response_n_umis_range_uppper = "default"
 params.response_n_nonzero_range_lower = "default"
 params.response_n_nonzero_range_upper = "default"
 params.p_mito_threshold = "default"
+// calibration check
+params.n_calibration_pairs = "default"
+params.calibration_group_size = "default"
 // parallelization
 params.grna_pod_size = 100
 params.pair_pod_size = 500
@@ -54,7 +58,6 @@ process output_grna_info {
 process assign_grnas {
   time {1.m * params.grna_pod_size}
   memory "4 GB"
-  debug true
 
   when:
   !(params.grna_assignment_method == "maximum" || (low_moi == "true" && params.grna_assignment_method == "default"))
@@ -88,10 +91,9 @@ process assign_grnas {
 // PROCESS C: process gRNA assignments
 process process_grna_assignments {
   time "5m"
-  memory "5 GB"
+  memory "4 GB"
   publishDir "${params.output_directory}", mode: 'copy', overwrite: true, pattern: "*.png"
   publishDir "${params.output_directory}", mode: 'copy', overwrite: true, pattern: "*.txt"
-  debug true
 
   input:
   path "sceptre_object_fp"
@@ -118,7 +120,7 @@ process process_grna_assignments {
 // PROCESS D: quality control
 process run_qc {
   time "30m"
-  memory "5 GB"
+  memory "4 GB"
   publishDir "${params.output_directory}", mode: 'copy', overwrite: true, pattern: "*.png"
   publishDir "${params.output_directory}", mode: 'copy', overwrite: true, pattern: "*.txt"
 
@@ -147,20 +149,63 @@ process run_qc {
   """
 }
 
-// PROCESS: PREPARE ASSOCIATION ANALYSIS
+// PROCESS E: prepare association analysis
 process prepare_association_analyses {
-  time "5m"
-  memory "5 GB"
   debug true
+  time "1h"
+  memory "4 GB"
 
   input:
   path "sceptre_object_fp"
+  path "response_odm_fp"
+  path "grna_odm_fp"
+  
+  output:
+  path "calibration_check_pair_to_pod_map.rds", emit: calibration_check_pair_to_pod_map_ch
+  path "discovery_analysis_pair_to_pod_map.rds", emit: discovery_analysis_pair_to_pod_map_ch
+  path "power_check_pair_to_pod_map.rds", emit: power_check_pair_to_pod_map_ch
+  path "run_calibration_check", emit: run_calibration_check_ch
+  path "run_discovery_analysis", emit: run_discovery_analysis_ch
+  path "run_power_check", emit: run_power_check_ch
+  path "calibration_check_pods", emit: calibration_check_pods_ch
+  path "power_check_pods", emit: power_check_pods_ch
+  path "discovery_analysis_pods", emit: discovery_analysis_pods_ch
 
   """
-  echo $sceptre_object_fp \
+  prepare_association_analyses.R $sceptre_object_fp \
+  $response_odm_fp \
+  $grna_odm_fp \
+  ${params.n_calibration_pairs} \
+  ${params.calibration_group_size} \
   ${params.pair_pod_size}
   """
 }
+
+// PROCESS F: run calibration check
+process run_calibration_check {
+  time {1.m * params.pair_pod_size}
+  memory "4 GB"
+  
+  when:
+  run_calibration_check == "true"
+  
+  input:
+  path "sceptre_object_fp"
+  path "response_odm_fp"
+  path "grna_odm_fp"
+  path "calibration_check_pair_to_pod_map"
+  val "pair_pod"
+  val "run_calibration_check"
+  
+  """
+  echo $sceptre_object_fp \
+  $response_odm_fp \
+  $grna_odm_fp \
+  $calibration_check_pair_to_pod_map \
+  $pair_pod
+  """
+}
+
 
 /**********
 * WORKFLOW
@@ -173,7 +218,7 @@ workflow {
     Channel.fromPath(params.grna_odm_fp, checkIfExists : true)
   )
 
-  // 2. process output from the above
+  // 2. process output from above process
   grna_to_pod_map_ch = output_grna_info.out.grna_to_pod_map_ch.first()
   grna_pods_ch = output_grna_info.out.grna_pods_ch.splitText().map{it.trim()}
   low_moi_ch = output_grna_info.out.low_moi_ch.splitText().map{it.trim()}.first()
@@ -188,7 +233,7 @@ workflow {
     low_moi_ch
   )
 
-  // 4. process output from the above
+  // 4. process output from above process
   grna_assignments_ch = assign_grnas.out.grna_assignments_ch.ifEmpty(params.sceptre_object_fp).collect()
 
   // 5. process the gRNA assignments
@@ -206,10 +251,30 @@ workflow {
     Channel.fromPath(params.grna_odm_fp).first(),
   )
   
-  /*
   // 7. prepare association analyses
   prepare_association_analyses(
-    run_qc.out.sceptre_object_ch_2
+    run_qc.out.sceptre_object_ch_2,
+    Channel.fromPath(params.response_odm_fp).first(),
+    Channel.fromPath(params.grna_odm_fp).first()
+  )
+  
+  /*
+  // 8. process output of above process
+  calibration_check_pair_to_pod_map_ch = prepare_association_analyses.out.calibration_check_pair_to_pod_map_ch.first()
+  discovery_analysis_pair_to_pod_map_ch = prepare_association_analyses.out.discovery_analysis_pair_to_pod_map_ch.first()
+  power_check_pair_to_pod_map_ch = prepare_association_analyses.out.power_check_pair_to_pod_map.first()
+  
+  run_calibration_check_ch = prepare_association_analyses.out.run_calibration_check_ch.splitText().map{it.trim()}.first()
+  run_power_check_ch = prepare_association_analyses.out.run_power_check_ch.splitText().map{it.trim()}.first()
+  run_discovery_analysis_ch = prepare_association_analyses.out.run_discovery_analysis_ch.splitText().map{it.trim()}.first()
+  
+  // 9. run calibration check
+  run_calibration_check(
+    run_qc.out.sceptre_object_ch_2,
+    Channel.fromPath(params.response_odm_fp).first(),
+    Channel.fromPath(params.grna_odm_fp).first(),
+    calibration_check_pair_to_pod_map_ch,
+    
   )
   */
 }

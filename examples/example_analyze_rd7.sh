@@ -28,6 +28,9 @@ nextflow run ../main.nf \
  --response_odm_fp $response_odm_fp \
  --grna_odm_fp $grna_odm_fp \
  --output_directory $output_directory \
- --grna_assignment_method "maximum" \
- --umi_fraction_threshold "0.95" \
+ --grna_assignment_method "thresholding" \
+ --threshold "3" \
+ --n_nonzero_trt_thresh "5" \
+ --n_nonzero_cntrl_thresh "5" \
+ --pair_pod_size "30" \
  -resume
