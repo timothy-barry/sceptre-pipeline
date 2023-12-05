@@ -151,7 +151,6 @@ process run_qc {
 
 // PROCESS E: prepare association analysis
 process prepare_association_analyses {
-  debug true
   time "1h"
   memory "4 GB"
 
@@ -185,6 +184,7 @@ process prepare_association_analyses {
 process run_calibration_check {
   time {1.m * params.pair_pod_size}
   memory "4 GB"
+  debug true
   
   when:
   run_calibration_check == "true"
@@ -219,10 +219,11 @@ workflow {
   )
 
   // 2. process output from above process
-  grna_to_pod_map_ch = output_grna_info.out.grna_to_pod_map_ch.first()
+  grna_to_pod_map_ch = output_grna_info.out.grna_to_pod_map_ch
   grna_pods_ch = output_grna_info.out.grna_pods_ch.splitText().map{it.trim()}
   low_moi_ch = output_grna_info.out.low_moi_ch.splitText().map{it.trim()}.first()
-
+  
+  /*
   // 3. assign gRNAs
   assign_grnas(
     Channel.fromPath(params.sceptre_object_fp).first(),
@@ -257,24 +258,28 @@ workflow {
     Channel.fromPath(params.response_odm_fp).first(),
     Channel.fromPath(params.grna_odm_fp).first()
   )
-  
-  /*
-  // 8. process output of above process
-  calibration_check_pair_to_pod_map_ch = prepare_association_analyses.out.calibration_check_pair_to_pod_map_ch.first()
-  discovery_analysis_pair_to_pod_map_ch = prepare_association_analyses.out.discovery_analysis_pair_to_pod_map_ch.first()
-  power_check_pair_to_pod_map_ch = prepare_association_analyses.out.power_check_pair_to_pod_map.first()
-  
+
+  // 8. run calibration check
+  calibration_check_pair_to_pod_map_ch = prepare_association_analyses.out.calibration_check_pair_to_pod_map_ch
+  calibration_check_pods_ch = prepare_association_analyses.out.calibration_check_pods_ch.splitText().map{it.trim()}
   run_calibration_check_ch = prepare_association_analyses.out.run_calibration_check_ch.splitText().map{it.trim()}.first()
-  run_power_check_ch = prepare_association_analyses.out.run_power_check_ch.splitText().map{it.trim()}.first()
-  run_discovery_analysis_ch = prepare_association_analyses.out.run_discovery_analysis_ch.splitText().map{it.trim()}.first()
   
-  // 9. run calibration check
   run_calibration_check(
     run_qc.out.sceptre_object_ch_2,
     Channel.fromPath(params.response_odm_fp).first(),
     Channel.fromPath(params.grna_odm_fp).first(),
     calibration_check_pair_to_pod_map_ch,
-    
+    calibration_check_pods_ch,
+    run_calibration_check_ch
   )
+
+  discovery_analysis_pair_to_pod_map_ch = prepare_association_analyses.out.discovery_analysis_pair_to_pod_map_ch.first()
+  power_check_pair_to_pod_map_ch = prepare_association_analyses.out.power_check_pair_to_pod_map.first()
+  
+  run_power_check_ch = prepare_association_analyses.out.run_power_check_ch.splitText().map{it.trim()}.first()
+  run_discovery_analysis_ch = prepare_association_analyses.out.run_discovery_analysis_ch.splitText().map{it.trim()}.first()
+  
+  // 9. run calibration check
+
   */
 }
