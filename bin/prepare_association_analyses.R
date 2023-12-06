@@ -34,10 +34,11 @@ data_table_list <- list(calibration_check = sceptre_object@negative_control_pair
 # process each of the data tables
 process_pair_data_table <- function(data_table) {
   if (nrow(data_table) >= 1L) {
-    data_table <- data_table[data_table$pass_qc,]
-    data.table::setorderv(data_table, "response_id")
-    data_table$pod <- sceptre:::get_id_vect(v = data_table$response_id, pod_size = pair_pod_size)
-    rownames(data_table) <- NULL 
+    data_table_pass_qc <- data_table[data_table$pass_qc,]
+    data.table::setorderv(data_table_pass_qc, "response_id")
+    data_table_pass_qc$pod <- sceptre:::get_id_vect(v = data_table_pass_qc$response_id, pod_size = pair_pod_size)
+    data_table_fail_qc <- data_table[!data_table$pass_qc,] |> dplyr::mutate(pod = 1L)
+    data_table <- data.table::rbindlist(list(data_table_pass_qc, data_table_fail_qc))
   }
   return(data_table)
 }
