@@ -10,7 +10,7 @@ include { run_analysis_subworkflow as run_analysis_subworkflow_discovery_analysi
 * DEFAULT PARAMETER VALUES
 *************************/
 // pipeline step to go to
-params.pipeline_stop_stop = "run_discovery_analysis"
+params.pipeline_stop = "run_discovery_analysis"
 // set analysis parameters
 // gRNA assignment
 params.grna_assignment_method = "default"
@@ -38,7 +38,12 @@ params.pair_pod_size = 500
 /*****************************
 * GROOVY PROCESSING OF INPUTS
 *****************************/
-
+pipeline_steps = ["assign_grnas", "run_qc", "run_calibration_check", "run_power_check", "run_discovery_analysis"]
+// get the rank of the input params.pipeline_stop; throw an error if not present in the list
+def step_rank = pipeline_steps.indexOf(params.pipeline_stop)
+if (step_rank == -1) {
+    throw new Exception("'$params.pipeline_stop' is not a step of the sceptre pipeline. The parameter 'pipeline_stop' should be set to one of 'assign_grnas', 'run_qc', 'run_calibration_check', 'run_power_check', or 'run_discovery_analysis'.")
+}
 
 /**********
 * PROCESSES
@@ -194,6 +199,7 @@ process prepare_association_analyses {
 * MAIN WORKFLOW
 ***************/
 workflow {
+  if (step_rank >= 0) {
   // 1. obtain the gRNA info
   output_grna_info(
     Channel.fromPath(params.sceptre_object_fp, checkIfExists : true),
@@ -226,14 +232,18 @@ workflow {
     Channel.fromPath(params.grna_odm_fp).first(),
     grna_assignments_ch
   )
+  }
   
-  // 6. run quality control
+  if (step_rank >= 1) {
+     // 6. run quality control
   run_qc(
     process_grna_assignments.out.sceptre_object_ch,
     Channel.fromPath(params.response_odm_fp).first(),
     Channel.fromPath(params.grna_odm_fp).first(),
   )
+  }
   
+  if (step_rank >= 2) {
   // 7. prepare association analyses
   prepare_association_analyses(
     run_qc.out.sceptre_object_ch,
@@ -252,7 +262,9 @@ workflow {
     run_calibration_check_ch,
     Channel.from("run_calibration_check").first()
   )
+  }
   
+  if (step_rank >= 3) {
   // 9. run power check
   power_check_pods_ch = prepare_association_analyses.out.power_check_pods_ch.splitText().map{it.trim()}
   run_power_check_ch = prepare_association_analyses.out.run_power_check_ch.splitText().map{it.trim()}.first()
@@ -263,8 +275,10 @@ workflow {
     power_check_pods_ch,
     run_power_check_ch,
     Channel.from("run_power_check").first()
-  )
+  ) 
+  }
   
+  if (step_rank >= 4) {
   // 10. run discovery analysis
   discovery_analysis_pods_ch = prepare_association_analyses.out.discovery_analysis_pods_ch.splitText().map{it.trim()}
   run_discovery_analysis_ch = prepare_association_analyses.out.run_discovery_analysis_ch.splitText().map{it.trim()}.first()
@@ -276,4 +290,5 @@ workflow {
     run_discovery_analysis_ch,
     Channel.from("run_discovery_analysis").first()
   )
+  }
 }
