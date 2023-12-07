@@ -9,6 +9,8 @@ include { run_analysis_subworkflow as run_analysis_subworkflow_discovery_analysi
 /*************************
 * DEFAULT PARAMETER VALUES
 *************************/
+// pipeline step to go to
+params.pipeline_stop_stop = "run_discovery_analysis"
 // set analysis parameters
 // gRNA assignment
 params.grna_assignment_method = "default"
@@ -32,6 +34,11 @@ params.calibration_group_size = "default"
 // parallelization
 params.grna_pod_size = 100
 params.pair_pod_size = 500
+
+/*****************************
+* GROOVY PROCESSING OF INPUTS
+*****************************/
+
 
 /**********
 * PROCESSES
@@ -208,7 +215,7 @@ workflow {
     grna_pods_ch,
     low_moi_ch
   )
-
+  
   // 4. process output from above process
   grna_assignments_ch = assign_grnas.out.grna_assignments_ch.ifEmpty(params.sceptre_object_fp).collect()
 
@@ -235,7 +242,6 @@ workflow {
   )
   
   // 8. run calibration check
-  /*
   calibration_check_pods_ch = prepare_association_analyses.out.calibration_check_pods_ch.splitText().map{it.trim()}
   run_calibration_check_ch = prepare_association_analyses.out.run_calibration_check_ch.splitText().map{it.trim()}.first()
   run_analysis_subworkflow_calibration_check(
@@ -251,35 +257,23 @@ workflow {
   power_check_pods_ch = prepare_association_analyses.out.power_check_pods_ch.splitText().map{it.trim()}
   run_power_check_ch = prepare_association_analyses.out.run_power_check_ch.splitText().map{it.trim()}.first()
   run_analysis_subworkflow_power_check(
-    prepare_association_analyses.out.sceptre_object_ch, // UPDATE ME!!!!
+    run_analysis_subworkflow_calibration_check.out.first(),
     Channel.fromPath(params.response_odm_fp).first(),
     Channel.fromPath(params.grna_odm_fp).first(),
     power_check_pods_ch,
     run_power_check_ch,
     Channel.from("run_power_check").first()
   )
-  */
   
   // 10. run discovery analysis
   discovery_analysis_pods_ch = prepare_association_analyses.out.discovery_analysis_pods_ch.splitText().map{it.trim()}
   run_discovery_analysis_ch = prepare_association_analyses.out.run_discovery_analysis_ch.splitText().map{it.trim()}.first()
   run_analysis_subworkflow_discovery_analysis(
-    prepare_association_analyses.out.sceptre_object_ch, // UPDATE ME!!!!
+    run_analysis_subworkflow_power_check.out.first(),
     Channel.fromPath(params.response_odm_fp).first(),
     Channel.fromPath(params.grna_odm_fp).first(),
     discovery_analysis_pods_ch,
     run_discovery_analysis_ch,
     Channel.from("run_discovery_analysis").first()
   )
-  
-  /*
-  // sceptre_object_ch = run_analysis_subworkflow.out
-  // 9. process outputs from above process
-  process_calibration_check_results(
-    sceptre_object_ch,
-    run_calibration_check.out.result_ch.collect(),
-    run_calibration_check.out.precomputations_ch.collect(),
-    run_calibration_check_ch
-  )
-  */
 }

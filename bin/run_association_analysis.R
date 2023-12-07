@@ -28,7 +28,7 @@ funct_to_run <- switch(analysis_type,
   run_power_check = sceptre:::run_power_check,
   run_discovery_analysis = sceptre:::run_discovery_analysis
 )
-sceptre_object <- do.call(funct_to_run, list(sceptre_object))
+sceptre_object <- funct_to_run(sceptre_object)
 
 # save the output
 result_name <- switch(analysis_type,

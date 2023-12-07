@@ -32,5 +32,4 @@ nextflow run ../main.nf \
  --threshold "3" \
  --n_nonzero_trt_thresh "5" \
  --n_nonzero_cntrl_thresh "5" \
- --pair_pod_size "30" \
- -resume
+ --pair_pod_size "30"
