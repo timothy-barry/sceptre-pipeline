@@ -1,0 +1,268 @@
+Dec-07 19:01:19.436 [main] DEBUG nextflow.cli.Launcher - $> nextflow run ../../main.nf --sceptre_object_fp /Users/timbarry/research_offsite/external/gasperini-2019/small_scale/sceptre_object.rds --response_odm_fp /Users/timbarry/research_offsite/external/gasperini-2019/small_scale/gene.odm --grna_odm_fp /Users/timbarry/research_offsite/external/gasperini-2019/small_scale/grna.odm --output_directory /Users/timbarry/gasperini_pipeline_outputs --grna_assignment_method mixture --pair_pod_size 30 --grna_pod_size 10 --pipeline_stop run_discovery_analysis -resume
+Dec-07 19:01:19.476 [main] INFO  nextflow.cli.CmdRun - N E X T F L O W  ~  version 23.10.0
+Dec-07 19:01:19.486 [main] DEBUG nextflow.plugin.PluginsFacade - Setting up plugin manager > mode=prod; embedded=false; plugins-dir=/Users/timbarry/.nextflow/plugins; core-plugins: nf-amazon@2.1.4,nf-azure@1.3.2,nf-cloudcache@0.3.0,nf-codecommit@0.1.5,nf-console@1.0.6,nf-ga4gh@1.1.0,nf-google@1.8.3,nf-tower@1.6.3,nf-wave@1.0.0
+Dec-07 19:01:19.490 [main] INFO  o.pf4j.DefaultPluginStatusProvider - Enabled plugins: []
+Dec-07 19:01:19.490 [main] INFO  o.pf4j.DefaultPluginStatusProvider - Disabled plugins: []
+Dec-07 19:01:19.491 [main] INFO  org.pf4j.DefaultPluginManager - PF4J version 3.4.1 in 'deployment' mode
+Dec-07 19:01:19.496 [main] INFO  org.pf4j.AbstractPluginManager - No plugins
+Dec-07 19:01:19.539 [main] DEBUG nextflow.cli.CmdRun - Applied DSL=2 from script declararion
+Dec-07 19:01:19.548 [main] INFO  nextflow.cli.CmdRun - Launching `../../main.nf` [extravagant_gautier] DSL2 - revision: c41f56be39
+Dec-07 19:01:19.548 [main] DEBUG nextflow.plugin.PluginsFacade - Plugins default=[]
+Dec-07 19:01:19.548 [main] DEBUG nextflow.plugin.PluginsFacade - Plugins resolved requirement=[]
+Dec-07 19:01:19.553 [main] DEBUG n.secret.LocalSecretsProvider - Secrets store: /Users/timbarry/.nextflow/secrets/store.json
+Dec-07 19:01:19.556 [main] DEBUG nextflow.secret.SecretsLoader - Discovered secrets providers: [nextflow.secret.LocalSecretsProvider@7e8a46b7] - activable => nextflow.secret.LocalSecretsProvider@7e8a46b7
+Dec-07 19:01:19.582 [main] DEBUG nextflow.Session - Session UUID: f34f68fa-8051-49bf-895d-38bde074a642
+Dec-07 19:01:19.582 [main] DEBUG nextflow.Session - Run name: extravagant_gautier
+Dec-07 19:01:19.582 [main] DEBUG nextflow.Session - Executor pool size: 8
+Dec-07 19:01:19.586 [main] DEBUG nextflow.file.FilePorter - File porter settings maxRetries=3; maxTransfers=50; pollTimeout=null
+Dec-07 19:01:19.588 [main] DEBUG nextflow.util.ThreadPoolBuilder - Creating thread pool 'FileTransfer' minSize=10; maxSize=24; workQueue=LinkedBlockingQueue[10000]; allowCoreThreadTimeout=false
+Dec-07 19:01:19.599 [main] DEBUG nextflow.cli.CmdRun - 
+  Version: 23.10.0 build 5889
+  Created: 15-10-2023 15:07 UTC (11:07 EDT)
+  System: Mac OS X 14.1.1
+  Runtime: Groovy 3.0.19 on OpenJDK 64-Bit Server VM 17.0.6+10-LTS
+  Encoding: UTF-8 (UTF-8)
+  Process: 51668@Tims-MacBook-Pro.local [127.0.0.1]
+  CPUs: 8 - Mem: 16 GB (2 GB) - Swap: 2 GB (1.7 GB)
+Dec-07 19:01:19.608 [main] DEBUG nextflow.Session - Work-dir: /Users/timbarry/research_code/sceptre-pipeline/examples/gasp/work [Mac OS X]
+Dec-07 19:01:19.625 [main] DEBUG nextflow.executor.ExecutorFactory - Extension executors providers=[]
+Dec-07 19:01:19.629 [main] DEBUG nextflow.Session - Observer factory: DefaultObserverFactory
+Dec-07 19:01:19.641 [main] DEBUG nextflow.cache.CacheFactory - Using Nextflow cache factory: nextflow.cache.DefaultCacheFactory
+Dec-07 19:01:19.646 [main] DEBUG nextflow.util.CustomThreadPool - Creating default thread pool > poolSize: 9; maxThreads: 1000
+Dec-07 19:01:19.691 [main] DEBUG nextflow.Session - Session start
+Dec-07 19:01:20.259 [main] DEBUG nextflow.script.ScriptRunner - > Launching execution
+Dec-07 19:01:20.440 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: null
+Dec-07 19:01:20.440 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'local'
+Dec-07 19:01:20.442 [main] DEBUG nextflow.executor.Executor - [warm up] executor > local
+Dec-07 19:01:20.444 [main] DEBUG n.processor.LocalPollingMonitor - Creating local task monitor for executor 'local' > cpus=8; memory=16 GB; capacity=8; pollInterval=100ms; dumpInterval=5m
+Dec-07 19:01:20.445 [main] DEBUG n.processor.TaskPollingMonitor - >>> barrier register (monitor: local)
+Dec-07 19:01:20.496 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: null
+Dec-07 19:01:20.496 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'local'
+Dec-07 19:01:20.505 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: null
+Dec-07 19:01:20.505 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'local'
+Dec-07 19:01:20.508 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: null
+Dec-07 19:01:20.508 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'local'
+Dec-07 19:01:20.512 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: null
+Dec-07 19:01:20.512 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'local'
+Dec-07 19:01:20.524 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: null
+Dec-07 19:01:20.524 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'local'
+Dec-07 19:01:20.527 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: null
+Dec-07 19:01:20.527 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'local'
+Dec-07 19:01:20.529 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: null
+Dec-07 19:01:20.529 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'local'
+Dec-07 19:01:20.535 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: null
+Dec-07 19:01:20.535 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'local'
+Dec-07 19:01:20.537 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: null
+Dec-07 19:01:20.537 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'local'
+Dec-07 19:01:20.538 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: null
+Dec-07 19:01:20.538 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'local'
+Dec-07 19:01:20.542 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: null
+Dec-07 19:01:20.542 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'local'
+Dec-07 19:01:20.544 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: null
+Dec-07 19:01:20.544 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'local'
+Dec-07 19:01:20.545 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: null
+Dec-07 19:01:20.545 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'local'
+Dec-07 19:01:20.546 [main] DEBUG nextflow.Session - Workflow process names [dsl2]: dummy_process, output_grna_info, run_analysis_subworkflow_calibration_check:dummy_process, run_qc, run_analysis_subworkflow_calibration_check:run_association_analysis, run_analysis_subworkflow_power_check:process_association_analysis_results, run_analysis_subworkflow_power_check:dummy_process, process_association_analysis_results, process_grna_assignments, prepare_association_analyses, run_association_analysis, run_analysis_subworkflow_discovery_analysis:dummy_process, run_analysis_subworkflow_power_check:run_association_analysis, run_analysis_subworkflow_discovery_analysis:process_association_analysis_results, assign_grnas, run_analysis_subworkflow_calibration_check:process_association_analysis_results, run_analysis_subworkflow_discovery_analysis:run_association_analysis
+Dec-07 19:01:20.546 [main] DEBUG nextflow.Session - Igniting dataflow network (36)
+Dec-07 19:01:20.550 [main] DEBUG nextflow.processor.TaskProcessor - Starting process > output_grna_info
+Dec-07 19:01:20.551 [main] DEBUG nextflow.processor.TaskProcessor - Starting process > assign_grnas
+Dec-07 19:01:20.552 [main] DEBUG nextflow.processor.TaskProcessor - Starting process > process_grna_assignments
+Dec-07 19:01:20.552 [main] DEBUG nextflow.processor.TaskProcessor - Starting process > run_qc
+Dec-07 19:01:20.552 [main] DEBUG nextflow.processor.TaskProcessor - Starting process > prepare_association_analyses
+Dec-07 19:01:20.552 [main] DEBUG nextflow.processor.TaskProcessor - Starting process > run_analysis_subworkflow_calibration_check:run_association_analysis
+Dec-07 19:01:20.553 [main] DEBUG nextflow.processor.TaskProcessor - Starting process > run_analysis_subworkflow_calibration_check:process_association_analysis_results
+Dec-07 19:01:20.553 [main] DEBUG nextflow.processor.TaskProcessor - Starting process > run_analysis_subworkflow_calibration_check:dummy_process
+Dec-07 19:01:20.553 [main] DEBUG nextflow.processor.TaskProcessor - Starting process > run_analysis_subworkflow_power_check:run_association_analysis
+Dec-07 19:01:20.553 [main] DEBUG nextflow.processor.TaskProcessor - Starting process > run_analysis_subworkflow_power_check:process_association_analysis_results
+Dec-07 19:01:20.553 [main] DEBUG nextflow.processor.TaskProcessor - Starting process > run_analysis_subworkflow_power_check:dummy_process
+Dec-07 19:01:20.553 [main] DEBUG nextflow.processor.TaskProcessor - Starting process > run_analysis_subworkflow_discovery_analysis:run_association_analysis
+Dec-07 19:01:20.553 [main] DEBUG nextflow.processor.TaskProcessor - Starting process > run_analysis_subworkflow_discovery_analysis:process_association_analysis_results
+Dec-07 19:01:20.553 [main] DEBUG nextflow.processor.TaskProcessor - Starting process > run_analysis_subworkflow_discovery_analysis:dummy_process
+Dec-07 19:01:20.553 [main] DEBUG nextflow.script.ScriptRunner - Parsed script files:
+  Script_d894d4d2a3ad00a1: /Users/timbarry/research_code/sceptre-pipeline/main.nf
+  Script_ac1ac806794a1b40: /Users/timbarry/research_code/sceptre-pipeline/./run_analysis_subworkflow.nf
+Dec-07 19:01:20.553 [main] DEBUG nextflow.script.ScriptRunner - > Awaiting termination 
+Dec-07 19:01:20.553 [main] DEBUG nextflow.Session - Session await
+Dec-07 19:01:20.633 [Task submitter] DEBUG n.executor.local.LocalTaskHandler - Launch cmd line: /bin/bash -ue .command.run
+Dec-07 19:01:20.634 [Task submitter] INFO  nextflow.Session - [13/655082] Submitted process > output_grna_info (1)
+Dec-07 19:01:21.235 [Task monitor] DEBUG n.processor.TaskPollingMonitor - Task completed > TaskHandler[id: 1; name: output_grna_info (1); status: COMPLETED; exit: 0; error: -; workDir: /Users/timbarry/research_code/sceptre-pipeline/examples/gasp/work/13/655082cc82350b3c2524e386fe35d4]
+Dec-07 19:01:21.270 [Task submitter] DEBUG n.executor.local.LocalTaskHandler - Launch cmd line: /bin/bash -ue .command.run
+Dec-07 19:01:21.270 [Task submitter] INFO  nextflow.Session - [4a/fc8a95] Submitted process > assign_grnas (8)
+Dec-07 19:01:21.273 [Task submitter] DEBUG n.executor.local.LocalTaskHandler - Launch cmd line: /bin/bash -ue .command.run
+Dec-07 19:01:21.273 [Task submitter] INFO  nextflow.Session - [03/a404c3] Submitted process > assign_grnas (6)
+Dec-07 19:01:21.276 [Task submitter] DEBUG n.executor.local.LocalTaskHandler - Launch cmd line: /bin/bash -ue .command.run
+Dec-07 19:01:21.277 [Task submitter] INFO  nextflow.Session - [10/4d8f3d] Submitted process > assign_grnas (4)
+Dec-07 19:01:21.279 [Task submitter] DEBUG n.executor.local.LocalTaskHandler - Launch cmd line: /bin/bash -ue .command.run
+Dec-07 19:01:21.280 [Task submitter] INFO  nextflow.Session - [a6/09f100] Submitted process > assign_grnas (3)
+Dec-07 19:01:23.197 [Task monitor] DEBUG n.processor.TaskPollingMonitor - Task completed > TaskHandler[id: 7; name: assign_grnas (6); status: COMPLETED; exit: 0; error: -; workDir: /Users/timbarry/research_code/sceptre-pipeline/examples/gasp/work/03/a404c3d0b89ad3b7d863f85b198dea]
+Dec-07 19:01:23.200 [Task submitter] DEBUG n.executor.local.LocalTaskHandler - Launch cmd line: /bin/bash -ue .command.run
+Dec-07 19:01:23.200 [Task submitter] INFO  nextflow.Session - [52/4b019e] Submitted process > assign_grnas (2)
+Dec-07 19:01:23.285 [Task monitor] DEBUG n.processor.TaskPollingMonitor - Task completed > TaskHandler[id: 5; name: assign_grnas (4); status: COMPLETED; exit: 0; error: -; workDir: /Users/timbarry/research_code/sceptre-pipeline/examples/gasp/work/10/4d8f3defcd98bc22f9f79f9de58cc2]
+Dec-07 19:01:23.288 [Task submitter] DEBUG n.executor.local.LocalTaskHandler - Launch cmd line: /bin/bash -ue .command.run
+Dec-07 19:01:23.289 [Task submitter] INFO  nextflow.Session - [1a/2168f2] Submitted process > assign_grnas (5)
+Dec-07 19:01:23.347 [Task monitor] DEBUG n.processor.TaskPollingMonitor - Task completed > TaskHandler[id: 4; name: assign_grnas (3); status: COMPLETED; exit: 0; error: -; workDir: /Users/timbarry/research_code/sceptre-pipeline/examples/gasp/work/a6/09f1003c4c3600101dbae27d197b00]
+Dec-07 19:01:23.349 [Task submitter] DEBUG n.executor.local.LocalTaskHandler - Launch cmd line: /bin/bash -ue .command.run
+Dec-07 19:01:23.349 [Task submitter] INFO  nextflow.Session - [1a/b16e31] Submitted process > assign_grnas (1)
+Dec-07 19:01:23.361 [Task monitor] DEBUG n.processor.TaskPollingMonitor - Task completed > TaskHandler[id: 9; name: assign_grnas (8); status: COMPLETED; exit: 0; error: -; workDir: /Users/timbarry/research_code/sceptre-pipeline/examples/gasp/work/4a/fc8a952f45413d6eebcc6f796eb77d]
+Dec-07 19:01:23.363 [Task submitter] DEBUG n.executor.local.LocalTaskHandler - Launch cmd line: /bin/bash -ue .command.run
+Dec-07 19:01:23.363 [Task submitter] INFO  nextflow.Session - [11/254d75] Submitted process > assign_grnas (7)
+Dec-07 19:01:25.159 [Task monitor] DEBUG n.processor.TaskPollingMonitor - Task completed > TaskHandler[id: 3; name: assign_grnas (2); status: COMPLETED; exit: 0; error: -; workDir: /Users/timbarry/research_code/sceptre-pipeline/examples/gasp/work/52/4b019ee8c450cb9ecc12e661d9eb59]
+Dec-07 19:01:25.161 [Task submitter] DEBUG n.executor.local.LocalTaskHandler - Launch cmd line: /bin/bash -ue .command.run
+Dec-07 19:01:25.161 [Task submitter] INFO  nextflow.Session - [2d/6043f3] Submitted process > assign_grnas (10)
+Dec-07 19:01:25.165 [Task monitor] DEBUG n.processor.TaskPollingMonitor - Task completed > TaskHandler[id: 8; name: assign_grnas (7); status: COMPLETED; exit: 0; error: -; workDir: /Users/timbarry/research_code/sceptre-pipeline/examples/gasp/work/11/254d753f2a3c83603e4b0d0d840019]
+Dec-07 19:01:25.167 [Task submitter] DEBUG n.executor.local.LocalTaskHandler - Launch cmd line: /bin/bash -ue .command.run
+Dec-07 19:01:25.167 [Task submitter] INFO  nextflow.Session - [ec/72bcf4] Submitted process > assign_grnas (9)
+Dec-07 19:01:25.209 [Task monitor] DEBUG n.processor.TaskPollingMonitor - Task completed > TaskHandler[id: 6; name: assign_grnas (5); status: COMPLETED; exit: 0; error: -; workDir: /Users/timbarry/research_code/sceptre-pipeline/examples/gasp/work/1a/2168f234fd51770be945a5af310346]
+Dec-07 19:01:25.403 [Task monitor] DEBUG n.processor.TaskPollingMonitor - Task completed > TaskHandler[id: 2; name: assign_grnas (1); status: COMPLETED; exit: 0; error: -; workDir: /Users/timbarry/research_code/sceptre-pipeline/examples/gasp/work/1a/b16e31612d58a5420cfd3eaac71443]
+Dec-07 19:01:26.745 [Task monitor] DEBUG n.processor.TaskPollingMonitor - Task completed > TaskHandler[id: 10; name: assign_grnas (9); status: COMPLETED; exit: 0; error: -; workDir: /Users/timbarry/research_code/sceptre-pipeline/examples/gasp/work/ec/72bcf4766e31a117ca172f1dae353e]
+Dec-07 19:01:26.848 [Task monitor] DEBUG n.processor.TaskPollingMonitor - Task completed > TaskHandler[id: 11; name: assign_grnas (10); status: COMPLETED; exit: 0; error: -; workDir: /Users/timbarry/research_code/sceptre-pipeline/examples/gasp/work/2d/6043f3997ac484930c6797622aaff4]
+Dec-07 19:01:26.858 [Task submitter] DEBUG n.executor.local.LocalTaskHandler - Launch cmd line: /bin/bash -ue .command.run
+Dec-07 19:01:26.858 [Task submitter] INFO  nextflow.Session - [dc/48357c] Submitted process > process_grna_assignments
+Dec-07 19:01:28.411 [Task monitor] DEBUG n.processor.TaskPollingMonitor - Task completed > TaskHandler[id: 12; name: process_grna_assignments; status: COMPLETED; exit: 0; error: -; workDir: /Users/timbarry/research_code/sceptre-pipeline/examples/gasp/work/dc/48357c934266bdbe4e6713681c4c7c]
+Dec-07 19:01:28.417 [Task monitor] DEBUG nextflow.util.ThreadPoolBuilder - Creating thread pool 'PublishDir' minSize=10; maxSize=24; workQueue=LinkedBlockingQueue[10000]; allowCoreThreadTimeout=false
+Dec-07 19:01:28.428 [Task submitter] DEBUG n.executor.local.LocalTaskHandler - Launch cmd line: /bin/bash -ue .command.run
+Dec-07 19:01:28.428 [Task submitter] INFO  nextflow.Session - [1a/cff55e] Submitted process > run_qc
+Dec-07 19:01:30.147 [Task monitor] DEBUG n.processor.TaskPollingMonitor - Task completed > TaskHandler[id: 13; name: run_qc; status: COMPLETED; exit: 0; error: -; workDir: /Users/timbarry/research_code/sceptre-pipeline/examples/gasp/work/1a/cff55e7c0eb555209f60eab2c8bd9c]
+Dec-07 19:01:30.158 [Task submitter] DEBUG n.executor.local.LocalTaskHandler - Launch cmd line: /bin/bash -ue .command.run
+Dec-07 19:01:30.158 [Task submitter] INFO  nextflow.Session - [68/dcca38] Submitted process > prepare_association_analyses
+Dec-07 19:01:31.291 [Task monitor] DEBUG n.processor.TaskPollingMonitor - Task completed > TaskHandler[id: 14; name: prepare_association_analyses; status: COMPLETED; exit: 0; error: -; workDir: /Users/timbarry/research_code/sceptre-pipeline/examples/gasp/work/68/dcca3886a6d23b6f2ff412460e17ce]
+Dec-07 19:01:31.297 [Task submitter] DEBUG n.executor.local.LocalTaskHandler - Launch cmd line: /bin/bash -ue .command.run
+Dec-07 19:01:31.298 [Task submitter] INFO  nextflow.Session - [ad/fe27c1] Submitted process > run_analysis_subworkflow_calibration_check:run_association_analysis (1)
+Dec-07 19:01:31.302 [Task submitter] DEBUG n.executor.local.LocalTaskHandler - Launch cmd line: /bin/bash -ue .command.run
+Dec-07 19:01:31.302 [Task submitter] INFO  nextflow.Session - [70/7a5dad] Submitted process > run_analysis_subworkflow_calibration_check:run_association_analysis (4)
+Dec-07 19:01:31.304 [Task submitter] DEBUG n.executor.local.LocalTaskHandler - Launch cmd line: /bin/bash -ue .command.run
+Dec-07 19:01:31.304 [Task submitter] INFO  nextflow.Session - [98/5eb48d] Submitted process > run_analysis_subworkflow_calibration_check:run_association_analysis (2)
+Dec-07 19:01:31.305 [Task submitter] DEBUG n.executor.local.LocalTaskHandler - Launch cmd line: /bin/bash -ue .command.run
+Dec-07 19:01:31.306 [Task submitter] INFO  nextflow.Session - [78/fd36ef] Submitted process > run_analysis_subworkflow_calibration_check:run_association_analysis (5)
+Dec-07 19:01:34.146 [Task monitor] DEBUG n.processor.TaskPollingMonitor - Task completed > TaskHandler[id: 19; name: run_analysis_subworkflow_calibration_check:run_association_analysis (4); status: COMPLETED; exit: 0; error: -; workDir: /Users/timbarry/research_code/sceptre-pipeline/examples/gasp/work/70/7a5dad01027272c54eb85617f4aaf3]
+Dec-07 19:01:34.148 [Task submitter] DEBUG n.executor.local.LocalTaskHandler - Launch cmd line: /bin/bash -ue .command.run
+Dec-07 19:01:34.148 [Task submitter] INFO  nextflow.Session - [f2/19dc5b] Submitted process > run_analysis_subworkflow_calibration_check:run_association_analysis (10)
+Dec-07 19:01:34.669 [Task monitor] DEBUG n.processor.TaskPollingMonitor - Task completed > TaskHandler[id: 15; name: run_analysis_subworkflow_calibration_check:run_association_analysis (1); status: COMPLETED; exit: 0; error: -; workDir: /Users/timbarry/research_code/sceptre-pipeline/examples/gasp/work/ad/fe27c1a5215cc9b856ef3df264799a]
+Dec-07 19:01:34.671 [Task submitter] DEBUG n.executor.local.LocalTaskHandler - Launch cmd line: /bin/bash -ue .command.run
+Dec-07 19:01:34.671 [Task submitter] INFO  nextflow.Session - [30/2dfd5a] Submitted process > run_analysis_subworkflow_calibration_check:run_association_analysis (6)
+Dec-07 19:01:34.926 [Task monitor] DEBUG n.processor.TaskPollingMonitor - Task completed > TaskHandler[id: 20; name: run_analysis_subworkflow_calibration_check:run_association_analysis (5); status: COMPLETED; exit: 0; error: -; workDir: /Users/timbarry/research_code/sceptre-pipeline/examples/gasp/work/78/fd36ef847996b6f3201e02642cdd57]
+Dec-07 19:01:34.928 [Task submitter] DEBUG n.executor.local.LocalTaskHandler - Launch cmd line: /bin/bash -ue .command.run
+Dec-07 19:01:34.928 [Task submitter] INFO  nextflow.Session - [17/b83194] Submitted process > run_analysis_subworkflow_calibration_check:run_association_analysis (9)
+Dec-07 19:01:34.973 [Task monitor] DEBUG n.processor.TaskPollingMonitor - Task completed > TaskHandler[id: 16; name: run_analysis_subworkflow_calibration_check:run_association_analysis (2); status: COMPLETED; exit: 0; error: -; workDir: /Users/timbarry/research_code/sceptre-pipeline/examples/gasp/work/98/5eb48daaa6dbab3d1f9fbbf11930a5]
+Dec-07 19:01:34.975 [Task submitter] DEBUG n.executor.local.LocalTaskHandler - Launch cmd line: /bin/bash -ue .command.run
+Dec-07 19:01:34.975 [Task submitter] INFO  nextflow.Session - [60/e7f02a] Submitted process > run_analysis_subworkflow_calibration_check:run_association_analysis (8)
+Dec-07 19:01:37.341 [Task monitor] DEBUG n.processor.TaskPollingMonitor - Task completed > TaskHandler[id: 25; name: run_analysis_subworkflow_calibration_check:run_association_analysis (10); status: COMPLETED; exit: 0; error: -; workDir: /Users/timbarry/research_code/sceptre-pipeline/examples/gasp/work/f2/19dc5beb31030c7cbef34c8419122e]
+Dec-07 19:01:37.343 [Task submitter] DEBUG n.executor.local.LocalTaskHandler - Launch cmd line: /bin/bash -ue .command.run
+Dec-07 19:01:37.343 [Task submitter] INFO  nextflow.Session - [bc/0c5cea] Submitted process > run_analysis_subworkflow_calibration_check:run_association_analysis (3)
+Dec-07 19:01:37.590 [Task monitor] DEBUG n.processor.TaskPollingMonitor - Task completed > TaskHandler[id: 21; name: run_analysis_subworkflow_calibration_check:run_association_analysis (6); status: COMPLETED; exit: 0; error: -; workDir: /Users/timbarry/research_code/sceptre-pipeline/examples/gasp/work/30/2dfd5ad75394f98eb4d50c63344ef7]
+Dec-07 19:01:37.592 [Task submitter] DEBUG n.executor.local.LocalTaskHandler - Launch cmd line: /bin/bash -ue .command.run
+Dec-07 19:01:37.592 [Task submitter] INFO  nextflow.Session - [00/49b19a] Submitted process > run_analysis_subworkflow_calibration_check:run_association_analysis (13)
+Dec-07 19:01:38.423 [Task monitor] DEBUG n.processor.TaskPollingMonitor - Task completed > TaskHandler[id: 24; name: run_analysis_subworkflow_calibration_check:run_association_analysis (9); status: COMPLETED; exit: 0; error: -; workDir: /Users/timbarry/research_code/sceptre-pipeline/examples/gasp/work/17/b8319410dce6045e034039976e3407]
+Dec-07 19:01:38.424 [Task monitor] DEBUG n.processor.TaskPollingMonitor - Task completed > TaskHandler[id: 23; name: run_analysis_subworkflow_calibration_check:run_association_analysis (8); status: COMPLETED; exit: 0; error: -; workDir: /Users/timbarry/research_code/sceptre-pipeline/examples/gasp/work/60/e7f02a2d29f6b2517e1bf80cb5a659]
+Dec-07 19:01:38.424 [Task submitter] DEBUG n.executor.local.LocalTaskHandler - Launch cmd line: /bin/bash -ue .command.run
+Dec-07 19:01:38.424 [Task submitter] INFO  nextflow.Session - [ae/cdef39] Submitted process > run_analysis_subworkflow_calibration_check:run_association_analysis (15)
+Dec-07 19:01:38.426 [Task submitter] DEBUG n.executor.local.LocalTaskHandler - Launch cmd line: /bin/bash -ue .command.run
+Dec-07 19:01:38.426 [Task submitter] INFO  nextflow.Session - [0b/d57671] Submitted process > run_analysis_subworkflow_calibration_check:run_association_analysis (17)
+Dec-07 19:01:40.863 [Task monitor] DEBUG n.processor.TaskPollingMonitor - Task completed > TaskHandler[id: 18; name: run_analysis_subworkflow_calibration_check:run_association_analysis (3); status: COMPLETED; exit: 0; error: -; workDir: /Users/timbarry/research_code/sceptre-pipeline/examples/gasp/work/bc/0c5ceae377a8320763bcab7508c8a2]
+Dec-07 19:01:40.865 [Task submitter] DEBUG n.executor.local.LocalTaskHandler - Launch cmd line: /bin/bash -ue .command.run
+Dec-07 19:01:40.865 [Task submitter] INFO  nextflow.Session - [c2/2e147a] Submitted process > run_analysis_subworkflow_calibration_check:run_association_analysis (7)
+Dec-07 19:01:40.877 [Task monitor] DEBUG n.processor.TaskPollingMonitor - Task completed > TaskHandler[id: 28; name: run_analysis_subworkflow_calibration_check:run_association_analysis (13); status: COMPLETED; exit: 0; error: -; workDir: /Users/timbarry/research_code/sceptre-pipeline/examples/gasp/work/00/49b19a30c35a264d9c73675af210b8]
+Dec-07 19:01:40.879 [Task submitter] DEBUG n.executor.local.LocalTaskHandler - Launch cmd line: /bin/bash -ue .command.run
+Dec-07 19:01:40.879 [Task submitter] INFO  nextflow.Session - [92/62cfca] Submitted process > run_analysis_subworkflow_calibration_check:run_association_analysis (11)
+Dec-07 19:01:41.772 [Task monitor] DEBUG n.processor.TaskPollingMonitor - Task completed > TaskHandler[id: 30; name: run_analysis_subworkflow_calibration_check:run_association_analysis (15); status: COMPLETED; exit: 0; error: -; workDir: /Users/timbarry/research_code/sceptre-pipeline/examples/gasp/work/ae/cdef39a0b04b353c5bc81fa231e0e0]
+Dec-07 19:01:41.774 [Task submitter] DEBUG n.executor.local.LocalTaskHandler - Launch cmd line: /bin/bash -ue .command.run
+Dec-07 19:01:41.774 [Task submitter] INFO  nextflow.Session - [fd/dc54dc] Submitted process > run_analysis_subworkflow_calibration_check:run_association_analysis (19)
+Dec-07 19:01:41.949 [Task monitor] DEBUG n.processor.TaskPollingMonitor - Task completed > TaskHandler[id: 32; name: run_analysis_subworkflow_calibration_check:run_association_analysis (17); status: COMPLETED; exit: 0; error: -; workDir: /Users/timbarry/research_code/sceptre-pipeline/examples/gasp/work/0b/d57671b45022fc2554b6879c5d0d65]
+Dec-07 19:01:41.951 [Task submitter] DEBUG n.executor.local.LocalTaskHandler - Launch cmd line: /bin/bash -ue .command.run
+Dec-07 19:01:41.951 [Task submitter] INFO  nextflow.Session - [57/dcac89] Submitted process > run_analysis_subworkflow_calibration_check:run_association_analysis (12)
+Dec-07 19:01:43.853 [Task monitor] DEBUG n.processor.TaskPollingMonitor - Task completed > TaskHandler[id: 22; name: run_analysis_subworkflow_calibration_check:run_association_analysis (7); status: COMPLETED; exit: 0; error: -; workDir: /Users/timbarry/research_code/sceptre-pipeline/examples/gasp/work/c2/2e147a4aa0fb6836ca292b45bce0c7]
+Dec-07 19:01:43.855 [Task submitter] DEBUG n.executor.local.LocalTaskHandler - Launch cmd line: /bin/bash -ue .command.run
+Dec-07 19:01:43.855 [Task submitter] INFO  nextflow.Session - [ae/51106e] Submitted process > run_analysis_subworkflow_calibration_check:run_association_analysis (14)
+Dec-07 19:01:44.549 [Task monitor] DEBUG n.processor.TaskPollingMonitor - Task completed > TaskHandler[id: 26; name: run_analysis_subworkflow_calibration_check:run_association_analysis (11); status: COMPLETED; exit: 0; error: -; workDir: /Users/timbarry/research_code/sceptre-pipeline/examples/gasp/work/92/62cfcaed74ee5673c029d8d5c41004]
+Dec-07 19:01:44.550 [Task submitter] DEBUG n.executor.local.LocalTaskHandler - Launch cmd line: /bin/bash -ue .command.run
+Dec-07 19:01:44.550 [Task submitter] INFO  nextflow.Session - [2f/37cce2] Submitted process > run_analysis_subworkflow_calibration_check:run_association_analysis (16)
+Dec-07 19:01:44.915 [Task monitor] DEBUG n.processor.TaskPollingMonitor - Task completed > TaskHandler[id: 34; name: run_analysis_subworkflow_calibration_check:run_association_analysis (19); status: COMPLETED; exit: 0; error: -; workDir: /Users/timbarry/research_code/sceptre-pipeline/examples/gasp/work/fd/dc54dc49a80b983b10ea57f0c482e9]
+Dec-07 19:01:44.917 [Task submitter] DEBUG n.executor.local.LocalTaskHandler - Launch cmd line: /bin/bash -ue .command.run
+Dec-07 19:01:44.917 [Task submitter] INFO  nextflow.Session - [47/a7cf02] Submitted process > run_analysis_subworkflow_calibration_check:run_association_analysis (18)
+Dec-07 19:01:45.025 [Task monitor] DEBUG n.processor.TaskPollingMonitor - Task completed > TaskHandler[id: 27; name: run_analysis_subworkflow_calibration_check:run_association_analysis (12); status: COMPLETED; exit: 0; error: -; workDir: /Users/timbarry/research_code/sceptre-pipeline/examples/gasp/work/57/dcac891f184a477a7cdea88a9c35df]
+Dec-07 19:01:45.027 [Task submitter] DEBUG n.executor.local.LocalTaskHandler - Launch cmd line: /bin/bash -ue .command.run
+Dec-07 19:01:45.027 [Task submitter] INFO  nextflow.Session - [37/a25394] Submitted process > run_analysis_subworkflow_calibration_check:run_association_analysis (20)
+Dec-07 19:01:47.169 [Task monitor] DEBUG n.processor.TaskPollingMonitor - Task completed > TaskHandler[id: 29; name: run_analysis_subworkflow_calibration_check:run_association_analysis (14); status: COMPLETED; exit: 0; error: -; workDir: /Users/timbarry/research_code/sceptre-pipeline/examples/gasp/work/ae/51106ef0c68f62c7e5c9294cfeb656]
+Dec-07 19:01:47.656 [Task monitor] DEBUG n.processor.TaskPollingMonitor - Task completed > TaskHandler[id: 33; name: run_analysis_subworkflow_calibration_check:run_association_analysis (18); status: COMPLETED; exit: 0; error: -; workDir: /Users/timbarry/research_code/sceptre-pipeline/examples/gasp/work/47/a7cf025a7e8f87f723acfd95126444]
+Dec-07 19:01:47.712 [Task monitor] DEBUG n.processor.TaskPollingMonitor - Task completed > TaskHandler[id: 31; name: run_analysis_subworkflow_calibration_check:run_association_analysis (16); status: COMPLETED; exit: 0; error: -; workDir: /Users/timbarry/research_code/sceptre-pipeline/examples/gasp/work/2f/37cce25a4002b9225ba6b06d3c5357]
+Dec-07 19:01:48.748 [Task monitor] DEBUG n.processor.TaskPollingMonitor - Task completed > TaskHandler[id: 35; name: run_analysis_subworkflow_calibration_check:run_association_analysis (20); status: COMPLETED; exit: 0; error: -; workDir: /Users/timbarry/research_code/sceptre-pipeline/examples/gasp/work/37/a253945aec1feff6ffc4b3117d103d]
+Dec-07 19:01:48.753 [Task submitter] DEBUG n.executor.local.LocalTaskHandler - Launch cmd line: /bin/bash -ue .command.run
+Dec-07 19:01:48.753 [Task submitter] INFO  nextflow.Session - [f4/f0a0b6] Submitted process > run_analysis_subworkflow_calibration_check:process_association_analysis_results
+Dec-07 19:01:50.141 [Task monitor] DEBUG n.processor.TaskPollingMonitor - Task completed > TaskHandler[id: 36; name: run_analysis_subworkflow_calibration_check:process_association_analysis_results; status: COMPLETED; exit: 0; error: -; workDir: /Users/timbarry/research_code/sceptre-pipeline/examples/gasp/work/f4/f0a0b620130586ea0ee12c190ae516]
+Dec-07 19:01:50.148 [Task submitter] DEBUG n.executor.local.LocalTaskHandler - Launch cmd line: /bin/bash -ue .command.run
+Dec-07 19:01:50.149 [Task submitter] INFO  nextflow.Session - [2f/1b8382] Submitted process > run_analysis_subworkflow_power_check:run_association_analysis (1)
+Dec-07 19:01:51.797 [Task monitor] DEBUG n.processor.TaskPollingMonitor - Task completed > TaskHandler[id: 37; name: run_analysis_subworkflow_power_check:run_association_analysis (1); status: COMPLETED; exit: 0; error: -; workDir: /Users/timbarry/research_code/sceptre-pipeline/examples/gasp/work/2f/1b8382570535880c6c578c4f666024]
+Dec-07 19:01:51.799 [Task submitter] DEBUG n.executor.local.LocalTaskHandler - Launch cmd line: /bin/bash -ue .command.run
+Dec-07 19:01:51.799 [Task submitter] INFO  nextflow.Session - [53/815da0] Submitted process > run_analysis_subworkflow_power_check:process_association_analysis_results
+Dec-07 19:01:52.789 [Task monitor] DEBUG n.processor.TaskPollingMonitor - Task completed > TaskHandler[id: 39; name: run_analysis_subworkflow_power_check:process_association_analysis_results; status: COMPLETED; exit: 0; error: -; workDir: /Users/timbarry/research_code/sceptre-pipeline/examples/gasp/work/53/815da0474cec59605f14331b288d37]
+Dec-07 19:01:52.793 [Task submitter] DEBUG n.executor.local.LocalTaskHandler - Launch cmd line: /bin/bash -ue .command.run
+Dec-07 19:01:52.793 [Task submitter] INFO  nextflow.Session - [75/634a94] Submitted process > run_analysis_subworkflow_discovery_analysis:run_association_analysis (1)
+Dec-07 19:01:52.794 [Task submitter] DEBUG n.executor.local.LocalTaskHandler - Launch cmd line: /bin/bash -ue .command.run
+Dec-07 19:01:52.794 [Task submitter] INFO  nextflow.Session - [3d/61b2a6] Submitted process > run_analysis_subworkflow_discovery_analysis:run_association_analysis (8)
+Dec-07 19:01:52.794 [Task submitter] DEBUG n.executor.local.LocalTaskHandler - Launch cmd line: /bin/bash -ue .command.run
+Dec-07 19:01:52.794 [Task submitter] INFO  nextflow.Session - [b7/d1b67b] Submitted process > run_analysis_subworkflow_discovery_analysis:run_association_analysis (5)
+Dec-07 19:01:52.795 [Task submitter] DEBUG n.executor.local.LocalTaskHandler - Launch cmd line: /bin/bash -ue .command.run
+Dec-07 19:01:52.795 [Task submitter] INFO  nextflow.Session - [42/51f7f1] Submitted process > run_analysis_subworkflow_discovery_analysis:run_association_analysis (2)
+Dec-07 19:01:55.013 [Task monitor] DEBUG n.processor.TaskPollingMonitor - Task completed > TaskHandler[id: 45; name: run_analysis_subworkflow_discovery_analysis:run_association_analysis (5); status: COMPLETED; exit: 0; error: -; workDir: /Users/timbarry/research_code/sceptre-pipeline/examples/gasp/work/b7/d1b67bf732bdf849f9c1244a02e941]
+Dec-07 19:01:55.015 [Task submitter] DEBUG n.executor.local.LocalTaskHandler - Launch cmd line: /bin/bash -ue .command.run
+Dec-07 19:01:55.016 [Task submitter] INFO  nextflow.Session - [c6/140fcc] Submitted process > run_analysis_subworkflow_discovery_analysis:run_association_analysis (4)
+Dec-07 19:01:55.102 [Task monitor] DEBUG n.processor.TaskPollingMonitor - Task completed > TaskHandler[id: 41; name: run_analysis_subworkflow_discovery_analysis:run_association_analysis (1); status: COMPLETED; exit: 0; error: -; workDir: /Users/timbarry/research_code/sceptre-pipeline/examples/gasp/work/75/634a94181cb61c5a73a00f7c87b2f2]
+Dec-07 19:01:55.103 [Task submitter] DEBUG n.executor.local.LocalTaskHandler - Launch cmd line: /bin/bash -ue .command.run
+Dec-07 19:01:55.103 [Task submitter] INFO  nextflow.Session - [3b/d2e19f] Submitted process > run_analysis_subworkflow_discovery_analysis:run_association_analysis (3)
+Dec-07 19:01:55.509 [Task monitor] DEBUG n.processor.TaskPollingMonitor - Task completed > TaskHandler[id: 48; name: run_analysis_subworkflow_discovery_analysis:run_association_analysis (8); status: COMPLETED; exit: 0; error: -; workDir: /Users/timbarry/research_code/sceptre-pipeline/examples/gasp/work/3d/61b2a64e03b9bd72957612262b6c06]
+Dec-07 19:01:55.510 [Task submitter] DEBUG n.executor.local.LocalTaskHandler - Launch cmd line: /bin/bash -ue .command.run
+Dec-07 19:01:55.511 [Task submitter] INFO  nextflow.Session - [07/759b92] Submitted process > run_analysis_subworkflow_discovery_analysis:run_association_analysis (7)
+Dec-07 19:01:55.724 [Task monitor] DEBUG n.processor.TaskPollingMonitor - Task completed > TaskHandler[id: 42; name: run_analysis_subworkflow_discovery_analysis:run_association_analysis (2); status: COMPLETED; exit: 0; error: -; workDir: /Users/timbarry/research_code/sceptre-pipeline/examples/gasp/work/42/51f7f18d5cc874825c81cb5e67bfb3]
+Dec-07 19:01:55.725 [Task submitter] DEBUG n.executor.local.LocalTaskHandler - Launch cmd line: /bin/bash -ue .command.run
+Dec-07 19:01:55.725 [Task submitter] INFO  nextflow.Session - [ea/4d8871] Submitted process > run_analysis_subworkflow_discovery_analysis:run_association_analysis (13)
+Dec-07 19:01:57.204 [Task monitor] DEBUG n.processor.TaskPollingMonitor - Task completed > TaskHandler[id: 44; name: run_analysis_subworkflow_discovery_analysis:run_association_analysis (4); status: COMPLETED; exit: 0; error: -; workDir: /Users/timbarry/research_code/sceptre-pipeline/examples/gasp/work/c6/140fccfb8acc6c2480507519340cf9]
+Dec-07 19:01:57.206 [Task submitter] DEBUG n.executor.local.LocalTaskHandler - Launch cmd line: /bin/bash -ue .command.run
+Dec-07 19:01:57.207 [Task submitter] INFO  nextflow.Session - [93/98a6ec] Submitted process > run_analysis_subworkflow_discovery_analysis:run_association_analysis (6)
+Dec-07 19:01:57.542 [Task monitor] DEBUG n.processor.TaskPollingMonitor - Task completed > TaskHandler[id: 47; name: run_analysis_subworkflow_discovery_analysis:run_association_analysis (7); status: COMPLETED; exit: 0; error: -; workDir: /Users/timbarry/research_code/sceptre-pipeline/examples/gasp/work/07/759b92944b1a2a157bdc6593cfc928]
+Dec-07 19:01:57.544 [Task submitter] DEBUG n.executor.local.LocalTaskHandler - Launch cmd line: /bin/bash -ue .command.run
+Dec-07 19:01:57.544 [Task submitter] INFO  nextflow.Session - [cc/9526d9] Submitted process > run_analysis_subworkflow_discovery_analysis:run_association_analysis (9)
+Dec-07 19:01:57.725 [Task monitor] DEBUG n.processor.TaskPollingMonitor - Task completed > TaskHandler[id: 43; name: run_analysis_subworkflow_discovery_analysis:run_association_analysis (3); status: COMPLETED; exit: 0; error: -; workDir: /Users/timbarry/research_code/sceptre-pipeline/examples/gasp/work/3b/d2e19f96e5aefa14d08e316df03035]
+Dec-07 19:01:57.726 [Task submitter] DEBUG n.executor.local.LocalTaskHandler - Launch cmd line: /bin/bash -ue .command.run
+Dec-07 19:01:57.727 [Task submitter] INFO  nextflow.Session - [cc/6b0b29] Submitted process > run_analysis_subworkflow_discovery_analysis:run_association_analysis (10)
+Dec-07 19:01:58.077 [Task monitor] DEBUG n.processor.TaskPollingMonitor - Task completed > TaskHandler[id: 53; name: run_analysis_subworkflow_discovery_analysis:run_association_analysis (13); status: COMPLETED; exit: 0; error: -; workDir: /Users/timbarry/research_code/sceptre-pipeline/examples/gasp/work/ea/4d887125b0369966c59736bc6018d9]
+Dec-07 19:01:58.079 [Task submitter] DEBUG n.executor.local.LocalTaskHandler - Launch cmd line: /bin/bash -ue .command.run
+Dec-07 19:01:58.079 [Task submitter] INFO  nextflow.Session - [47/f019cc] Submitted process > run_analysis_subworkflow_discovery_analysis:run_association_analysis (16)
+Dec-07 19:01:59.769 [Task monitor] DEBUG n.processor.TaskPollingMonitor - Task completed > TaskHandler[id: 46; name: run_analysis_subworkflow_discovery_analysis:run_association_analysis (6); status: COMPLETED; exit: 0; error: -; workDir: /Users/timbarry/research_code/sceptre-pipeline/examples/gasp/work/93/98a6ec701fc01dc141b0437b10e96a]
+Dec-07 19:01:59.771 [Task submitter] DEBUG n.executor.local.LocalTaskHandler - Launch cmd line: /bin/bash -ue .command.run
+Dec-07 19:01:59.771 [Task submitter] INFO  nextflow.Session - [d7/3b56e5] Submitted process > run_analysis_subworkflow_discovery_analysis:run_association_analysis (12)
+Dec-07 19:02:00.034 [Task monitor] DEBUG n.processor.TaskPollingMonitor - Task completed > TaskHandler[id: 49; name: run_analysis_subworkflow_discovery_analysis:run_association_analysis (9); status: COMPLETED; exit: 0; error: -; workDir: /Users/timbarry/research_code/sceptre-pipeline/examples/gasp/work/cc/9526d930749563baf0e1ddcbb31332]
+Dec-07 19:02:00.036 [Task submitter] DEBUG n.executor.local.LocalTaskHandler - Launch cmd line: /bin/bash -ue .command.run
+Dec-07 19:02:00.036 [Task submitter] INFO  nextflow.Session - [d4/b3d529] Submitted process > run_analysis_subworkflow_discovery_analysis:run_association_analysis (11)
+Dec-07 19:02:00.499 [Task monitor] DEBUG n.processor.TaskPollingMonitor - Task completed > TaskHandler[id: 50; name: run_analysis_subworkflow_discovery_analysis:run_association_analysis (10); status: COMPLETED; exit: 0; error: -; workDir: /Users/timbarry/research_code/sceptre-pipeline/examples/gasp/work/cc/6b0b29d93f6860c87a5981b0016d79]
+Dec-07 19:02:00.501 [Task submitter] DEBUG n.executor.local.LocalTaskHandler - Launch cmd line: /bin/bash -ue .command.run
+Dec-07 19:02:00.501 [Task submitter] INFO  nextflow.Session - [93/54a099] Submitted process > run_analysis_subworkflow_discovery_analysis:run_association_analysis (15)
+Dec-07 19:02:00.797 [Task monitor] DEBUG n.processor.TaskPollingMonitor - Task completed > TaskHandler[id: 56; name: run_analysis_subworkflow_discovery_analysis:run_association_analysis (16); status: COMPLETED; exit: 0; error: -; workDir: /Users/timbarry/research_code/sceptre-pipeline/examples/gasp/work/47/f019ccba7558848cbf6bbeb575c4c7]
+Dec-07 19:02:00.799 [Task submitter] DEBUG n.executor.local.LocalTaskHandler - Launch cmd line: /bin/bash -ue .command.run
+Dec-07 19:02:00.799 [Task submitter] INFO  nextflow.Session - [b7/2f47a0] Submitted process > run_analysis_subworkflow_discovery_analysis:run_association_analysis (14)
+Dec-07 19:02:01.980 [Task monitor] DEBUG n.processor.TaskPollingMonitor - Task completed > TaskHandler[id: 51; name: run_analysis_subworkflow_discovery_analysis:run_association_analysis (11); status: COMPLETED; exit: 0; error: -; workDir: /Users/timbarry/research_code/sceptre-pipeline/examples/gasp/work/d4/b3d5298415ff22fc7c54ef2e4584fe]
+Dec-07 19:02:01.981 [Task submitter] DEBUG n.executor.local.LocalTaskHandler - Launch cmd line: /bin/bash -ue .command.run
+Dec-07 19:02:01.981 [Task submitter] INFO  nextflow.Session - [74/271865] Submitted process > run_analysis_subworkflow_discovery_analysis:run_association_analysis (19)
+Dec-07 19:02:02.108 [Task monitor] DEBUG n.processor.TaskPollingMonitor - Task completed > TaskHandler[id: 52; name: run_analysis_subworkflow_discovery_analysis:run_association_analysis (12); status: COMPLETED; exit: 0; error: -; workDir: /Users/timbarry/research_code/sceptre-pipeline/examples/gasp/work/d7/3b56e582404b708aa5ed9b4276c056]
+Dec-07 19:02:02.110 [Task submitter] DEBUG n.executor.local.LocalTaskHandler - Launch cmd line: /bin/bash -ue .command.run
+Dec-07 19:02:02.110 [Task submitter] INFO  nextflow.Session - [09/819b01] Submitted process > run_analysis_subworkflow_discovery_analysis:run_association_analysis (17)
+Dec-07 19:02:02.699 [Task monitor] DEBUG n.processor.TaskPollingMonitor - Task completed > TaskHandler[id: 55; name: run_analysis_subworkflow_discovery_analysis:run_association_analysis (15); status: COMPLETED; exit: 0; error: -; workDir: /Users/timbarry/research_code/sceptre-pipeline/examples/gasp/work/93/54a09998177ac0d487c7271b1c6280]
+Dec-07 19:02:02.700 [Task submitter] DEBUG n.executor.local.LocalTaskHandler - Launch cmd line: /bin/bash -ue .command.run
+Dec-07 19:02:02.700 [Task submitter] INFO  nextflow.Session - [c0/8be31b] Submitted process > run_analysis_subworkflow_discovery_analysis:run_association_analysis (20)
+Dec-07 19:02:03.417 [Task monitor] DEBUG n.processor.TaskPollingMonitor - Task completed > TaskHandler[id: 54; name: run_analysis_subworkflow_discovery_analysis:run_association_analysis (14); status: COMPLETED; exit: 0; error: -; workDir: /Users/timbarry/research_code/sceptre-pipeline/examples/gasp/work/b7/2f47a04b714e2986924e63456db98f]
+Dec-07 19:02:03.419 [Task submitter] DEBUG n.executor.local.LocalTaskHandler - Launch cmd line: /bin/bash -ue .command.run
+Dec-07 19:02:03.419 [Task submitter] INFO  nextflow.Session - [fc/a462d8] Submitted process > run_analysis_subworkflow_discovery_analysis:run_association_analysis (18)
+Dec-07 19:02:04.024 [Task monitor] DEBUG n.processor.TaskPollingMonitor - Task completed > TaskHandler[id: 59; name: run_analysis_subworkflow_discovery_analysis:run_association_analysis (19); status: COMPLETED; exit: 0; error: -; workDir: /Users/timbarry/research_code/sceptre-pipeline/examples/gasp/work/74/27186512f0b66b207048fe6938db5f]
+Dec-07 19:02:04.819 [Task monitor] DEBUG n.processor.TaskPollingMonitor - Task completed > TaskHandler[id: 57; name: run_analysis_subworkflow_discovery_analysis:run_association_analysis (17); status: COMPLETED; exit: 0; error: -; workDir: /Users/timbarry/research_code/sceptre-pipeline/examples/gasp/work/09/819b0131b6bb778858daf68b6db0ef]
+Dec-07 19:02:05.313 [Task monitor] DEBUG n.processor.TaskPollingMonitor - Task completed > TaskHandler[id: 60; name: run_analysis_subworkflow_discovery_analysis:run_association_analysis (20); status: COMPLETED; exit: 0; error: -; workDir: /Users/timbarry/research_code/sceptre-pipeline/examples/gasp/work/c0/8be31bb9dba701e9aed8a004fc0b43]
+Dec-07 19:02:05.618 [Task monitor] DEBUG n.processor.TaskPollingMonitor - Task completed > TaskHandler[id: 58; name: run_analysis_subworkflow_discovery_analysis:run_association_analysis (18); status: COMPLETED; exit: 0; error: -; workDir: /Users/timbarry/research_code/sceptre-pipeline/examples/gasp/work/fc/a462d88e68dbeab57b65c253ce4060]
+Dec-07 19:02:05.622 [Task submitter] DEBUG n.executor.local.LocalTaskHandler - Launch cmd line: /bin/bash -ue .command.run
+Dec-07 19:02:05.622 [Task submitter] INFO  nextflow.Session - [d7/0df796] Submitted process > run_analysis_subworkflow_discovery_analysis:process_association_analysis_results
+Dec-07 19:02:07.190 [Task monitor] DEBUG n.processor.TaskPollingMonitor - Task completed > TaskHandler[id: 61; name: run_analysis_subworkflow_discovery_analysis:process_association_analysis_results; status: COMPLETED; exit: 0; error: -; workDir: /Users/timbarry/research_code/sceptre-pipeline/examples/gasp/work/d7/0df7961f0e458f476427442eab3074]
+Dec-07 19:02:07.193 [main] DEBUG nextflow.Session - Session await > all processes finished
+Dec-07 19:02:07.296 [Task monitor] DEBUG n.processor.TaskPollingMonitor - <<< barrier arrives (monitor: local) - terminating tasks monitor poll loop
+Dec-07 19:02:07.296 [main] DEBUG nextflow.Session - Session await > all barriers passed
+Dec-07 19:02:07.297 [main] DEBUG nextflow.util.ThreadPoolManager - Thread pool 'PublishDir' shutdown completed (hard=false)
+Dec-07 19:02:07.299 [main] DEBUG n.trace.WorkflowStatsObserver - Workflow completed > WorkflowStats[succeededCount=58; failedCount=0; ignoredCount=0; cachedCount=0; pendingCount=0; submittedCount=0; runningCount=0; retriesCount=0; abortedCount=0; succeedDuration=2m 19s; failedDuration=0ms; cachedDuration=0ms;loadCpus=0; loadMemory=0; peakRunning=4; peakCpus=4; peakMemory=16 GB; ]
+Dec-07 19:02:07.434 [main] DEBUG nextflow.cache.CacheDB - Closing CacheDB done
+Dec-07 19:02:07.446 [main] DEBUG nextflow.util.ThreadPoolManager - Thread pool 'FileTransfer' shutdown completed (hard=false)
+Dec-07 19:02:07.446 [main] DEBUG nextflow.script.ScriptRunner - > Execution complete -- Goodbye

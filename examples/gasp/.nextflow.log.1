@@ -1,0 +1,152 @@
+Dec-07 18:58:14.442 [main] DEBUG nextflow.cli.Launcher - $> nextflow run ../../main.nf --sceptre_object_fp /Users/timbarry/research_offsite/external/gasperini-2019/small_scale/sceptre_object.rds --response_odm_fp /Users/timbarry/research_offsite/external/gasperini-2019/small_scale/gene.odm --grna_odm_fp /Users/timbarry/research_offsite/external/gasperini-2019/small_scale/grna.odm --output_directory /Users/timbarry/gasperini_pipeline_outputs --grna_assignment_method mixture --pair_pod_size 30 --grna_pod_size 10 --pipeline_stop run_discovery_analysis -resume
+Dec-07 18:58:14.478 [main] INFO  nextflow.cli.CmdRun - N E X T F L O W  ~  version 23.10.0
+Dec-07 18:58:14.487 [main] DEBUG nextflow.plugin.PluginsFacade - Setting up plugin manager > mode=prod; embedded=false; plugins-dir=/Users/timbarry/.nextflow/plugins; core-plugins: nf-amazon@2.1.4,nf-azure@1.3.2,nf-cloudcache@0.3.0,nf-codecommit@0.1.5,nf-console@1.0.6,nf-ga4gh@1.1.0,nf-google@1.8.3,nf-tower@1.6.3,nf-wave@1.0.0
+Dec-07 18:58:14.491 [main] INFO  o.pf4j.DefaultPluginStatusProvider - Enabled plugins: []
+Dec-07 18:58:14.491 [main] INFO  o.pf4j.DefaultPluginStatusProvider - Disabled plugins: []
+Dec-07 18:58:14.492 [main] INFO  org.pf4j.DefaultPluginManager - PF4J version 3.4.1 in 'deployment' mode
+Dec-07 18:58:14.496 [main] INFO  org.pf4j.AbstractPluginManager - No plugins
+Dec-07 18:58:14.533 [main] DEBUG nextflow.cli.CmdRun - Applied DSL=2 from script declararion
+Dec-07 18:58:14.543 [main] INFO  nextflow.cli.CmdRun - Launching `../../main.nf` [drunk_cori] DSL2 - revision: c41f56be39
+Dec-07 18:58:14.544 [main] DEBUG nextflow.plugin.PluginsFacade - Plugins default=[]
+Dec-07 18:58:14.544 [main] DEBUG nextflow.plugin.PluginsFacade - Plugins resolved requirement=[]
+Dec-07 18:58:14.549 [main] DEBUG n.secret.LocalSecretsProvider - Secrets store: /Users/timbarry/.nextflow/secrets/store.json
+Dec-07 18:58:14.551 [main] DEBUG nextflow.secret.SecretsLoader - Discovered secrets providers: [nextflow.secret.LocalSecretsProvider@6df7988f] - activable => nextflow.secret.LocalSecretsProvider@6df7988f
+Dec-07 18:58:14.581 [main] DEBUG nextflow.Session - Session UUID: f34f68fa-8051-49bf-895d-38bde074a642
+Dec-07 18:58:14.582 [main] DEBUG nextflow.Session - Run name: drunk_cori
+Dec-07 18:58:14.582 [main] DEBUG nextflow.Session - Executor pool size: 8
+Dec-07 18:58:14.586 [main] DEBUG nextflow.file.FilePorter - File porter settings maxRetries=3; maxTransfers=50; pollTimeout=null
+Dec-07 18:58:14.589 [main] DEBUG nextflow.util.ThreadPoolBuilder - Creating thread pool 'FileTransfer' minSize=10; maxSize=24; workQueue=LinkedBlockingQueue[10000]; allowCoreThreadTimeout=false
+Dec-07 18:58:14.808 [main] DEBUG nextflow.cli.CmdRun - 
+  Version: 23.10.0 build 5889
+  Created: 15-10-2023 15:07 UTC (11:07 EDT)
+  System: Mac OS X 14.1.1
+  Runtime: Groovy 3.0.19 on OpenJDK 64-Bit Server VM 17.0.6+10-LTS
+  Encoding: UTF-8 (UTF-8)
+  Process: 51184@Tims-MacBook-Pro.local [127.0.0.1]
+  CPUs: 8 - Mem: 16 GB (2.3 GB) - Swap: 2 GB (1.7 GB)
+Dec-07 18:58:14.820 [main] DEBUG nextflow.Session - Work-dir: /Users/timbarry/research_code/sceptre-pipeline/examples/gasp/work [Mac OS X]
+Dec-07 18:58:14.839 [main] DEBUG nextflow.executor.ExecutorFactory - Extension executors providers=[]
+Dec-07 18:58:14.844 [main] DEBUG nextflow.Session - Observer factory: DefaultObserverFactory
+Dec-07 18:58:14.858 [main] DEBUG nextflow.cache.CacheFactory - Using Nextflow cache factory: nextflow.cache.DefaultCacheFactory
+Dec-07 18:58:14.863 [main] DEBUG nextflow.util.CustomThreadPool - Creating default thread pool > poolSize: 9; maxThreads: 1000
+Dec-07 18:58:14.907 [main] DEBUG nextflow.Session - Session start
+Dec-07 18:58:15.416 [main] DEBUG nextflow.script.ScriptRunner - > Launching execution
+Dec-07 18:58:15.535 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: null
+Dec-07 18:58:15.535 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'local'
+Dec-07 18:58:15.537 [main] DEBUG nextflow.executor.Executor - [warm up] executor > local
+Dec-07 18:58:15.540 [main] DEBUG n.processor.LocalPollingMonitor - Creating local task monitor for executor 'local' > cpus=8; memory=16 GB; capacity=8; pollInterval=100ms; dumpInterval=5m
+Dec-07 18:58:15.541 [main] DEBUG n.processor.TaskPollingMonitor - >>> barrier register (monitor: local)
+Dec-07 18:58:15.593 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: null
+Dec-07 18:58:15.594 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'local'
+Dec-07 18:58:15.603 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: null
+Dec-07 18:58:15.603 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'local'
+Dec-07 18:58:15.606 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: null
+Dec-07 18:58:15.607 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'local'
+Dec-07 18:58:15.610 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: null
+Dec-07 18:58:15.610 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'local'
+Dec-07 18:58:15.616 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: null
+Dec-07 18:58:15.616 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'local'
+Dec-07 18:58:15.618 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: null
+Dec-07 18:58:15.619 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'local'
+Dec-07 18:58:15.620 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: null
+Dec-07 18:58:15.620 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'local'
+Dec-07 18:58:15.625 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: null
+Dec-07 18:58:15.626 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'local'
+Dec-07 18:58:15.627 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: null
+Dec-07 18:58:15.627 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'local'
+Dec-07 18:58:15.630 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: null
+Dec-07 18:58:15.630 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'local'
+Dec-07 18:58:15.634 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: null
+Dec-07 18:58:15.634 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'local'
+Dec-07 18:58:15.636 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: null
+Dec-07 18:58:15.636 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'local'
+Dec-07 18:58:15.637 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: null
+Dec-07 18:58:15.637 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'local'
+Dec-07 18:58:15.638 [main] DEBUG nextflow.Session - Workflow process names [dsl2]: dummy_process, output_grna_info, run_analysis_subworkflow_calibration_check:dummy_process, run_qc, run_analysis_subworkflow_calibration_check:run_association_analysis, run_analysis_subworkflow_power_check:process_association_analysis_results, run_analysis_subworkflow_power_check:dummy_process, process_association_analysis_results, process_grna_assignments, prepare_association_analyses, run_association_analysis, run_analysis_subworkflow_discovery_analysis:dummy_process, run_analysis_subworkflow_power_check:run_association_analysis, run_analysis_subworkflow_discovery_analysis:process_association_analysis_results, assign_grnas, run_analysis_subworkflow_calibration_check:process_association_analysis_results, run_analysis_subworkflow_discovery_analysis:run_association_analysis
+Dec-07 18:58:15.638 [main] DEBUG nextflow.Session - Igniting dataflow network (36)
+Dec-07 18:58:15.642 [main] DEBUG nextflow.processor.TaskProcessor - Starting process > output_grna_info
+Dec-07 18:58:15.642 [main] DEBUG nextflow.processor.TaskProcessor - Starting process > assign_grnas
+Dec-07 18:58:15.643 [main] DEBUG nextflow.processor.TaskProcessor - Starting process > process_grna_assignments
+Dec-07 18:58:15.643 [main] DEBUG nextflow.processor.TaskProcessor - Starting process > run_qc
+Dec-07 18:58:15.643 [main] DEBUG nextflow.processor.TaskProcessor - Starting process > prepare_association_analyses
+Dec-07 18:58:15.643 [main] DEBUG nextflow.processor.TaskProcessor - Starting process > run_analysis_subworkflow_calibration_check:run_association_analysis
+Dec-07 18:58:15.643 [main] DEBUG nextflow.processor.TaskProcessor - Starting process > run_analysis_subworkflow_calibration_check:process_association_analysis_results
+Dec-07 18:58:15.643 [main] DEBUG nextflow.processor.TaskProcessor - Starting process > run_analysis_subworkflow_calibration_check:dummy_process
+Dec-07 18:58:15.644 [main] DEBUG nextflow.processor.TaskProcessor - Starting process > run_analysis_subworkflow_power_check:run_association_analysis
+Dec-07 18:58:15.644 [main] DEBUG nextflow.processor.TaskProcessor - Starting process > run_analysis_subworkflow_power_check:process_association_analysis_results
+Dec-07 18:58:15.644 [main] DEBUG nextflow.processor.TaskProcessor - Starting process > run_analysis_subworkflow_power_check:dummy_process
+Dec-07 18:58:15.644 [main] DEBUG nextflow.processor.TaskProcessor - Starting process > run_analysis_subworkflow_discovery_analysis:run_association_analysis
+Dec-07 18:58:15.644 [main] DEBUG nextflow.processor.TaskProcessor - Starting process > run_analysis_subworkflow_discovery_analysis:process_association_analysis_results
+Dec-07 18:58:15.644 [main] DEBUG nextflow.processor.TaskProcessor - Starting process > run_analysis_subworkflow_discovery_analysis:dummy_process
+Dec-07 18:58:15.644 [main] DEBUG nextflow.script.ScriptRunner - Parsed script files:
+  Script_d894d4d2a3ad00a1: /Users/timbarry/research_code/sceptre-pipeline/main.nf
+  Script_ac1ac806794a1b40: /Users/timbarry/research_code/sceptre-pipeline/./run_analysis_subworkflow.nf
+Dec-07 18:58:15.644 [main] DEBUG nextflow.script.ScriptRunner - > Awaiting termination 
+Dec-07 18:58:15.644 [main] DEBUG nextflow.Session - Session await
+Dec-07 18:58:15.714 [Actor Thread 13] INFO  nextflow.processor.TaskProcessor - [13/655082] Cached process > output_grna_info (1)
+Dec-07 18:58:15.746 [Actor Thread 10] INFO  nextflow.processor.TaskProcessor - [a8/ffb44c] Cached process > assign_grnas (1)
+Dec-07 18:58:15.746 [Actor Thread 13] INFO  nextflow.processor.TaskProcessor - [58/2c4075] Cached process > assign_grnas (3)
+Dec-07 18:58:15.746 [Actor Thread 1] INFO  nextflow.processor.TaskProcessor - [b3/25ad29] Cached process > assign_grnas (6)
+Dec-07 18:58:15.746 [Actor Thread 11] INFO  nextflow.processor.TaskProcessor - [ef/d3a4c4] Cached process > assign_grnas (7)
+Dec-07 18:58:15.746 [Actor Thread 12] INFO  nextflow.processor.TaskProcessor - [f9/a93181] Cached process > assign_grnas (4)
+Dec-07 18:58:15.746 [Actor Thread 9] INFO  nextflow.processor.TaskProcessor - [4b/82d886] Cached process > assign_grnas (2)
+Dec-07 18:58:15.747 [Actor Thread 2] INFO  nextflow.processor.TaskProcessor - [ed/2d31b9] Cached process > assign_grnas (8)
+Dec-07 18:58:15.747 [Actor Thread 7] INFO  nextflow.processor.TaskProcessor - [8f/7c4246] Cached process > assign_grnas (5)
+Dec-07 18:58:15.757 [Actor Thread 9] INFO  nextflow.processor.TaskProcessor - [17/e4228d] Cached process > assign_grnas (10)
+Dec-07 18:58:15.757 [Actor Thread 3] INFO  nextflow.processor.TaskProcessor - [cc/910537] Cached process > assign_grnas (9)
+Dec-07 18:58:15.767 [Actor Thread 8] INFO  nextflow.processor.TaskProcessor - [cc/ec6886] Cached process > process_grna_assignments
+Dec-07 18:58:15.776 [Actor Thread 8] DEBUG nextflow.util.ThreadPoolBuilder - Creating thread pool 'PublishDir' minSize=10; maxSize=24; workQueue=LinkedBlockingQueue[10000]; allowCoreThreadTimeout=false
+Dec-07 18:58:15.788 [Actor Thread 9] INFO  nextflow.processor.TaskProcessor - [08/944f84] Cached process > run_qc
+Dec-07 18:58:15.798 [Actor Thread 1] INFO  nextflow.processor.TaskProcessor - [8a/ac828d] Cached process > prepare_association_analyses
+Dec-07 18:58:15.803 [Actor Thread 7] INFO  nextflow.processor.TaskProcessor - [ab/d9d5c5] Cached process > run_analysis_subworkflow_calibration_check:run_association_analysis (5)
+Dec-07 18:58:15.805 [Actor Thread 14] INFO  nextflow.processor.TaskProcessor - [8c/53a599] Cached process > run_analysis_subworkflow_calibration_check:run_association_analysis (2)
+Dec-07 18:58:15.805 [Actor Thread 5] INFO  nextflow.processor.TaskProcessor - [de/5aff6f] Cached process > run_analysis_subworkflow_calibration_check:run_association_analysis (1)
+Dec-07 18:58:15.806 [Actor Thread 12] INFO  nextflow.processor.TaskProcessor - [a3/115d33] Cached process > run_analysis_subworkflow_calibration_check:run_association_analysis (3)
+Dec-07 18:58:15.806 [Actor Thread 18] INFO  nextflow.processor.TaskProcessor - [cc/fb06fa] Cached process > run_analysis_subworkflow_calibration_check:run_association_analysis (7)
+Dec-07 18:58:15.806 [Actor Thread 17] INFO  nextflow.processor.TaskProcessor - [6a/9b94d3] Cached process > run_analysis_subworkflow_calibration_check:run_association_analysis (6)
+Dec-07 18:58:15.806 [Actor Thread 8] INFO  nextflow.processor.TaskProcessor - [5d/443b48] Cached process > run_analysis_subworkflow_calibration_check:run_association_analysis (8)
+Dec-07 18:58:15.806 [Actor Thread 16] INFO  nextflow.processor.TaskProcessor - [5d/a77dda] Cached process > run_analysis_subworkflow_calibration_check:run_association_analysis (4)
+Dec-07 18:58:15.808 [Actor Thread 5] INFO  nextflow.processor.TaskProcessor - [f2/cd061f] Cached process > run_analysis_subworkflow_calibration_check:run_association_analysis (10)
+Dec-07 18:58:15.809 [Actor Thread 7] INFO  nextflow.processor.TaskProcessor - [ea/7884a9] Cached process > run_analysis_subworkflow_calibration_check:run_association_analysis (9)
+Dec-07 18:58:15.809 [Actor Thread 11] INFO  nextflow.processor.TaskProcessor - [74/364515] Cached process > run_analysis_subworkflow_calibration_check:run_association_analysis (12)
+Dec-07 18:58:15.810 [Actor Thread 16] INFO  nextflow.processor.TaskProcessor - [2a/a2a87e] Cached process > run_analysis_subworkflow_calibration_check:run_association_analysis (13)
+Dec-07 18:58:15.810 [Actor Thread 14] INFO  nextflow.processor.TaskProcessor - [2a/3a3d66] Cached process > run_analysis_subworkflow_calibration_check:run_association_analysis (15)
+Dec-07 18:58:15.810 [Actor Thread 18] INFO  nextflow.processor.TaskProcessor - [bb/65610f] Cached process > run_analysis_subworkflow_calibration_check:run_association_analysis (11)
+Dec-07 18:58:15.811 [Actor Thread 12] INFO  nextflow.processor.TaskProcessor - [f7/8bdc6e] Cached process > run_analysis_subworkflow_calibration_check:run_association_analysis (14)
+Dec-07 18:58:15.812 [Actor Thread 16] INFO  nextflow.processor.TaskProcessor - [77/cf4d67] Cached process > run_analysis_subworkflow_calibration_check:run_association_analysis (20)
+Dec-07 18:58:15.812 [Actor Thread 1] INFO  nextflow.processor.TaskProcessor - [a3/fba200] Cached process > run_analysis_subworkflow_calibration_check:run_association_analysis (17)
+Dec-07 18:58:15.813 [Actor Thread 8] INFO  nextflow.processor.TaskProcessor - [ef/fe68c5] Cached process > run_analysis_subworkflow_calibration_check:run_association_analysis (18)
+Dec-07 18:58:15.814 [Actor Thread 17] INFO  nextflow.processor.TaskProcessor - [de/a671f1] Cached process > run_analysis_subworkflow_calibration_check:run_association_analysis (19)
+Dec-07 18:58:15.814 [Actor Thread 4] INFO  nextflow.processor.TaskProcessor - [7b/f5f9f3] Cached process > run_analysis_subworkflow_calibration_check:run_association_analysis (16)
+Dec-07 18:58:15.825 [Actor Thread 15] INFO  nextflow.processor.TaskProcessor - [16/41c84f] Cached process > run_analysis_subworkflow_calibration_check:process_association_analysis_results
+Dec-07 18:58:15.827 [Actor Thread 1] INFO  nextflow.processor.TaskProcessor - [0d/249aef] Cached process > run_analysis_subworkflow_power_check:run_association_analysis (1)
+Dec-07 18:58:15.830 [Actor Thread 1] INFO  nextflow.processor.TaskProcessor - [9e/52cf42] Cached process > run_analysis_subworkflow_power_check:process_association_analysis_results
+Dec-07 18:58:15.833 [Actor Thread 11] INFO  nextflow.processor.TaskProcessor - [c0/1d8f61] Cached process > run_analysis_subworkflow_discovery_analysis:run_association_analysis (2)
+Dec-07 18:58:15.834 [Actor Thread 18] INFO  nextflow.processor.TaskProcessor - [5d/9bc1ea] Cached process > run_analysis_subworkflow_discovery_analysis:run_association_analysis (5)
+Dec-07 18:58:15.834 [Actor Thread 6] INFO  nextflow.processor.TaskProcessor - [62/0b2b4d] Cached process > run_analysis_subworkflow_discovery_analysis:run_association_analysis (8)
+Dec-07 18:58:15.834 [Actor Thread 14] INFO  nextflow.processor.TaskProcessor - [5e/68d032] Cached process > run_analysis_subworkflow_discovery_analysis:run_association_analysis (6)
+Dec-07 18:58:15.834 [Actor Thread 12] INFO  nextflow.processor.TaskProcessor - [0f/a518c5] Cached process > run_analysis_subworkflow_discovery_analysis:run_association_analysis (4)
+Dec-07 18:58:15.834 [Actor Thread 16] INFO  nextflow.processor.TaskProcessor - [8c/4c4fdd] Cached process > run_analysis_subworkflow_discovery_analysis:run_association_analysis (3)
+Dec-07 18:58:15.833 [Actor Thread 10] INFO  nextflow.processor.TaskProcessor - [44/eafea1] Cached process > run_analysis_subworkflow_discovery_analysis:run_association_analysis (7)
+Dec-07 18:58:15.836 [Actor Thread 8] INFO  nextflow.processor.TaskProcessor - [35/440b31] Cached process > run_analysis_subworkflow_discovery_analysis:run_association_analysis (1)
+Dec-07 18:58:15.837 [Actor Thread 13] INFO  nextflow.processor.TaskProcessor - [70/79f695] Cached process > run_analysis_subworkflow_discovery_analysis:run_association_analysis (10)
+Dec-07 18:58:15.837 [Actor Thread 6] INFO  nextflow.processor.TaskProcessor - [94/0cdff9] Cached process > run_analysis_subworkflow_discovery_analysis:run_association_analysis (12)
+Dec-07 18:58:15.837 [Actor Thread 1] INFO  nextflow.processor.TaskProcessor - [27/bc8ef3] Cached process > run_analysis_subworkflow_discovery_analysis:run_association_analysis (13)
+Dec-07 18:58:15.837 [Actor Thread 10] INFO  nextflow.processor.TaskProcessor - [e2/6391f8] Cached process > run_analysis_subworkflow_discovery_analysis:run_association_analysis (9)
+Dec-07 18:58:15.838 [Actor Thread 16] INFO  nextflow.processor.TaskProcessor - [a7/148aa0] Cached process > run_analysis_subworkflow_discovery_analysis:run_association_analysis (11)
+Dec-07 18:58:15.838 [Actor Thread 4] INFO  nextflow.processor.TaskProcessor - [e2/b80bf6] Cached process > run_analysis_subworkflow_discovery_analysis:run_association_analysis (14)
+Dec-07 18:58:15.840 [Actor Thread 14] INFO  nextflow.processor.TaskProcessor - [0e/25910a] Cached process > run_analysis_subworkflow_discovery_analysis:run_association_analysis (17)
+Dec-07 18:58:15.840 [Actor Thread 8] INFO  nextflow.processor.TaskProcessor - [3a/741ed7] Cached process > run_analysis_subworkflow_discovery_analysis:run_association_analysis (19)
+Dec-07 18:58:15.840 [Actor Thread 17] INFO  nextflow.processor.TaskProcessor - [0b/1f9c69] Cached process > run_analysis_subworkflow_discovery_analysis:run_association_analysis (16)
+Dec-07 18:58:15.840 [Actor Thread 13] INFO  nextflow.processor.TaskProcessor - [8a/c99c4c] Cached process > run_analysis_subworkflow_discovery_analysis:run_association_analysis (15)
+Dec-07 18:58:15.841 [Actor Thread 9] INFO  nextflow.processor.TaskProcessor - [5d/e52b48] Cached process > run_analysis_subworkflow_discovery_analysis:run_association_analysis (20)
+Dec-07 18:58:15.841 [Actor Thread 12] INFO  nextflow.processor.TaskProcessor - [6a/7d6be5] Cached process > run_analysis_subworkflow_discovery_analysis:run_association_analysis (18)
+Dec-07 18:58:15.848 [Actor Thread 12] INFO  nextflow.processor.TaskProcessor - [30/e8acc3] Cached process > run_analysis_subworkflow_discovery_analysis:process_association_analysis_results
+Dec-07 18:58:15.850 [main] DEBUG nextflow.Session - Session await > all processes finished
+Dec-07 18:58:15.851 [Task monitor] DEBUG n.processor.TaskPollingMonitor - <<< barrier arrives (monitor: local) - terminating tasks monitor poll loop
+Dec-07 18:58:15.851 [main] DEBUG nextflow.Session - Session await > all barriers passed
+Dec-07 18:58:15.852 [main] DEBUG nextflow.util.ThreadPoolManager - Thread pool 'PublishDir' shutdown completed (hard=false)
+Dec-07 18:58:15.854 [main] DEBUG n.trace.WorkflowStatsObserver - Workflow completed > WorkflowStats[succeededCount=0; failedCount=0; ignoredCount=0; cachedCount=58; pendingCount=0; submittedCount=0; runningCount=0; retriesCount=0; abortedCount=0; succeedDuration=0ms; failedDuration=0ms; cachedDuration=2m 19s;loadCpus=0; loadMemory=0; peakRunning=0; peakCpus=0; peakMemory=0; ]
+Dec-07 18:58:15.961 [main] DEBUG nextflow.cache.CacheDB - Closing CacheDB done
+Dec-07 18:58:15.966 [main] DEBUG nextflow.util.ThreadPoolManager - Thread pool 'FileTransfer' shutdown completed (hard=false)
+Dec-07 18:58:15.966 [main] DEBUG nextflow.script.ScriptRunner - > Execution complete -- Goodbye

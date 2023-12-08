@@ -1,2 +1,3 @@
 examples/.nextflow*
-examples/work
+examples/gasp/work
+examples/rd7/work

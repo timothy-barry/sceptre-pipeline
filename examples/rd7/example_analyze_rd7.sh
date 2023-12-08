@@ -23,7 +23,7 @@ output_directory="/Users/timbarry/rd7_pipeline_outputs"
 #################
 # Invoke pipeline
 #################
-nextflow run ../main.nf \
+nextflow run ../../main.nf \
  --sceptre_object_fp $sceptre_object_fp \
  --response_odm_fp $response_odm_fp \
  --grna_odm_fp $grna_odm_fp \
