@@ -1,3 +1,4 @@
-examples/.nextflow*
 examples/gasp/work
 examples/rd7/work
+examples/rd7/.nextflow*
+example/gasp/.nextflow*

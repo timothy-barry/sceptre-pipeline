@@ -9,9 +9,16 @@ include { run_analysis_subworkflow as run_analysis_subworkflow_discovery_analysi
 /*************************
 * DEFAULT PARAMETER VALUES
 *************************/
-// pipeline step to go to
+// pipeline stopping step
 params.pipeline_stop = "run_discovery_analysis"
 // set analysis parameters
+params.side = "default"
+params.grna_integration_strategy = "default"
+params.fit_parametric_curve = "default"
+params.control_group = "default"
+params.resampling_mechanism = "default"
+params.multiple_testing_method = "default"
+params.multiple_testing_alpha = "default"
 // gRNA assignment
 params.grna_assignment_method = "default"
 params.threshold = "default"
@@ -20,6 +27,7 @@ params.n_em_rep = "default"
 params.n_nonzero_cells_cutoff = "default"
 params.backup_threshold = "default"
 params.probability_threshold = "default"
+params.grna_assignment_formula_string = "default"
 // QC
 params.n_nonzero_trt_thresh = "default"
 params.n_nonzero_cntrl_thresh = "default"
@@ -50,6 +58,7 @@ if (step_rank == -1) {
 **********/
 // PROCESS A: output gRNA info
 process output_grna_info {
+  debug true
   time "5m"
   memory "4 GB"
 
@@ -57,7 +66,7 @@ process output_grna_info {
   path "sceptre_object_fp"
   path "response_odm_fp"
   path "grna_odm_fp"
-
+  
   output:
   path "grna_to_pod_map.rds", emit: grna_to_pod_map_ch
   path "grna_pods.txt", emit: grna_pods_ch
@@ -87,6 +96,7 @@ process assign_grnas {
   val "grna_pod"
   val "low_moi"
 
+  /*
   output:
   path "grna_assignments.rds", emit: grna_assignments_ch
 
@@ -101,7 +111,24 @@ process assign_grnas {
   ${params.n_em_rep} \
   ${params.n_nonzero_cells_cutoff} \
   ${params.backup_threshold} \
-  ${params.probability_threshold}
+  ${params.probability_threshold} \
+  ${params.grna_assignment_formula_string}
+  """
+  */
+  
+  """
+  echo $sceptre_object_fp \
+  $response_odm_fp \
+  $grna_odm_fp \
+  $grna_to_pod_map \
+  $grna_pod \
+  ${params.grna_assignment_method} \
+  ${params.threshold} \
+  ${params.n_em_rep} \
+  ${params.n_nonzero_cells_cutoff} \
+  ${params.backup_threshold} \
+  ${params.probability_threshold} \
+  ${params.grna_assignment_formula_string}
   """
 }
 
@@ -206,7 +233,7 @@ workflow {
     Channel.fromPath(params.response_odm_fp, checkIfExists : true),
     Channel.fromPath(params.grna_odm_fp, checkIfExists : true)
   )
-
+  
   // 2. process output from above process
   grna_to_pod_map_ch = output_grna_info.out.grna_to_pod_map_ch.first()
   grna_pods_ch = output_grna_info.out.grna_pods_ch.splitText().map{it.trim()}
@@ -222,6 +249,7 @@ workflow {
     low_moi_ch
   )
   
+  /*
   // 4. process output from above process
   grna_assignments_ch = assign_grnas.out.grna_assignments_ch.ifEmpty(params.sceptre_object_fp).collect()
 
@@ -232,8 +260,9 @@ workflow {
     Channel.fromPath(params.grna_odm_fp).first(),
     grna_assignments_ch
   )
+  */
   }
-  
+  /*
   if (step_rank >= 1) {
      // 6. run quality control
   run_qc(
@@ -291,4 +320,5 @@ workflow {
     Channel.from("run_discovery_analysis").first()
   )
   }
+  */
 }
