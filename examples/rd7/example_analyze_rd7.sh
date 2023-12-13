@@ -17,7 +17,7 @@ grna_odm_fp=$rd7_data_dir"grna.odm"
 
 ###################
 # OUTPUT DIRECTORY:
-##################
+###################
 output_directory="/Users/timbarry/rd7_pipeline_outputs"
 
 #################
@@ -28,10 +28,10 @@ nextflow run ../../main.nf \
  --response_odm_fp $response_odm_fp \
  --grna_odm_fp $grna_odm_fp \
  --output_directory $output_directory \
+ --discovery_pairs "/Users/timbarry/research_code/sceptre-pipeline/examples/rd7/discovery_pairs.rds" \
  --grna_assignment_method "mixture" \
- --probability_threshold "0.9"
+ --probability_threshold "0.98" \
  --n_nonzero_trt_thresh "5" \
  --n_nonzero_cntrl_thresh "5" \
  --pair_pod_size "30" \
- --pipeline_stop "assign_grnas" \
- -resume
+ --pipeline_stop "set_analysis_parameters"
