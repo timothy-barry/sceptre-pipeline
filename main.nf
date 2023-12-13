@@ -66,7 +66,7 @@ process output_grna_info {
   path "sceptre_object_fp"
   path "response_odm_fp"
   path "grna_odm_fp"
-  
+
   output:
   path "grna_to_pod_map.rds", emit: grna_to_pod_map_ch
   path "grna_pods.txt", emit: grna_pods_ch
@@ -96,28 +96,11 @@ process assign_grnas {
   val "grna_pod"
   val "low_moi"
 
-  /*
   output:
   path "grna_assignments.rds", emit: grna_assignments_ch
 
   """
   assign_grnas.R $sceptre_object_fp \
-  $response_odm_fp \
-  $grna_odm_fp \
-  $grna_to_pod_map \
-  $grna_pod \
-  ${params.grna_assignment_method} \
-  ${params.threshold} \
-  ${params.n_em_rep} \
-  ${params.n_nonzero_cells_cutoff} \
-  ${params.backup_threshold} \
-  ${params.probability_threshold} \
-  ${params.grna_assignment_formula_string}
-  """
-  */
-  
-  """
-  echo $sceptre_object_fp \
   $response_odm_fp \
   $grna_odm_fp \
   $grna_to_pod_map \
@@ -144,7 +127,7 @@ process process_grna_assignments {
   path "response_odm_fp"
   path "grna_odm_fp"
   path "grna_assignments"
-  
+
   output:
   path "plot_grna_count_distributions.png"
   path "plot_assign_grnas.png"
@@ -172,7 +155,7 @@ process run_qc {
   path "sceptre_object_fp"
   path "response_odm_fp"
   path "grna_odm_fp"
-  
+
   output:
   path "plot_covariates.png"
   path "plot_run_qc.png"
@@ -202,7 +185,7 @@ process prepare_association_analyses {
   path "sceptre_object_fp"
   path "response_odm_fp"
   path "grna_odm_fp"
-  
+
   output:
   path "run_calibration_check", emit: run_calibration_check_ch
   path "run_discovery_analysis", emit: run_discovery_analysis_ch
@@ -211,7 +194,7 @@ process prepare_association_analyses {
   path "power_check_pods", emit: power_check_pods_ch
   path "discovery_analysis_pods", emit: discovery_analysis_pods_ch
   path "sceptre_object.rds", emit: sceptre_object_ch
-  
+
   """
   prepare_association_analyses.R $sceptre_object_fp \
   $response_odm_fp \
@@ -233,12 +216,12 @@ workflow {
     Channel.fromPath(params.response_odm_fp, checkIfExists : true),
     Channel.fromPath(params.grna_odm_fp, checkIfExists : true)
   )
-  
+
   // 2. process output from above process
   grna_to_pod_map_ch = output_grna_info.out.grna_to_pod_map_ch.first()
   grna_pods_ch = output_grna_info.out.grna_pods_ch.splitText().map{it.trim()}
   low_moi_ch = output_grna_info.out.low_moi_ch.splitText().map{it.trim()}.first()
-  
+
   // 3. assign gRNAs
   assign_grnas(
     Channel.fromPath(params.sceptre_object_fp).first(),
@@ -248,8 +231,7 @@ workflow {
     grna_pods_ch,
     low_moi_ch
   )
-  
-  /*
+
   // 4. process output from above process
   grna_assignments_ch = assign_grnas.out.grna_assignments_ch.ifEmpty(params.sceptre_object_fp).collect()
 
@@ -260,9 +242,7 @@ workflow {
     Channel.fromPath(params.grna_odm_fp).first(),
     grna_assignments_ch
   )
-  */
   }
-  /*
   if (step_rank >= 1) {
      // 6. run quality control
   run_qc(
@@ -271,7 +251,7 @@ workflow {
     Channel.fromPath(params.grna_odm_fp).first(),
   )
   }
-  
+
   if (step_rank >= 2) {
   // 7. prepare association analyses
   prepare_association_analyses(
@@ -279,7 +259,7 @@ workflow {
     Channel.fromPath(params.response_odm_fp).first(),
     Channel.fromPath(params.grna_odm_fp).first()
   )
-  
+
   // 8. run calibration check
   calibration_check_pods_ch = prepare_association_analyses.out.calibration_check_pods_ch.splitText().map{it.trim()}
   run_calibration_check_ch = prepare_association_analyses.out.run_calibration_check_ch.splitText().map{it.trim()}.first()
@@ -292,7 +272,7 @@ workflow {
     Channel.from("run_calibration_check").first()
   )
   }
-  
+
   if (step_rank >= 3) {
   // 9. run power check
   power_check_pods_ch = prepare_association_analyses.out.power_check_pods_ch.splitText().map{it.trim()}
@@ -304,9 +284,9 @@ workflow {
     power_check_pods_ch,
     run_power_check_ch,
     Channel.from("run_power_check").first()
-  ) 
+  )
   }
-  
+
   if (step_rank >= 4) {
   // 10. run discovery analysis
   discovery_analysis_pods_ch = prepare_association_analyses.out.discovery_analysis_pods_ch.splitText().map{it.trim()}
@@ -320,5 +300,4 @@ workflow {
     Channel.from("run_discovery_analysis").first()
   )
   }
-  */
 }

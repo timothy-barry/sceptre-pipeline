@@ -7,7 +7,7 @@ export NXF_OPTS="-Xms500M -Xmx4G"
 # REQUIRED INPUT ARGUMENTS
 ##########################
 source ~/.research_config
-rd7_data_dir=$LOCAL_REPLOGLE_2022_DATA_DIR"/processed/rd7/small/"
+rd7_data_dir=$LOCAL_REPLOGLE_2022_DATA_DIR"/processed/rd7/"
 # sceptre object
 sceptre_object_fp=$rd7_data_dir"sceptre_object.rds"
 # response ODM
@@ -29,8 +29,9 @@ nextflow run ../../main.nf \
  --grna_odm_fp $grna_odm_fp \
  --output_directory $output_directory \
  --grna_assignment_method "mixture" \
+ --probability_threshold "0.9"
  --n_nonzero_trt_thresh "5" \
  --n_nonzero_cntrl_thresh "5" \
  --pair_pod_size "30" \
- --pipeline_stop "run_discovery_analysis" \
+ --pipeline_stop "assign_grnas" \
  -resume
