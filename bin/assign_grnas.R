@@ -13,6 +13,7 @@ n_em_rep <- args[8]
 n_nonzero_cells_cutoff <- args[9]
 backup_threshold <- args[10]
 probability_threshold <- args[11]
+grna_assignment_formula_fp <- args[12]
 
 # load the sceptre object
 sceptre_object <- sceptre::read_ondisc_backed_sceptre_object(sceptre_object_fp = sceptre_object_fp,
@@ -37,10 +38,15 @@ for (optional_arg_name in optional_args_names) {
     args_to_pass[[optional_arg_name]] <- as.numeric(optional_arg_value)
   }
 }
+grna_assignment_formula <- readRDS(grna_assignment_formula_fp)
+if (!identical(grna_assignment_formula, NULL)) {
+  args_to_pass[["formula_object"]] <- grna_assignment_formula
+}
 
 # call the gRNA-to-cell assignment function
-sceptre_object <- do.call(what = sceptre::assign_grnas,
-                          args = args_to_pass)
+sceptre_object <- do.call(what = sceptre::assign_grnas, args = args_to_pass)
 
 # save the initial assignment list
+grna_assignment_formula <- sceptre_object@grna_assignment_hyperparameters$formula_object 
 saveRDS(sceptre_object@initial_grna_assignment_list, "grna_assignments.rds")
+saveRDS(grna_assignment_formula, "grna_assignment_formula.rds")

@@ -30,7 +30,7 @@ params.n_em_rep = "default"
 params.n_nonzero_cells_cutoff = "default"
 params.backup_threshold = "default"
 params.probability_threshold = "default"
-params.grna_assignment_formula_string = "default"
+params.grna_assignment_formula = "${baseDir}/resources/placeholder_file.rds"
 // QC
 params.n_nonzero_trt_thresh = "default"
 params.n_nonzero_cntrl_thresh = "default"
@@ -133,9 +133,11 @@ process assign_grnas {
   path "grna_to_pod_map"
   val "grna_pod"
   val "low_moi"
+  path "grna_assignment_formula"
 
   output:
   path "grna_assignments.rds", emit: grna_assignments_ch
+  path "grna_assignment_formula.rds", emit: grna_assignment_formula_ch
 
   """
   assign_grnas.R $sceptre_object_fp \
@@ -149,7 +151,7 @@ process assign_grnas {
   ${params.n_nonzero_cells_cutoff} \
   ${params.backup_threshold} \
   ${params.probability_threshold} \
-  ${params.grna_assignment_formula_string}
+  $grna_assignment_formula
   """
 }
 
@@ -159,11 +161,13 @@ process process_grna_assignments {
   memory "4 GB"
   publishDir "${params.output_directory}", mode: 'copy', overwrite: true, pattern: "*.png"
   publishDir "${params.output_directory}", mode: 'copy', overwrite: true, pattern: "*.txt"
+  debug true
 
   input:
   path "sceptre_object_fp"
   path "response_odm_fp"
   path "grna_odm_fp"
+  path "grna_assignment_formula"
   path "grna_assignments"
 
   output:
@@ -173,11 +177,12 @@ process process_grna_assignments {
   path "sceptre_object.rds", emit: sceptre_object_ch
 
   """
-  process_grna_assignments.R  $sceptre_object_fp \
+  process_grna_assignments.R $sceptre_object_fp \
   $response_odm_fp \
   $grna_odm_fp \
   ${params.grna_assignment_method} \
   ${params.umi_fraction_threshold} \
+  $grna_assignment_formula \
   grna_assignments*
   """
 }
@@ -247,7 +252,7 @@ process prepare_association_analyses {
 * MAIN WORKFLOW
 ***************/
 workflow {
-  // -1. set analysis parameters
+  // 0. set analysis parameters
   if (step_rank >= 0) {
     set_analysis_parameters(
       Channel.fromPath(params.sceptre_object_fp, checkIfExists : true),
@@ -258,48 +263,50 @@ workflow {
       Channel.fromPath(params.positive_control_pairs, checkIfExists : true)
     )
     
-    // 0. process output from above process
+    // 1. process output from above process
     sceptre_object_ch = set_analysis_parameters.out.sceptre_object_ch
-    sceptre_object_ch.view()
   }
   
   if (step_rank >= 1) {
-  // 1. obtain the gRNA info
+  // 2. obtain the gRNA info
   output_grna_info(
-    Channel.fromPath(params.sceptre_object_fp, checkIfExists : true),
+    sceptre_object_ch.first(),
     Channel.fromPath(params.response_odm_fp, checkIfExists : true),
     Channel.fromPath(params.grna_odm_fp, checkIfExists : true)
   )
 
-  // 2. process output from above process
+  // 3. process output from above process
   grna_to_pod_map_ch = output_grna_info.out.grna_to_pod_map_ch.first()
   grna_pods_ch = output_grna_info.out.grna_pods_ch.splitText().map{it.trim()}
   low_moi_ch = output_grna_info.out.low_moi_ch.splitText().map{it.trim()}.first()
 
-  // 3. assign gRNAs
+  // 4. assign gRNAs
   assign_grnas(
     Channel.fromPath(params.sceptre_object_fp).first(),
     Channel.fromPath(params.response_odm_fp).first(),
     Channel.fromPath(params.grna_odm_fp).first(),
     grna_to_pod_map_ch,
     grna_pods_ch,
-    low_moi_ch
+    low_moi_ch,
+    Channel.fromPath(params.grna_assignment_formula).first()
   )
-
-  // 4. process output from above process
+  
+  // 5. process output from above process
   grna_assignments_ch = assign_grnas.out.grna_assignments_ch.ifEmpty(params.sceptre_object_fp).collect()
-
-  // 5. process the gRNA assignments
+  grna_assignment_formula_ch = assign_grnas.out.grna_assignment_formula_ch.first()
+ 
+  // 6. process the gRNA assignments
   process_grna_assignments(
     Channel.fromPath(params.sceptre_object_fp).first(),
     Channel.fromPath(params.response_odm_fp).first(),
     Channel.fromPath(params.grna_odm_fp).first(),
+    grna_assignment_formula_ch,
     grna_assignments_ch
   )
   }
   
   if (step_rank >= 2) {
-  // 6. run quality control
+  // 7. run quality control
   run_qc(
     process_grna_assignments.out.sceptre_object_ch,
     Channel.fromPath(params.response_odm_fp).first(),
@@ -308,14 +315,14 @@ workflow {
   }
 
   if (step_rank >= 3) {
-  // 7. prepare association analyses
+  // 8. prepare association analyses
   prepare_association_analyses(
     run_qc.out.sceptre_object_ch,
     Channel.fromPath(params.response_odm_fp).first(),
     Channel.fromPath(params.grna_odm_fp).first()
   )
 
-  // 8. run calibration check
+  // 9. run calibration check
   calibration_check_pods_ch = prepare_association_analyses.out.calibration_check_pods_ch.splitText().map{it.trim()}
   run_calibration_check_ch = prepare_association_analyses.out.run_calibration_check_ch.splitText().map{it.trim()}.first()
   run_analysis_subworkflow_calibration_check(
@@ -329,7 +336,7 @@ workflow {
   }
 
   if (step_rank >= 4) {
-  // 9. run power check
+  // 10. run power check
   power_check_pods_ch = prepare_association_analyses.out.power_check_pods_ch.splitText().map{it.trim()}
   run_power_check_ch = prepare_association_analyses.out.run_power_check_ch.splitText().map{it.trim()}.first()
   run_analysis_subworkflow_power_check(
@@ -343,7 +350,7 @@ workflow {
   }
 
   if (step_rank >= 5) {
-  // 10. run discovery analysis
+  // 11. run discovery analysis
   discovery_analysis_pods_ch = prepare_association_analyses.out.discovery_analysis_pods_ch.splitText().map{it.trim()}
   run_discovery_analysis_ch = prepare_association_analyses.out.run_discovery_analysis_ch.splitText().map{it.trim()}.first()
   run_analysis_subworkflow_discovery_analysis(

@@ -7,7 +7,8 @@ response_odm_fp <- args[2]
 grna_odm_fp <- args[3]
 method <- args[4]
 umi_fraction_threshold <- args[5]
-grna_assignment_fps <- args[seq(6, length(args))]
+grna_assignment_formula_fp <- args[6]
+grna_assignment_fps <- args[seq(7, length(args))]
 
 # load the sceptre object
 sceptre_object <- sceptre::read_ondisc_backed_sceptre_object(sceptre_object_fp = sceptre_object_fp,
@@ -30,6 +31,7 @@ if (method == "maximum") {
     unlist(recursive = FALSE)
   sceptre_object@functs_called[["assign_grnas"]] <- TRUE
   sceptre_object@grna_assignment_method <- method
+  sceptre_object@grna_assignment_hyperparameters$formula_object <- readRDS(grna_assignment_formula_fp)
   sceptre_object <- sceptre:::process_initial_assignment_list(sceptre_object)
 }
 
