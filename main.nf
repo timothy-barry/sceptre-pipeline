@@ -43,7 +43,7 @@ params.p_mito_threshold = "default"
 params.n_calibration_pairs = "default"
 params.calibration_group_size = "default"
 // parallelization
-params.grna_pod_size = 500
+params.grna_pod_size = 200
 params.pair_pod_size = 5000
 
 /*****************************
