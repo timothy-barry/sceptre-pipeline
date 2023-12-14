@@ -43,8 +43,8 @@ params.p_mito_threshold = "default"
 params.n_calibration_pairs = "default"
 params.calibration_group_size = "default"
 // parallelization
-params.grna_pod_size = 100
-params.pair_pod_size = 500
+params.grna_pod_size = 500
+params.pair_pod_size = 5000
 
 /*****************************
 * GROOVY PROCESSING OF INPUTS
@@ -62,10 +62,10 @@ if (step_rank == -1) {
 // PROCESS A: set analysis parameters
 process set_analysis_parameters {
   publishDir "${params.output_directory}", mode: 'copy', overwrite: true, pattern: "*.txt"
-  
-  time "5m"
+
+  time "10m"
   memory "4 GB"
-  
+
   input:
   path "sceptre_object_fp"
   path "response_odm_fp"
@@ -73,11 +73,11 @@ process set_analysis_parameters {
   path "formula_object"
   path "discovery_pairs"
   path "positive_control_pairs"
-  
+
   output:
   path "sceptre_object.rds", emit: sceptre_object_ch
   path "analysis_summary.txt"
-  
+
   """
   set_analysis_parameters.R $sceptre_object_fp \
   $response_odm_fp \
@@ -97,7 +97,7 @@ process set_analysis_parameters {
 
 // PROCESS B: output gRNA info
 process output_grna_info {
-  time "5m"
+  time "10m"
   memory "4 GB"
 
   input:
@@ -120,7 +120,7 @@ process output_grna_info {
 
 // PROCESS C: assign gRNAs
 process assign_grnas {
-  time {1.m * params.grna_pod_size}
+  time {5.s * params.grna_pod_size}
   memory "4 GB"
 
   when:
@@ -157,7 +157,7 @@ process assign_grnas {
 
 // PROCESS D: process gRNA assignments
 process process_grna_assignments {
-  time "5m"
+  time "10m"
   memory "4 GB"
   publishDir "${params.output_directory}", mode: 'copy', overwrite: true, pattern: "*.png"
   publishDir "${params.output_directory}", mode: 'copy', overwrite: true, pattern: "*.txt"
@@ -189,7 +189,7 @@ process process_grna_assignments {
 
 // PROCESS E: quality control
 process run_qc {
-  time "30m"
+  time "1h"
   memory "4 GB"
   publishDir "${params.output_directory}", mode: 'copy', overwrite: true, pattern: "*.png"
   publishDir "${params.output_directory}", mode: 'copy', overwrite: true, pattern: "*.txt"
@@ -262,11 +262,11 @@ workflow {
       Channel.fromPath(params.discovery_pairs, checkIfExists : true),
       Channel.fromPath(params.positive_control_pairs, checkIfExists : true)
     )
-    
+
     // 1. process output from above process
     sceptre_object_ch = set_analysis_parameters.out.sceptre_object_ch
   }
-  
+
   if (step_rank >= 1) {
   // 2. obtain the gRNA info
   output_grna_info(
@@ -290,11 +290,11 @@ workflow {
     low_moi_ch,
     Channel.fromPath(params.grna_assignment_formula).first()
   )
-  
+
   // 5. process output from above process
   grna_assignments_ch = assign_grnas.out.grna_assignments_ch.ifEmpty(params.sceptre_object_fp).collect()
   grna_assignment_formula_ch = assign_grnas.out.grna_assignment_formula_ch.first()
- 
+
   // 6. process the gRNA assignments
   process_grna_assignments(
     Channel.fromPath(params.sceptre_object_fp).first(),
@@ -304,7 +304,7 @@ workflow {
     grna_assignments_ch
   )
   }
-  
+
   if (step_rank >= 2) {
   // 7. run quality control
   run_qc(

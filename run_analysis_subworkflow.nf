@@ -1,11 +1,11 @@
 // PROCESS: run association analysis
 process run_association_analysis {
-  time {1.m * params.pair_pod_size}
+  time {1.s * params.pair_pod_size}
   memory "4 GB"
-  
+
   when:
   run_analysis == "true"
-  
+
   input:
   path "sceptre_object_fp"
   path "response_odm_fp"
@@ -13,11 +13,11 @@ process run_association_analysis {
   val "pair_pod"
   val "run_analysis"
   val "analysis_type"
-  
+
   output:
   path "result.rds", emit: results_ch
   path "precomputations.rds", emit: precomputations_ch
-  
+
   """
   run_association_analysis.R $sceptre_object_fp \
   $response_odm_fp \
@@ -29,28 +29,28 @@ process run_association_analysis {
 
 // PROCESS: process association analysis results
 process process_association_analysis_results {
-  time "5m"
+  time "10m"
   memory "4 GB"
   publishDir "${params.output_directory}", mode: 'copy', overwrite: true, pattern: "*.png"
   publishDir "${params.output_directory}", mode: 'copy', overwrite: true, pattern: "*.txt"
   publishDir "${params.output_directory}", mode: 'copy', overwrite: true, pattern: "results_*"
-  
+
   when:
   run_analysis == "true"
-  
+
   input:
   path "sceptre_object_fp"
   path "results"
   path "precomputations"
   val "run_analysis"
   val "analysis_type"
-  
+
   output:
   path "sceptre_object.rds", emit: sceptre_object_ch
   path "results_*"
   path "*.png"
   path "analysis_summary.txt"
-  
+
   """
   process_association_analysis_results.R $sceptre_object_fp \
   $analysis_type \
@@ -63,14 +63,14 @@ process process_association_analysis_results {
 process dummy_process {
   when:
   run_analysis == "false"
-  
+
   input:
   path "sceptre_object_fp"
   val "run_analysis"
-  
+
   output:
   path "sceptre_object_fp", emit: sceptre_object_ch
-  
+
   """
   """
 }
@@ -106,7 +106,7 @@ workflow run_analysis_subworkflow {
     run_analysis_ch
   )
   output_sceptre_ch = process_association_analysis_results.out.sceptre_object_ch.mix(dummy_process.out.sceptre_object_ch)
-  
+
   emit:
   output_sceptre_ch
 }
