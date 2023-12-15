@@ -1,11 +1,6 @@
 // use DSL 2
 nextflow.enable.dsl = 2
 
-// include subworkflow
-include { run_analysis_subworkflow as run_analysis_subworkflow_calibration_check } from './run_analysis_subworkflow.nf'
-include { run_analysis_subworkflow as run_analysis_subworkflow_power_check } from './run_analysis_subworkflow.nf'
-include { run_analysis_subworkflow as run_analysis_subworkflow_discovery_analysis } from './run_analysis_subworkflow.nf'
-
 /*************************
 * DEFAULT PARAMETER VALUES
 *************************/
@@ -45,6 +40,13 @@ params.calibration_group_size = "default"
 // parallelization
 params.grna_pod_size = 200
 params.pair_pod_size = 5000
+
+/*********************
+* INCLUDE SUBWORKFLOW
+*********************/
+include { run_analysis_subworkflow as run_analysis_subworkflow_calibration_check } from './run_analysis_subworkflow.nf'
+include { run_analysis_subworkflow as run_analysis_subworkflow_power_check } from './run_analysis_subworkflow.nf'
+include { run_analysis_subworkflow as run_analysis_subworkflow_discovery_analysis } from './run_analysis_subworkflow.nf'
 
 /*****************************
 * GROOVY PROCESSING OF INPUTS
