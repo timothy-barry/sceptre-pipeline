@@ -29,8 +29,8 @@ process run_association_analysis {
 
 // PROCESS: process association analysis results
 process process_association_analysis_results {
-  time "10m"
-  memory "4 GB"
+  time "20m"
+  memory "8 GB"
   publishDir "${params.output_directory}", mode: 'copy', overwrite: true, pattern: "*.png"
   publishDir "${params.output_directory}", mode: 'copy', overwrite: true, pattern: "*.txt"
   publishDir "${params.output_directory}", mode: 'copy', overwrite: true, pattern: "results_*"
