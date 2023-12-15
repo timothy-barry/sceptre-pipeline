@@ -64,7 +64,7 @@ process set_analysis_parameters {
   publishDir "${params.output_directory}", mode: 'copy', overwrite: true, pattern: "*.txt"
 
   time "10m"
-  memory "4 GB"
+  memory "8 GB"
 
   input:
   path "sceptre_object_fp"
