@@ -39,7 +39,7 @@ params.n_calibration_pairs = "default"
 params.calibration_group_size = "default"
 // parallelization
 params.grna_pod_size = 200
-params.pair_pod_size = 5000
+params.pair_pod_size = 10000
 
 /*********************
 * INCLUDE SUBWORKFLOW
@@ -57,9 +57,6 @@ def step_rank = pipeline_steps.indexOf(params.pipeline_stop)
 if (step_rank == -1) {
     throw new Exception("'$params.pipeline_stop' is not a step of the sceptre pipeline. The parameter 'pipeline_stop' should be set to one of 'assign_grnas', 'run_qc', 'run_calibration_check', 'run_power_check', or 'run_discovery_analysis'.")
 }
-
-println "gRNA pod size: ${params.grna_pod_size}"
-println "pair pod size: ${params.pair_pod_size}"
 
 /**********
 * PROCESSES

@@ -28,9 +28,8 @@ nextflow run ../../main.nf \
  --response_odm_fp $response_odm_fp \
  --grna_odm_fp $grna_odm_fp \
  --output_directory $output_directory \
- --grna_assignment_method "thresholding"
+ --grna_assignment_method "thresholding" \
  --n_nonzero_trt_thresh "9" \
  --n_nonzero_cntrl_thresh "9" \
- --pair_pod_size "30" \
  --pipeline_stop "set_analysis_parameters"
  
