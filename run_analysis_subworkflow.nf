@@ -1,7 +1,7 @@
 // PROCESS: run association analysis
 process run_association_analysis {
   time {1.s * params.pair_pod_size}
-  memory "4 GB"
+  memory params.association_analysis_mem
 
   when:
   run_analysis == "true"
@@ -30,7 +30,7 @@ process run_association_analysis {
 // PROCESS: process association analysis results
 process process_association_analysis_results {
   time "20m"
-  memory "8 GB"
+  memory params.connecting_process_mem
   publishDir "${params.output_directory}", mode: 'copy', overwrite: true, pattern: "*.png"
   publishDir "${params.output_directory}", mode: 'copy', overwrite: true, pattern: "*.txt"
   publishDir "${params.output_directory}", mode: 'copy', overwrite: true, pattern: "results_*"

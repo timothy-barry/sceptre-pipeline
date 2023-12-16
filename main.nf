@@ -37,9 +37,12 @@ params.p_mito_threshold = "default"
 // calibration check
 params.n_calibration_pairs = "default"
 params.calibration_group_size = "default"
-// parallelization
+// computation: parallelization, memory, and time
 params.grna_pod_size = 200
 params.pair_pod_size = 10000
+params.association_analysis_mem = "4 GB"
+params.grna_assignment_mem = "4 GB"
+params.connecting_process_mem = "8 GB"
 
 /*********************
 * INCLUDE SUBWORKFLOW
@@ -66,7 +69,7 @@ process set_analysis_parameters {
   publishDir "${params.output_directory}", mode: 'copy', overwrite: true, pattern: "*.txt"
 
   time "10m"
-  memory "8 GB"
+  memory params.connecting_process_mem
 
   input:
   path "sceptre_object_fp"
@@ -100,7 +103,7 @@ process set_analysis_parameters {
 // PROCESS B: output gRNA info
 process output_grna_info {
   time "10m"
-  memory "4 GB"
+  memory params.connecting_process_mem
 
   input:
   path "sceptre_object_fp"
@@ -123,7 +126,7 @@ process output_grna_info {
 // PROCESS C: assign gRNAs
 process assign_grnas {
   time {5.s * params.grna_pod_size}
-  memory "4 GB"
+  memory params.grna_assignment_mem
 
   when:
   !(params.grna_assignment_method == "maximum" || (low_moi == "true" && params.grna_assignment_method == "default"))
@@ -160,7 +163,7 @@ process assign_grnas {
 // PROCESS D: process gRNA assignments
 process process_grna_assignments {
   time "10m"
-  memory "4 GB"
+  memory params.connecting_process_mem
   publishDir "${params.output_directory}", mode: 'copy', overwrite: true, pattern: "*.png"
   publishDir "${params.output_directory}", mode: 'copy', overwrite: true, pattern: "*.txt"
   debug true
@@ -192,7 +195,7 @@ process process_grna_assignments {
 // PROCESS E: quality control
 process run_qc {
   time "1h"
-  memory "4 GB"
+  memory params.connecting_process_mem
   publishDir "${params.output_directory}", mode: 'copy', overwrite: true, pattern: "*.png"
   publishDir "${params.output_directory}", mode: 'copy', overwrite: true, pattern: "*.txt"
 
@@ -224,7 +227,7 @@ process run_qc {
 // PROCESS F: prepare association analysis
 process prepare_association_analyses {
   time "1h"
-  memory "4 GB"
+  memory params.connecting_process_mem
 
   input:
   path "sceptre_object_fp"

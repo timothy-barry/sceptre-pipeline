@@ -33,6 +33,6 @@ nextflow run ../../main.nf \
  --grna_assignment_method "thresholding" \
  --n_nonzero_trt_thresh "9" \
  --n_nonzero_cntrl_thresh "9" \
- --pipeline_stop "run_calibration_check" \
+ --pipeline_stop "assign_grnas" \
  -resume
  
