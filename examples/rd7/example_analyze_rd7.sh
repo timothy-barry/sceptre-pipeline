@@ -18,7 +18,8 @@ grna_odm_fp=$rd7_data_dir"grna.odm"
 ###################
 # OUTPUT DIRECTORY:
 ###################
-output_directory="/Users/timbarry/rd7_pipeline_outputs"
+sceptre3_dir=$LOCAL_SCEPTRE3_DATA_DIR
+output_directory=$sceptre3_dir"/replogle-2022/rd7_pipeline_outputs"
 
 #################
 # Invoke pipeline
@@ -28,8 +29,10 @@ nextflow run ../../main.nf \
  --response_odm_fp $response_odm_fp \
  --grna_odm_fp $grna_odm_fp \
  --output_directory $output_directory \
+ --fit_parametric_curve "FALSE" \
  --grna_assignment_method "thresholding" \
  --n_nonzero_trt_thresh "9" \
  --n_nonzero_cntrl_thresh "9" \
- --pipeline_stop "set_analysis_parameters"
+ --pipeline_stop "run_calibration_check" \
+ -resume
  

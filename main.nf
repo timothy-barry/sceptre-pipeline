@@ -264,15 +264,12 @@ workflow {
       Channel.fromPath(params.discovery_pairs, checkIfExists : true),
       Channel.fromPath(params.positive_control_pairs, checkIfExists : true)
     )
-
-    // 1. process output from above process
-    sceptre_object_ch = set_analysis_parameters.out.sceptre_object_ch
   }
 
   if (step_rank >= 1) {
   // 2. obtain the gRNA info
   output_grna_info(
-    sceptre_object_ch.first(),
+    set_analysis_parameters.out.sceptre_object_ch.first(),
     Channel.fromPath(params.response_odm_fp, checkIfExists : true),
     Channel.fromPath(params.grna_odm_fp, checkIfExists : true)
   )
@@ -284,7 +281,7 @@ workflow {
 
   // 4. assign gRNAs
   assign_grnas(
-    Channel.fromPath(params.sceptre_object_fp).first(),
+    set_analysis_parameters.out.sceptre_object_ch.first(),
     Channel.fromPath(params.response_odm_fp).first(),
     Channel.fromPath(params.grna_odm_fp).first(),
     grna_to_pod_map_ch,
@@ -299,7 +296,7 @@ workflow {
 
   // 6. process the gRNA assignments
   process_grna_assignments(
-    Channel.fromPath(params.sceptre_object_fp).first(),
+    set_analysis_parameters.out.sceptre_object_ch.first(),
     Channel.fromPath(params.response_odm_fp).first(),
     Channel.fromPath(params.grna_odm_fp).first(),
     grna_assignment_formula_ch,
