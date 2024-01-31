@@ -1,5 +1,6 @@
 #!/usr/bin/env Rscript
 args <- commandArgs(trailingOnly = TRUE)
+set.seed(4)
 
 # obtain the command line arguments
 sceptre_object_fp <- args[1]

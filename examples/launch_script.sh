@@ -5,18 +5,18 @@ export NXF_OPTS="-Xms500M -Xmx4G"
 ##########################
 # REQUIRED INPUT ARGUMENTS
 ##########################
-example_dir="/tmp/sceptre_example/"
+data_directory="/tmp/sceptre_example/"
 # sceptre object
-sceptre_object_fp=$example_dir"sceptre_object.rds"
+sceptre_object_fp=$data_directory"sceptre_object.rds"
 # response ODM
-response_odm_fp=$example_dir"gene.odm"
+response_odm_fp=$data_directory"gene.odm"
 # grna ODM
-grna_odm_fp=$example_dir"grna.odm"
+grna_odm_fp=$data_directory"grna.odm"
 
 ###################
 # OUTPUT DIRECTORY:
 ##################
-output_directory=$example_dir"/pipeline_outputs"
+output_directory=$data_directory"/pipeline_outputs"
 
 #################
 # Invoke pipeline
