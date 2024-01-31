@@ -272,7 +272,6 @@ workflow {
     )
   }
   
-  /*
   if (step_rank >= 1) {
   // 2. obtain the gRNA info
   output_grna_info(
@@ -368,5 +367,4 @@ workflow {
     Channel.from("run_discovery_analysis").first()
   )
   }
-  */
 }
