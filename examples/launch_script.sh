@@ -29,5 +29,4 @@ nextflow run timothy-barry/sceptre-pipeline -r main \
  --grna_assignment_method "mixture" \
  --pair_pod_size "200" \
  --grna_pod_size "10" \
- --trial "true"
- 
+ --trial
