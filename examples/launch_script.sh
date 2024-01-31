@@ -5,7 +5,7 @@ export NXF_OPTS="-Xms500M -Xmx4G"
 ##########################
 # REQUIRED INPUT ARGUMENTS
 ##########################
-data_directory="/tmp/sceptre_example/"
+data_directory=$HOME"/sceptre_example/"
 # sceptre object
 sceptre_object_fp=$data_directory"sceptre_object.rds"
 # response ODM
