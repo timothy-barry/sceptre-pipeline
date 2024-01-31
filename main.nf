@@ -4,8 +4,9 @@ nextflow.enable.dsl = 2
 /*************************
 * DEFAULT PARAMETER VALUES
 *************************/
-// pipeline stopping step
+// pipeline meta params
 params.pipeline_stop = "run_discovery_analysis"
+params.trial = "false"
 // set analysis parameters
 params.side = "default"
 params.grna_integration_strategy = "default"
@@ -66,8 +67,9 @@ if (step_rank == -1) {
 **********/
 // PROCESS A: set analysis parameters
 process set_analysis_parameters {
+  debug true
   publishDir "${params.output_directory}", mode: 'copy', overwrite: true, pattern: "*.txt"
-
+  
   time "10m"
   memory params.connecting_process_mem
 
@@ -78,11 +80,11 @@ process set_analysis_parameters {
   path "formula_object"
   path "discovery_pairs"
   path "positive_control_pairs"
-
+  
   output:
   path "sceptre_object.rds", emit: sceptre_object_ch
   path "analysis_summary.txt"
-
+  
   """
   set_analysis_parameters.R $sceptre_object_fp \
   $response_odm_fp \
@@ -96,7 +98,8 @@ process set_analysis_parameters {
   ${params.multiple_testing_alpha} \
   $formula_object \
   $discovery_pairs \
-  $positive_control_pairs
+  $positive_control_pairs \
+  ${params.trial}
   """
 }
 
@@ -268,7 +271,8 @@ workflow {
       Channel.fromPath(params.positive_control_pairs, checkIfExists : true)
     )
   }
-
+  
+  /*
   if (step_rank >= 1) {
   // 2. obtain the gRNA info
   output_grna_info(
@@ -364,4 +368,5 @@ workflow {
     Channel.from("run_discovery_analysis").first()
   )
   }
+  */
 }

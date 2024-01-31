@@ -15,6 +15,7 @@ multiple_testing_alpha <- args[10]
 formula_object_fp <- args[11]
 discovery_pairs <- args[12]
 positive_control_pairs <- args[13]
+trial <- as.logical(args[14])
 
 # load the sceptre object
 sceptre_object <- sceptre::read_ondisc_backed_sceptre_object(sceptre_object_fp = sceptre_object_fp,
@@ -71,11 +72,19 @@ discovery_pairs <- readRDS(discovery_pairs)
 if (identical(discovery_pairs, NULL)) {
   discovery_pairs <- sceptre_object@discovery_pairs
 }
+if (trial) {
+  n_pairs <- nrow(discovery_pairs)
+  discovery_pairs <- discovery_pairs |> dplyr::sample_n(min(100, n_pairs))
+}
 
 # positive_control_pairs
 positive_control_pairs <- readRDS(positive_control_pairs)
 if (identical(positive_control_pairs, NULL)) {
   positive_control_pairs <- sceptre_object@positive_control_pairs
+}
+if (trial) {
+  n_pairs <- nrow(positive_control_pairs)
+  positive_control_pairs <- positive_control_pairs |> dplyr::sample_n(min(100, n_pairs))
 }
 
 # set the analysis parameters

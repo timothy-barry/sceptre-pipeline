@@ -1,4 +1,2 @@
-examples/gasp/work
-examples/rd7/work
-examples/rd7/.nextflow*
-example/gasp/.nextflow*
+examples/.nextflow*
+.dev_examples/.nextflow*
