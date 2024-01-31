@@ -62,6 +62,10 @@ if (step_rank == -1) {
     throw new Exception("'$params.pipeline_stop' is not a step of the sceptre pipeline. The parameter 'pipeline_stop' should be set to one of 'assign_grnas', 'run_qc', 'run_calibration_check', 'run_power_check', or 'run_discovery_analysis'.")
 }
 
+if ("$params.trial" == "true") {
+  println "Running pipeline in trial mode."
+}
+
 /**********
 * PROCESSES
 **********/
