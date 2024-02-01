@@ -1,5 +1,6 @@
 #!/bin/bash
 # Limit NF driver to 4 GB memory
+nextflow pull timothy-barry/sceptre-pipeline
 export NXF_OPTS="-Xms500M -Xmx4G"
 
 ##########################
