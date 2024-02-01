@@ -173,7 +173,6 @@ process process_grna_assignments {
   memory params.connecting_process_mem
   publishDir "${params.output_directory}", mode: 'copy', overwrite: true, pattern: "*.png"
   publishDir "${params.output_directory}", mode: 'copy', overwrite: true, pattern: "*.txt"
-  debug true
 
   input:
   path "sceptre_object_fp"

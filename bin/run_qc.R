@@ -36,7 +36,7 @@ for (optional_arg_name in optional_args_names) {
 sceptre_object <- do.call(what = sceptre::run_qc, args = args_to_pass)
 
 # write outputs to disk
-sceptre:::write_ondisc_backed_sceptre_object(sceptre_object = sceptre_object, "sceptre_object.rds")
+saveRDS(sceptre_object, "sceptre_object.rds")
 p1 <- sceptre::plot_covariates(sceptre_object)
 p2 <- sceptre::plot_run_qc(sceptre_object)
 ggplot2::ggsave(filename = "plot_covariates.png", plot = p1, device = "png", scale = 1.1, width = 5, height = 4, dpi = 330)

@@ -36,7 +36,7 @@ if (method == "maximum") {
 }
 
 # write outputs to disk
-sceptre:::write_ondisc_backed_sceptre_object(sceptre_object = sceptre_object, "sceptre_object.rds")
+saveRDS(sceptre_object, "sceptre_object.rds")
 p1 <- sceptre::plot_grna_count_distributions(sceptre_object)
 p2 <- sceptre::plot_assign_grnas(sceptre_object)
 ggplot2::ggsave(filename = "plot_grna_count_distributions.png", plot = p1, device = "png", scale = 1.1, width = 5, height = 4, dpi = 330)
