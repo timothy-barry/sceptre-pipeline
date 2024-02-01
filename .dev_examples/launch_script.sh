@@ -1,23 +1,22 @@
 #!/bin/bash
-
 # Limit NF driver to 4 GB memory
 export NXF_OPTS="-Xms500M -Xmx4G"
 
 ##########################
 # REQUIRED INPUT ARGUMENTS
 ##########################
-example_dir="/tmp/sceptre_example/"
+data_directory=$HOME"/sceptre_data/"
 # sceptre object
-sceptre_object_fp=$example_dir"sceptre_object.rds"
+sceptre_object_fp=$data_directory"sceptre_object.rds"
 # response ODM
-response_odm_fp=$example_dir"gene.odm"
+response_odm_fp=$data_directory"gene.odm"
 # grna ODM
-grna_odm_fp=$example_dir"grna.odm"
+grna_odm_fp=$data_directory"grna.odm"
 
-###################
-# OUTPUT DIRECTORY:
 ##################
-output_directory=$example_dir"/pipeline_outputs"
+# OUTPUT DIRECTORY
+##################
+output_directory=$HOME"/sceptre_outputs"
 
 #################
 # Invoke pipeline
@@ -28,7 +27,6 @@ nextflow run ../main.nf \
  --grna_odm_fp $grna_odm_fp \
  --output_directory $output_directory \
  --grna_assignment_method "mixture" \
- --pair_pod_size "30" \
+ --pair_pod_size "200" \
  --grna_pod_size "10" \
- --pipeline_stop "run_discovery_analysis" \
- --trial "true"
+ --trial

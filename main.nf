@@ -313,7 +313,7 @@ workflow {
     grna_assignments_ch
   )
   }
-
+  
   if (step_rank >= 2) {
   // 7. run quality control
   run_qc(
