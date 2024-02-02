@@ -100,6 +100,8 @@ workflow run_analysis_subworkflow {
   )
   process_association_analysis_results(
     sceptre_object_ch,
+    response_odm_fp_ch,
+    grna_odm_fp_ch,
     run_association_analysis.out.results_ch.collect(),
     run_association_analysis.out.precomputations_ch.collect(),
     run_analysis_ch,
