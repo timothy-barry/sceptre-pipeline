@@ -40,6 +40,8 @@ process process_association_analysis_results {
 
   input:
   path "sceptre_object_fp"
+  path "response_odm_fp"
+  path "grna_odm_fp"
   path "results"
   path "precomputations"
   val "run_analysis"
@@ -53,6 +55,8 @@ process process_association_analysis_results {
 
   """
   process_association_analysis_results.R $sceptre_object_fp \
+  $response_odm_fp \
+  $grna_odm_fp \
   $analysis_type \
   results* \
   precomputations*

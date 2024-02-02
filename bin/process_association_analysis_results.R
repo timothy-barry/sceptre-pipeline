@@ -3,12 +3,17 @@
 # obtain the command line arguments
 args <- commandArgs(trailingOnly = TRUE)
 sceptre_object_fp <- args[1]
-analysis_type <- args[2]
+response_odm_fp <- args[2]
+grna_odm_fp <- args[3]
+analysis_type <- args[4]
 result_fps <- grep(x = args, pattern = "results*", value = TRUE)
 precomp_fps <- grep(x = args, pattern = "precomputations*", value = TRUE)
 
 # load the sceptre object
-sceptre_object <- readRDS(sceptre_object_fp)
+# load the sceptre object
+sceptre_object <- sceptre::read_ondisc_backed_sceptre_object(sceptre_object_fp = sceptre_object_fp,
+                                                             response_odm_file_fp = response_odm_fp,
+                                                             grna_odm_file_fp = grna_odm_fp)
 sceptre_object@functs_called[[analysis_type]] <- TRUE
 sceptre_object@last_function_called <- analysis_type
 
