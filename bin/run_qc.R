@@ -18,19 +18,24 @@ sceptre_object <- sceptre::read_ondisc_backed_sceptre_object(sceptre_object_fp =
                                                              response_odm_file_fp = response_odm_fp,
                                                              grna_odm_file_fp = grna_odm_fp)
 
-# process the default arguments
-response_n_umis_range <- c(response_n_umis_range_lower, response_n_umis_range_upper)
-response_n_nonzero_range <- c(response_n_nonzero_range_lower, response_n_nonzero_range_upper)
+# process n_nonzero_trt_thresh, n_nonzero_cntrl_thresh, and p_mito_threshold
 args_to_pass <- list(sceptre_object)
-optional_args_names <- c("n_nonzero_trt_thresh", "n_nonzero_cntrl_thresh",
-                         "response_n_umis_range", "response_n_nonzero_range",
-                         "p_mito_threshold")
+optional_args_names <- c("n_nonzero_trt_thresh", "n_nonzero_cntrl_thresh", "p_mito_threshold")
 for (optional_arg_name in optional_args_names) {
   optional_arg_value <- get(x = optional_arg_name)
-  if (!identical(optional_arg_value, rep("default", length(optional_arg_value)))) {
+  if (!identical(optional_arg_value, "default")) {
     args_to_pass[[optional_arg_name]] <- as.numeric(optional_arg_value)
   }
 }
+# process response_n_umis_range and response_n_nonzero_range
+response_n_umis_range <- c(0.01, 0.99)
+response_n_nonzero_range <- c(0.01, 0.99)
+if (!identical(response_n_umis_range_lower, "default")) response_n_umis_range[1] <- as.numeric(response_n_umis_range_lower)
+if (!identical(response_n_umis_range_upper, "default")) response_n_umis_range[2] <- as.numeric(response_n_umis_range_upper)
+if (!identical(response_n_nonzero_range_lower, "default")) response_n_nonzero_range[1] <- as.numeric(response_n_nonzero_range_lower)
+if (!identical(response_n_nonzero_range_upper, "default")) response_n_nonzero_range[2] <- as.numeric(response_n_nonzero_range_upper)
+args_to_pass[["response_n_umis_range"]] <- response_n_umis_range
+args_to_pass[["response_n_nonzero_range"]] <- response_n_nonzero_range
 
 # call the qc function
 sceptre_object <- do.call(what = sceptre::run_qc, args = args_to_pass)

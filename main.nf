@@ -31,7 +31,7 @@ params.grna_assignment_formula = "${baseDir}/resources/placeholder_file.rds"
 params.n_nonzero_trt_thresh = "default"
 params.n_nonzero_cntrl_thresh = "default"
 params.response_n_umis_range_lower = "default"
-params.response_n_umis_range_uppper = "default"
+params.response_n_umis_range_upper = "default"
 params.response_n_nonzero_range_lower = "default"
 params.response_n_nonzero_range_upper = "default"
 params.p_mito_threshold = "default"
@@ -215,7 +215,7 @@ process run_qc {
   path "plot_run_qc.png"
   path "analysis_summary.txt"
   path "sceptre_object.rds", emit: sceptre_object_ch
-
+  
   """
   run_qc.R $sceptre_object_fp \
   $response_odm_fp \
@@ -223,7 +223,7 @@ process run_qc {
   ${params.n_nonzero_trt_thresh} \
   ${params.n_nonzero_cntrl_thresh} \
   ${params.response_n_umis_range_lower} \
-  ${params.response_n_umis_range_uppper} \
+  ${params.response_n_umis_range_upper} \
   ${params.response_n_nonzero_range_lower} \
   ${params.response_n_nonzero_range_upper} \
   ${params.p_mito_threshold}
