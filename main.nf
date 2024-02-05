@@ -74,7 +74,7 @@ process set_analysis_parameters {
   debug true
   publishDir "${params.output_directory}", mode: 'copy', overwrite: true, pattern: "*.txt"
   
-  time "10m"
+  time "15m"
   memory params.connecting_process_mem
 
   input:
@@ -108,8 +108,8 @@ process set_analysis_parameters {
 }
 
 // PROCESS B: output gRNA info
-process output_grna_info {
-  time "10m"
+process prepare_grna_assignments {
+  time "15m"
   memory params.connecting_process_mem
 
   input:
@@ -169,7 +169,7 @@ process assign_grnas {
 
 // PROCESS D: process gRNA assignments
 process process_grna_assignments {
-  time "10m"
+  time "15m"
   memory params.connecting_process_mem
   publishDir "${params.output_directory}", mode: 'copy', overwrite: true, pattern: "*.png"
   publishDir "${params.output_directory}", mode: 'copy', overwrite: true, pattern: "*.txt"
@@ -232,7 +232,7 @@ process run_qc {
 
 // PROCESS F: prepare association analysis
 process prepare_association_analyses {
-  time "1h"
+  time "15m"
   memory params.connecting_process_mem
 
   input:
@@ -277,16 +277,16 @@ workflow {
   
   if (step_rank >= 1) {
   // 2. obtain the gRNA info
-  output_grna_info(
+  prepare_grna_assignments(
     set_analysis_parameters.out.sceptre_object_ch.first(),
     Channel.fromPath(params.response_odm_fp, checkIfExists : true),
     Channel.fromPath(params.grna_odm_fp, checkIfExists : true)
   )
 
   // 3. process output from above process
-  grna_to_pod_map_ch = output_grna_info.out.grna_to_pod_map_ch.first()
-  grna_pods_ch = output_grna_info.out.grna_pods_ch.splitText().map{it.trim()}
-  low_moi_ch = output_grna_info.out.low_moi_ch.splitText().map{it.trim()}.first()
+  grna_to_pod_map_ch = prepare_grna_assignments.out.grna_to_pod_map_ch.first()
+  grna_pods_ch = prepare_grna_assignments.out.grna_pods_ch.splitText().map{it.trim()}
+  low_moi_ch = prepare_grna_assignments.out.low_moi_ch.splitText().map{it.trim()}.first()
 
   // 4. assign gRNAs
   assign_grnas(
