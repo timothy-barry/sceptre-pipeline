@@ -38,13 +38,25 @@ params.p_mito_threshold = "default"
 // calibration check
 params.n_calibration_pairs = "default"
 params.calibration_group_size = "default"
-// computation: parallelization, memory, and time
+// computation: parallelization
 params.grna_pod_size = 200
 params.pair_pod_size = 10000
-params.association_analysis_mem = "4 GB"
-params.grna_assignment_mem = "4 GB"
-params.connecting_process_mem = "8 GB"
+// computation: time
+params.set_analysis_parameters_time = "15m" // set analysis parameters
+params.prepare_grna_assignments_time = "15m" // prepare grna assignments
+params.assign_grnas_per_grna_time = "5s" // assign grnas
+params.process_grna_assignments_time = "15m" // process grna assignments
+params.run_qc_time = "60m" // run qc
+params.prepare_association_analyses_time = "15m" // prepare association analyses
+params.run_association_analysis_per_pair_time = "1s" // run association analysis
+params.process_association_analysis_results = "15m" // process association analysis results
+// computation: memory
 
+
+// computation: memory
+// params.association_analysis_mem = "4 GB"
+// params.grna_assignment_mem = "4 GB"
+// params.connecting_process_mem = "8 GB"
 /*********************
 * INCLUDE SUBWORKFLOW
 *********************/
@@ -61,7 +73,6 @@ def step_rank = pipeline_steps.indexOf(params.pipeline_stop)
 if (step_rank == -1) {
     throw new Exception("'$params.pipeline_stop' is not a step of the sceptre pipeline. The parameter 'pipeline_stop' should be set to one of 'assign_grnas', 'run_qc', 'run_calibration_check', 'run_power_check', or 'run_discovery_analysis'.")
 }
-
 if ("$params.trial" == "true") {
   println "Running pipeline in trial mode."
 }
@@ -74,8 +85,8 @@ process set_analysis_parameters {
   debug true
   publishDir "${params.output_directory}", mode: 'copy', overwrite: true, pattern: "*.txt"
   
-  time "15m"
-  memory params.connecting_process_mem
+  time params.set_analysis_parameters_time
+  memory "4GB"
 
   input:
   path "sceptre_object_fp"
@@ -109,8 +120,8 @@ process set_analysis_parameters {
 
 // PROCESS B: output gRNA info
 process prepare_grna_assignments {
-  time "15m"
-  memory params.connecting_process_mem
+  time params.prepare_grna_assignments_time
+  memory "4GB"
 
   input:
   path "sceptre_object_fp"
@@ -132,9 +143,9 @@ process prepare_grna_assignments {
 
 // PROCESS C: assign gRNAs
 process assign_grnas {
-  time {5.s * params.grna_pod_size}
-  memory params.grna_assignment_mem
-
+  time {params.assign_grnas_per_grna_time * params.grna_pod_size}
+  memory "4GB"
+  
   when:
   !(params.grna_assignment_method == "maximum" || (low_moi == "true" && params.grna_assignment_method == "default"))
 
@@ -169,8 +180,8 @@ process assign_grnas {
 
 // PROCESS D: process gRNA assignments
 process process_grna_assignments {
-  time "15m"
-  memory params.connecting_process_mem
+  time params.process_grna_assignments_time
+  memory "4GB"
   publishDir "${params.output_directory}", mode: 'copy', overwrite: true, pattern: "*.png"
   publishDir "${params.output_directory}", mode: 'copy', overwrite: true, pattern: "*.txt"
 
@@ -200,8 +211,8 @@ process process_grna_assignments {
 
 // PROCESS E: quality control
 process run_qc {
-  time "1h"
-  memory params.connecting_process_mem
+  time params.run_qc_time
+  memory "4GB"
   publishDir "${params.output_directory}", mode: 'copy', overwrite: true, pattern: "*.png"
   publishDir "${params.output_directory}", mode: 'copy', overwrite: true, pattern: "*.txt"
 
@@ -232,8 +243,8 @@ process run_qc {
 
 // PROCESS F: prepare association analysis
 process prepare_association_analyses {
-  time "15m"
-  memory params.connecting_process_mem
+  time params.prepare_association_analyses_time
+  memory "4GB"
 
   input:
   path "sceptre_object_fp"

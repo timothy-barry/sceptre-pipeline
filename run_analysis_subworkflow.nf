@@ -1,7 +1,7 @@
 // PROCESS: run association analysis
 process run_association_analysis {
-  time {1.s * params.pair_pod_size}
-  memory params.association_analysis_mem
+  time {params.run_association_analysis_per_pair_time * params.pair_pod_size}
+  memory "4GB"
 
   when:
   run_analysis == "true"
@@ -29,8 +29,8 @@ process run_association_analysis {
 
 // PROCESS: process association analysis results
 process process_association_analysis_results {
-  time "20m"
-  memory params.connecting_process_mem
+  time params.process_association_analysis_results
+  memory "4GB"
   publishDir "${params.output_directory}", mode: 'copy', overwrite: true, pattern: "*.png"
   publishDir "${params.output_directory}", mode: 'copy', overwrite: true, pattern: "*.txt"
   publishDir "${params.output_directory}", mode: 'copy', overwrite: true, pattern: "results_*"
@@ -65,6 +65,9 @@ process process_association_analysis_results {
 
 // PROCESS: dummy channel
 process dummy_process {
+  time "1m"
+  memory "1GB"
+  
   when:
   run_analysis == "false"
 
