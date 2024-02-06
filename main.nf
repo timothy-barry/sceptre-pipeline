@@ -4,10 +4,10 @@ nextflow.enable.dsl = 2
 /*************************
 * DEFAULT PARAMETER VALUES
 *************************/
-// pipeline meta params
+// 1. pipeline meta params
 params.pipeline_stop = "run_discovery_analysis"
 params.trial = "false"
-// set analysis parameters
+// 2. set analysis parameters
 params.side = "default"
 params.grna_integration_strategy = "default"
 params.fit_parametric_curve = "default"
@@ -18,7 +18,7 @@ params.multiple_testing_alpha = "default"
 params.formula_object = "${baseDir}/resources/placeholder_file.rds"
 params.discovery_pairs = "${baseDir}/resources/placeholder_file.rds"
 params.positive_control_pairs = "${baseDir}/resources/placeholder_file.rds"
-// gRNA assignment
+// 3. gRNA assignment
 params.grna_assignment_method = "default"
 params.threshold = "default"
 params.umi_fraction_threshold = "default"
@@ -27,7 +27,7 @@ params.n_nonzero_cells_cutoff = "default"
 params.backup_threshold = "default"
 params.probability_threshold = "default"
 params.grna_assignment_formula = "${baseDir}/resources/placeholder_file.rds"
-// QC
+// 4. QC
 params.n_nonzero_trt_thresh = "default"
 params.n_nonzero_cntrl_thresh = "default"
 params.response_n_umis_range_lower = "default"
@@ -35,28 +35,31 @@ params.response_n_umis_range_upper = "default"
 params.response_n_nonzero_range_lower = "default"
 params.response_n_nonzero_range_upper = "default"
 params.p_mito_threshold = "default"
-// calibration check
+// 5. calibration check
 params.n_calibration_pairs = "default"
 params.calibration_group_size = "default"
-// computation: parallelization
+// 6. computation: parallelization
 params.grna_pod_size = 200
 params.pair_pod_size = 10000
-// computation: time
+// 7. computation: time
 params.set_analysis_parameters_time = "15m" // set analysis parameters
-params.prepare_grna_assignments_time = "15m" // prepare grna assignments
-params.assign_grnas_per_grna_time = "5s" // assign grnas
-params.process_grna_assignments_time = "15m" // process grna assignments
+params.prepare_assign_grnas_time = "15m" // prepare grna assignments
+params.assign_grnas_time_per_grna = "5s" // assign grnas
+params.process_assign_grnas_time = "15m" // process grna assignments
 params.run_qc_time = "60m" // run qc
-params.prepare_association_analyses_time = "15m" // prepare association analyses
-params.run_association_analysis_per_pair_time = "1s" // run association analysis
-params.process_association_analysis_results = "15m" // process association analysis results
-// computation: memory
+params.prepare_association_analysis_time = "15m" // prepare association analyses
+params.run_association_analysis_time_per_pair = "1s" // run association analysis
+params.process_association_analysis_time = "15m" // process association analysis
+// 8. computation: memory
+params.set_analysis_parameters_memory = "4GB" // set analysis parameters
+params.prepare_assign_grnas_memory = "4GB" // prepare grna assignments
+params.assign_grnas_memory = "4GB" // assign grnas
+params.process_assign_grnas_memory = "4GB"  // process grna assignments
+params.run_qc_memory = "4GB" // run qc
+params.prepare_association_analysis_memory = "4GB" // prepare association analyses
+params.run_association_analysis_memory = "4GB" // run association analysis
+params.process_association_analysis_memory = "4GB" // process association analysis
 
-
-// computation: memory
-// params.association_analysis_mem = "4 GB"
-// params.grna_assignment_mem = "4 GB"
-// params.connecting_process_mem = "8 GB"
 /*********************
 * INCLUDE SUBWORKFLOW
 *********************/
@@ -82,11 +85,10 @@ if ("$params.trial" == "true") {
 **********/
 // PROCESS A: set analysis parameters
 process set_analysis_parameters {
-  debug true
   publishDir "${params.output_directory}", mode: 'copy', overwrite: true, pattern: "*.txt"
   
   time params.set_analysis_parameters_time
-  memory "4GB"
+  memory params.set_analysis_parameters_memory
 
   input:
   path "sceptre_object_fp"
@@ -119,9 +121,9 @@ process set_analysis_parameters {
 }
 
 // PROCESS B: output gRNA info
-process prepare_grna_assignments {
-  time params.prepare_grna_assignments_time
-  memory "4GB"
+process prepare_assign_grnas {
+  time params.prepare_assign_grnas_time
+  memory params.prepare_assign_grnas_memory
 
   input:
   path "sceptre_object_fp"
@@ -143,8 +145,8 @@ process prepare_grna_assignments {
 
 // PROCESS C: assign gRNAs
 process assign_grnas {
-  time {params.assign_grnas_per_grna_time * params.grna_pod_size}
-  memory "4GB"
+  time {params.assign_grnas_time_per_grna * params.grna_pod_size}
+  memory params.assign_grnas_memory
   
   when:
   !(params.grna_assignment_method == "maximum" || (low_moi == "true" && params.grna_assignment_method == "default"))
@@ -179,12 +181,13 @@ process assign_grnas {
 }
 
 // PROCESS D: process gRNA assignments
-process process_grna_assignments {
-  time params.process_grna_assignments_time
-  memory "4GB"
+process process_assign_grnas {
   publishDir "${params.output_directory}", mode: 'copy', overwrite: true, pattern: "*.png"
   publishDir "${params.output_directory}", mode: 'copy', overwrite: true, pattern: "*.txt"
-
+  
+  time params.process_assign_grnas_time
+  memory params.process_assign_grnas_memory
+  
   input:
   path "sceptre_object_fp"
   path "response_odm_fp"
@@ -211,10 +214,11 @@ process process_grna_assignments {
 
 // PROCESS E: quality control
 process run_qc {
-  time params.run_qc_time
-  memory "4GB"
   publishDir "${params.output_directory}", mode: 'copy', overwrite: true, pattern: "*.png"
   publishDir "${params.output_directory}", mode: 'copy', overwrite: true, pattern: "*.txt"
+  
+  time params.run_qc_time
+  memory params.run_qc_memory
 
   input:
   path "sceptre_object_fp"
@@ -242,10 +246,10 @@ process run_qc {
 }
 
 // PROCESS F: prepare association analysis
-process prepare_association_analyses {
-  time params.prepare_association_analyses_time
-  memory "4GB"
-
+process prepare_association_analysis {
+  time params.prepare_association_analysis_time
+  memory params.process_association_analysis_memory
+  
   input:
   path "sceptre_object_fp"
   path "response_odm_fp"
@@ -288,16 +292,16 @@ workflow {
   
   if (step_rank >= 1) {
   // 2. obtain the gRNA info
-  prepare_grna_assignments(
+  prepare_assign_grnas(
     set_analysis_parameters.out.sceptre_object_ch.first(),
     Channel.fromPath(params.response_odm_fp, checkIfExists : true),
     Channel.fromPath(params.grna_odm_fp, checkIfExists : true)
   )
 
   // 3. process output from above process
-  grna_to_pod_map_ch = prepare_grna_assignments.out.grna_to_pod_map_ch.first()
-  grna_pods_ch = prepare_grna_assignments.out.grna_pods_ch.splitText().map{it.trim()}
-  low_moi_ch = prepare_grna_assignments.out.low_moi_ch.splitText().map{it.trim()}.first()
+  grna_to_pod_map_ch = prepare_assign_grnas.out.grna_to_pod_map_ch.first()
+  grna_pods_ch = prepare_assign_grnas.out.grna_pods_ch.splitText().map{it.trim()}
+  low_moi_ch = prepare_assign_grnas.out.low_moi_ch.splitText().map{it.trim()}.first()
 
   // 4. assign gRNAs
   assign_grnas(
@@ -315,7 +319,7 @@ workflow {
   grna_assignment_formula_ch = assign_grnas.out.grna_assignment_formula_ch.first()
 
   // 6. process the gRNA assignments
-  process_grna_assignments(
+  process_assign_grnas(
     set_analysis_parameters.out.sceptre_object_ch.first(),
     Channel.fromPath(params.response_odm_fp).first(),
     Channel.fromPath(params.grna_odm_fp).first(),
@@ -327,7 +331,7 @@ workflow {
   if (step_rank >= 2) {
   // 7. run quality control
   run_qc(
-    process_grna_assignments.out.sceptre_object_ch,
+    process_assign_grnas.out.sceptre_object_ch,
     Channel.fromPath(params.response_odm_fp).first(),
     Channel.fromPath(params.grna_odm_fp).first(),
   )
@@ -335,17 +339,17 @@ workflow {
 
   if (step_rank >= 3) {
   // 8. prepare association analyses
-  prepare_association_analyses(
+  prepare_association_analysis(
     run_qc.out.sceptre_object_ch,
     Channel.fromPath(params.response_odm_fp).first(),
     Channel.fromPath(params.grna_odm_fp).first()
   )
 
   // 9. run calibration check
-  calibration_check_pods_ch = prepare_association_analyses.out.calibration_check_pods_ch.splitText().map{it.trim()}
-  run_calibration_check_ch = prepare_association_analyses.out.run_calibration_check_ch.splitText().map{it.trim()}.first()
+  calibration_check_pods_ch = prepare_association_analysis.out.calibration_check_pods_ch.splitText().map{it.trim()}
+  run_calibration_check_ch = prepare_association_analysis.out.run_calibration_check_ch.splitText().map{it.trim()}.first()
   run_analysis_subworkflow_calibration_check(
-    prepare_association_analyses.out.sceptre_object_ch,
+    prepare_association_analysis.out.sceptre_object_ch,
     Channel.fromPath(params.response_odm_fp).first(),
     Channel.fromPath(params.grna_odm_fp).first(),
     calibration_check_pods_ch,
@@ -356,8 +360,8 @@ workflow {
 
   if (step_rank >= 4) {
   // 10. run power check
-  power_check_pods_ch = prepare_association_analyses.out.power_check_pods_ch.splitText().map{it.trim()}
-  run_power_check_ch = prepare_association_analyses.out.run_power_check_ch.splitText().map{it.trim()}.first()
+  power_check_pods_ch = prepare_association_analysis.out.power_check_pods_ch.splitText().map{it.trim()}
+  run_power_check_ch = prepare_association_analysis.out.run_power_check_ch.splitText().map{it.trim()}.first()
   run_analysis_subworkflow_power_check(
     run_analysis_subworkflow_calibration_check.out.first(),
     Channel.fromPath(params.response_odm_fp).first(),
@@ -370,8 +374,8 @@ workflow {
 
   if (step_rank >= 5) {
   // 11. run discovery analysis
-  discovery_analysis_pods_ch = prepare_association_analyses.out.discovery_analysis_pods_ch.splitText().map{it.trim()}
-  run_discovery_analysis_ch = prepare_association_analyses.out.run_discovery_analysis_ch.splitText().map{it.trim()}.first()
+  discovery_analysis_pods_ch = prepare_association_analysis.out.discovery_analysis_pods_ch.splitText().map{it.trim()}
+  run_discovery_analysis_ch = prepare_association_analysis.out.run_discovery_analysis_ch.splitText().map{it.trim()}.first()
   run_analysis_subworkflow_discovery_analysis(
     run_analysis_subworkflow_power_check.out.first(),
     Channel.fromPath(params.response_odm_fp).first(),
