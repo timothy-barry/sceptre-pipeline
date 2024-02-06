@@ -28,13 +28,13 @@ process run_association_analysis {
 }
 
 // PROCESS: process association analysis results
-process process_association_analysis {
+process combine_association_analysis {
   publishDir "${params.output_directory}", mode: 'copy', overwrite: true, pattern: "*.png"
   publishDir "${params.output_directory}", mode: 'copy', overwrite: true, pattern: "*.txt"
   publishDir "${params.output_directory}", mode: 'copy', overwrite: true, pattern: "results_*"
   
-  time params.process_association_analysis_time
-  memory params.process_association_analysis_memory
+  time params.combine_association_analysis_time
+  memory params.combine_association_analysis_memory
 
   when:
   run_analysis == "true"
@@ -102,7 +102,7 @@ workflow run_analysis_subworkflow {
     run_analysis_ch,
     analysis_type
   )
-  process_association_analysis(
+  combine_association_analysis(
     sceptre_object_ch,
     response_odm_fp_ch,
     grna_odm_fp_ch,
@@ -115,7 +115,7 @@ workflow run_analysis_subworkflow {
     sceptre_object_ch,
     run_analysis_ch
   )
-  output_sceptre_ch = process_association_analysis.out.sceptre_object_ch.mix(dummy_process.out.sceptre_object_ch)
+  output_sceptre_ch = combine_association_analysis.out.sceptre_object_ch.mix(dummy_process.out.sceptre_object_ch)
 
   emit:
   output_sceptre_ch

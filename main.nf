@@ -45,20 +45,20 @@ params.pair_pod_size = 10000
 params.set_analysis_parameters_time = "15m" // set analysis parameters
 params.prepare_assign_grnas_time = "15m" // prepare grna assignments
 params.assign_grnas_time_per_grna = "5s" // assign grnas
-params.process_assign_grnas_time = "15m" // process grna assignments
+params.combine_assign_grnas_time = "15m" // process grna assignments
 params.run_qc_time = "60m" // run qc
 params.prepare_association_analysis_time = "15m" // prepare association analyses
 params.run_association_analysis_time_per_pair = "1s" // run association analysis
-params.process_association_analysis_time = "15m" // process association analysis
+params.combine_association_analysis_time = "15m" // process association analysis
 // 8. computation: memory
 params.set_analysis_parameters_memory = "4GB" // set analysis parameters
 params.prepare_assign_grnas_memory = "4GB" // prepare grna assignments
 params.assign_grnas_memory = "4GB" // assign grnas
-params.process_assign_grnas_memory = "4GB"  // process grna assignments
+params.combine_assign_grnas_memory = "4GB"  // process grna assignments
 params.run_qc_memory = "4GB" // run qc
 params.prepare_association_analysis_memory = "4GB" // prepare association analyses
 params.run_association_analysis_memory = "4GB" // run association analysis
-params.process_association_analysis_memory = "4GB" // process association analysis
+params.combine_association_analysis_memory = "4GB" // process association analysis
 
 /*********************
 * INCLUDE SUBWORKFLOW
@@ -181,12 +181,12 @@ process assign_grnas {
 }
 
 // PROCESS D: process gRNA assignments
-process process_assign_grnas {
+process combine_assign_grnas {
   publishDir "${params.output_directory}", mode: 'copy', overwrite: true, pattern: "*.png"
   publishDir "${params.output_directory}", mode: 'copy', overwrite: true, pattern: "*.txt"
   
-  time params.process_assign_grnas_time
-  memory params.process_assign_grnas_memory
+  time params.combine_assign_grnas_time
+  memory params.combine_assign_grnas_memory
   
   input:
   path "sceptre_object_fp"
@@ -248,7 +248,7 @@ process run_qc {
 // PROCESS F: prepare association analysis
 process prepare_association_analysis {
   time params.prepare_association_analysis_time
-  memory params.process_association_analysis_memory
+  memory params.prepare_association_analysis_memory
   
   input:
   path "sceptre_object_fp"
@@ -319,7 +319,7 @@ workflow {
   grna_assignment_formula_ch = assign_grnas.out.grna_assignment_formula_ch.first()
 
   // 6. process the gRNA assignments
-  process_assign_grnas(
+  combine_assign_grnas(
     set_analysis_parameters.out.sceptre_object_ch.first(),
     Channel.fromPath(params.response_odm_fp).first(),
     Channel.fromPath(params.grna_odm_fp).first(),
@@ -331,7 +331,7 @@ workflow {
   if (step_rank >= 2) {
   // 7. run quality control
   run_qc(
-    process_assign_grnas.out.sceptre_object_ch,
+    combine_assign_grnas.out.sceptre_object_ch,
     Channel.fromPath(params.response_odm_fp).first(),
     Channel.fromPath(params.grna_odm_fp).first(),
   )
