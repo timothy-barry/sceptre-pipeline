@@ -254,7 +254,7 @@ process prepare_association_analysis {
   path "sceptre_object_fp"
   path "response_odm_fp"
   path "grna_odm_fp"
-
+  
   output:
   path "run_calibration_check", emit: run_calibration_check_ch
   path "run_discovery_analysis", emit: run_discovery_analysis_ch
@@ -344,7 +344,7 @@ workflow {
     Channel.fromPath(params.response_odm_fp).first(),
     Channel.fromPath(params.grna_odm_fp).first()
   )
-
+  
   // 9. run calibration check
   calibration_check_pods_ch = prepare_association_analysis.out.calibration_check_pods_ch.splitText().map{it.trim()}
   run_calibration_check_ch = prepare_association_analysis.out.run_calibration_check_ch.splitText().map{it.trim()}.first()
