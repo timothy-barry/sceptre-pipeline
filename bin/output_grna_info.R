@@ -7,14 +7,13 @@ response_odm_fp <- args[2]
 grna_odm_fp <- args[3]
 grna_pod_size <- as.integer(args[4])
 
-
 # load the sceptre object
 sceptre_object <- sceptre::read_ondisc_backed_sceptre_object(sceptre_object_fp = sceptre_object_fp,
                                                              response_odm_file_fp = response_odm_fp,
                                                              grna_odm_file_fp = grna_odm_fp)
 
 # get the gRNAs in use and obtain the gRNA-to-pod map
-grnas_in_use <- sceptre:::determine_grnas_in_use(sceptre_object)
+grnas_in_use <- sceptre_object@grna_target_data_frame$grna_id
 grna_to_pod_map <- data.frame(grna_id = grnas_in_use,
                               pod_id = sceptre:::get_id_vect(grnas_in_use, grna_pod_size))
 grna_pods <- unique(grna_to_pod_map$pod_id)
