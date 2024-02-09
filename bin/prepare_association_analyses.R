@@ -24,7 +24,7 @@ for (optional_arg_name in optional_args_names) {
 }
 
 # generate the negative control pairs
-sceptre_object <- do.call(sceptre:::run_calibration_check_pt_1, args = args_to_pass)
+if (n_calibration_pairs >= 1L) sceptre_object <- do.call(sceptre:::run_calibration_check_pt_1, args = args_to_pass)
 
 # assign pods to negative control, positive control, and discovery pairs
 data_table_list <- list(calibration_check = sceptre_object@negative_control_pairs,

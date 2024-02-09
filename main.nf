@@ -60,7 +60,7 @@ params.prepare_association_analysis_memory = "4GB" // prepare association analys
 params.run_association_analysis_memory = "4GB" // run association analysis
 params.combine_association_analysis_memory = "4GB" // process association analysis
 
-/*********************
+/********************
 * INCLUDE SUBWORKFLOW
 *********************/
 include { run_analysis_subworkflow as run_analysis_subworkflow_calibration_check } from './run_analysis_subworkflow.nf'
