@@ -86,7 +86,7 @@ if ("$params.trial" == "true") {
 // PROCESS A: set analysis parameters
 process set_analysis_parameters {
   publishDir "${params.output_directory}", mode: 'copy', overwrite: true, pattern: "*.txt"
-  
+
   time params.set_analysis_parameters_time
   memory params.set_analysis_parameters_memory
 
@@ -97,11 +97,11 @@ process set_analysis_parameters {
   path "formula_object"
   path "discovery_pairs"
   path "positive_control_pairs"
-  
+
   output:
   path "sceptre_object.rds", emit: sceptre_object_ch
   path "analysis_summary.txt"
-  
+
   """
   set_analysis_parameters.R $sceptre_object_fp \
   $response_odm_fp \
@@ -139,7 +139,8 @@ process prepare_assign_grnas {
   output_grna_info.R $sceptre_object_fp \
   $response_odm_fp \
   $grna_odm_fp \
-  ${params.grna_pod_size}
+  ${params.grna_pod_size} \
+  ${params.trial}
   """
 }
 
@@ -147,7 +148,7 @@ process prepare_assign_grnas {
 process assign_grnas {
   time {params.assign_grnas_time_per_grna * params.grna_pod_size}
   memory params.assign_grnas_memory
-  
+
   when:
   !(params.grna_assignment_method == "maximum" || (low_moi == "true" && params.grna_assignment_method == "default"))
 
@@ -182,12 +183,13 @@ process assign_grnas {
 
 // PROCESS D: process gRNA assignments
 process combine_assign_grnas {
+  debug true
   publishDir "${params.output_directory}", mode: 'copy', overwrite: true, pattern: "*.png"
   publishDir "${params.output_directory}", mode: 'copy', overwrite: true, pattern: "*.txt"
-  
+
   time params.combine_assign_grnas_time
   memory params.combine_assign_grnas_memory
-  
+
   input:
   path "sceptre_object_fp"
   path "response_odm_fp"
@@ -200,7 +202,7 @@ process combine_assign_grnas {
   path "plot_assign_grnas.png"
   path "analysis_summary.txt"
   path "sceptre_object.rds", emit: sceptre_object_ch
-
+  
   """
   process_grna_assignments.R $sceptre_object_fp \
   $response_odm_fp \
@@ -216,7 +218,7 @@ process combine_assign_grnas {
 process run_qc {
   publishDir "${params.output_directory}", mode: 'copy', overwrite: true, pattern: "*.png"
   publishDir "${params.output_directory}", mode: 'copy', overwrite: true, pattern: "*.txt"
-  
+
   time params.run_qc_time
   memory params.run_qc_memory
 
@@ -230,7 +232,7 @@ process run_qc {
   path "plot_run_qc.png"
   path "analysis_summary.txt"
   path "sceptre_object.rds", emit: sceptre_object_ch
-  
+
   """
   run_qc.R $sceptre_object_fp \
   $response_odm_fp \
@@ -249,12 +251,12 @@ process run_qc {
 process prepare_association_analysis {
   time params.prepare_association_analysis_time
   memory params.prepare_association_analysis_memory
-  
+
   input:
   path "sceptre_object_fp"
   path "response_odm_fp"
   path "grna_odm_fp"
-  
+
   output:
   path "run_calibration_check", emit: run_calibration_check_ch
   path "run_discovery_analysis", emit: run_discovery_analysis_ch
@@ -289,7 +291,7 @@ workflow {
       Channel.fromPath(params.positive_control_pairs, checkIfExists : true)
     )
   }
-  
+
   if (step_rank >= 1) {
   // 2. obtain the gRNA info
   prepare_assign_grnas(
@@ -344,7 +346,7 @@ workflow {
     Channel.fromPath(params.response_odm_fp).first(),
     Channel.fromPath(params.grna_odm_fp).first()
   )
-  
+
   // 9. run calibration check
   calibration_check_pods_ch = prepare_association_analysis.out.calibration_check_pods_ch.splitText().map{it.trim()}
   run_calibration_check_ch = prepare_association_analysis.out.run_calibration_check_ch.splitText().map{it.trim()}.first()
