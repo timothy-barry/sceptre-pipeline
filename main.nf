@@ -39,8 +39,8 @@ params.p_mito_threshold = "default"
 params.n_calibration_pairs = "default"
 params.calibration_group_size = "default"
 // 6. computation: parallelization
-params.grna_pod_size = 200
-params.pair_pod_size = 10000
+params.grna_pod_size = 150
+params.pair_pod_size = 25000
 // 7. computation: time
 params.set_analysis_parameters_time = "15m" // set analysis parameters
 params.prepare_assign_grnas_time = "15m" // prepare grna assignments
@@ -183,9 +183,9 @@ process assign_grnas {
 
 // PROCESS D: process gRNA assignments
 process combine_assign_grnas {
-  debug true
   publishDir "${params.output_directory}", mode: 'copy', overwrite: true, pattern: "*.png"
   publishDir "${params.output_directory}", mode: 'copy', overwrite: true, pattern: "*.txt"
+  publishDir "${params.output_directory}", mode: 'copy', overwrite: true, pattern: "grna_assignment_matrix.rds"
 
   time params.combine_assign_grnas_time
   memory params.combine_assign_grnas_memory
@@ -201,6 +201,7 @@ process combine_assign_grnas {
   path "plot_grna_count_distributions.png"
   path "plot_assign_grnas.png"
   path "analysis_summary.txt"
+  path "grna_assignment_matrix.rds"
   path "sceptre_object.rds", emit: sceptre_object_ch
   
   """
