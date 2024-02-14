@@ -56,11 +56,11 @@ p <- sceptre::plot(sceptre_object)
 
 # 7. delete unecessary info from sceptre_object
 if (analysis_type == "run_calibration_check") {
-  sceptre_object@calibration_result <- sceptre_object@calibration_result[,"p_value",drop=FALSE]
+  sceptre_object@calibration_result <- result_df[,c("p_value", "log_2_fold_change")]
 } else if (analysis_type == "run_power_check") {
-  sceptre_object@power_result <- data.frame()
+  # pass
 } else { # discovery analysis
-  sceptre_object <- NULL
+  # pass
 }
 
 # save the outputs
