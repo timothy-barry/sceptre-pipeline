@@ -101,7 +101,10 @@ sceptre_object <- sceptre::set_analysis_parameters(
   resampling_mechanism = resampling_mechanism,
   multiple_testing_method = multiple_testing_method,
   multiple_testing_alpha = multiple_testing_alpha
-) 
+)
+
+# remove fields no longer needed
+sceptre_object@covariate_data_frame <- data.frame()
 
 # write the sceptre_object
 saveRDS(sceptre_object, "sceptre_object.rds")
