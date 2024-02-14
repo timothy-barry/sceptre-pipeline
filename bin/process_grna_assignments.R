@@ -35,6 +35,9 @@ if (method == "maximum") {
   sceptre_object <- sceptre:::process_initial_assignment_list(sceptre_object)
 }
 
+# remove fields no longer in use
+sceptre_object@initial_grna_assignment_list <- list()
+
 # write outputs to disk
 saveRDS(sceptre_object, "sceptre_object.rds")
 p1 <- sceptre::plot_grna_count_distributions(sceptre_object)

@@ -43,6 +43,8 @@ sceptre_object <- do.call(what = sceptre::run_qc, args = args_to_pass)
 # remove fields no longer needed
 sceptre_object@discovery_pairs <- data.frame()
 sceptre_object@positive_control_pairs <- data.frame()
+sceptre_object@grna_assignments_raw <- data.frame()
+sceptre_object@ondisc_grna_assignment_info <- list()
 
 # write outputs to disk
 saveRDS(sceptre_object, "sceptre_object.rds")
