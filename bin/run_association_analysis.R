@@ -36,6 +36,10 @@ result_name <- switch(analysis_type,
                       run_power_check = "power_result",
                       run_discovery_analysis = "discovery_result")
 result <- slot(sceptre_object, result_name)
-precomputations <- sceptre_object@response_precomputations
 saveRDS(result, "result.rds")
-saveRDS(precomputations, "precomputations.rds")
+if (sceptre_object@control_group_complement) {
+  precomputations <- sceptre_object@response_precomputations
+  saveRDS(precomputations, "precomputations.rds") 
+} else {
+  saveRDS(NULL, "precomputations.rds")
+}

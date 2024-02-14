@@ -64,9 +64,14 @@ if (analysis_type == "run_calibration_check") {
 }
 
 # save the outputs
-saveRDS(sceptre_object, "sceptre_object.rds")
+if (analysis_type == "run_discovery_analysis") {
+  saveRDS(NULL, "sceptre_object.rds")
+} else {
+  saveRDS(sceptre_object, "sceptre_object.rds") 
+}
 saveRDS(result_df, paste0("results_", analysis_type, ".rds"))
-ggplot2::ggsave(filename = paste0("plot_", analysis_type, ".png"), plot = p, device = "png", scale = 1.1, width = 5, height = 4, dpi = 330)
+ggplot2::ggsave(filename = paste0("plot_", analysis_type, ".png"), plot = p,
+                device = "png", scale = 1.1, width = 5, height = 4, dpi = 330)
 sink(file = "analysis_summary.txt", append = FALSE)
 sceptre::print(sceptre_object)
 sink(NULL)
