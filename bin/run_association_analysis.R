@@ -30,12 +30,20 @@ funct_to_run <- switch(analysis_type,
 )
 sceptre_object <- funct_to_run(sceptre_object)
 
-# save the output
+# obtain the output
 result_name <- switch(analysis_type,
                       run_calibration_check = "calibration_result",
                       run_power_check = "power_result",
                       run_discovery_analysis = "discovery_result")
 result <- slot(sceptre_object, result_name)
+
+# convert char columns into factors
+cols <- colnames(result)
+for (col in cols) {
+  if (is(result[[col]], "character")) {
+    result[[col]] <- factor(result[[col]])
+  }
+}
 saveRDS(result, "result.rds")
 if (sceptre_object@control_group_complement) {
   precomputations <- sceptre_object@response_precomputations
