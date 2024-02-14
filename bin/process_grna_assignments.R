@@ -34,6 +34,7 @@ if (method == "maximum") {
   sceptre_object@grna_assignment_hyperparameters$formula_object <- readRDS(grna_assignment_formula_fp)
   sceptre_object <- sceptre:::process_initial_assignment_list(sceptre_object)
 }
+grna_to_cell_assignment_matrix <- sceptre::get_grna_assignments(sceptre_object)
 
 # remove fields no longer in use
 sceptre_object@initial_grna_assignment_list <- list()
@@ -42,7 +43,6 @@ sceptre_object@initial_grna_assignment_list <- list()
 saveRDS(sceptre_object, "sceptre_object.rds")
 p1 <- sceptre::plot_grna_count_distributions(sceptre_object)
 p2 <- sceptre::plot_assign_grnas(sceptre_object)
-grna_to_cell_assignment_matrix <- sceptre::get_grna_assignments(sceptre_object)
 ggplot2::ggsave(filename = "plot_grna_count_distributions.png", plot = p1, device = "png", scale = 1.1, width = 5, height = 4, dpi = 330)
 ggplot2::ggsave(filename = "plot_assign_grnas.png", plot = p2, device = "png", scale = 1.1, width = 5, height = 4, dpi = 330)
 saveRDS(grna_to_cell_assignment_matrix, "grna_assignment_matrix.rds")
