@@ -16,7 +16,17 @@ sceptre_object <- sceptre::read_ondisc_backed_sceptre_object(sceptre_object_fp =
 sceptre_object@functs_called[[analysis_type]] <- TRUE
 sceptre_object@last_function_called <- analysis_type
 
-# 3. process the results
+# 3. prune the sceptre_object
+if (analysis_type == "run_calibration_check") {
+  # pass
+} else if (analysis_type == "run_power_check") {
+  # pass
+} else { # discovery analysis
+  sceptre_object@discovery_pairs_with_info <- data.frame()
+}
+gc() |> invisible()
+
+# 4. process the results
 result_df <- lapply(result_fps, readRDS) |> data.table::rbindlist()
 data.table::setorderv(result_df, cols = c("p_value", "response_id"), na.last = TRUE)
 process_funct <- switch(analysis_type,
@@ -26,7 +36,7 @@ process_funct <- switch(analysis_type,
 result_df <- process_funct(result_df, sceptre_object)
 result_df$pod <- NULL
 
-# 4. add to the sceptre_object
+# 5. add results to the sceptre_object
 if (analysis_type == "run_calibration_check") {
   sceptre_object@calibration_result <- result_df
 } else if (analysis_type == "run_power_check") {
@@ -35,11 +45,10 @@ if (analysis_type == "run_calibration_check") {
   sceptre_object@discovery_result <- result_df
 }
 
-# 5. process the response precomputations (if using the complement set as the control group)
-if (sceptre_object@control_group_complement) {
+# 6. process the response precomputations (if using the complement set as the control group, and not running a discovery analysis)
+if (sceptre_object@control_group_complement && analysis_type != "run_discovery_analysis") {
   precomputation_list <- lapply(precomp_fps, readRDS) |> unlist(recursive = FALSE)
-  sceptre_object@response_precomputations <- c(sceptre_object@response_precomputations,
-                                               precomputation_list)    
+  sceptre_object@response_precomputations <- c(sceptre_object@response_precomputations, precomputation_list)    
 }
 
 # 6. create the plot
