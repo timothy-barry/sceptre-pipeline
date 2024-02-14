@@ -40,16 +40,19 @@ args_to_pass[["response_n_nonzero_range"]] <- response_n_nonzero_range
 # call the qc function
 sceptre_object <- do.call(what = sceptre::run_qc, args = args_to_pass)
 
+# create plots
+p1 <- sceptre::plot_covariates(sceptre_object)
+p2 <- sceptre::plot_run_qc(sceptre_object)
+
 # remove fields no longer needed
 sceptre_object@discovery_pairs <- data.frame()
 sceptre_object@positive_control_pairs <- data.frame()
 sceptre_object@grna_assignments_raw <- data.frame()
 sceptre_object@ondisc_grna_assignment_info <- list()
+sceptre_object@covariate_data_frame <- data.frame()
 
 # write outputs to disk
 saveRDS(sceptre_object, "sceptre_object.rds")
-p1 <- sceptre::plot_covariates(sceptre_object)
-p2 <- sceptre::plot_run_qc(sceptre_object)
 ggplot2::ggsave(filename = "plot_covariates.png", plot = p1, device = "png",
                 scale = 1.1, width = 5, height = 4, dpi = 330)
 ggplot2::ggsave(filename = "plot_run_qc.png", plot = p2, device = "png",
