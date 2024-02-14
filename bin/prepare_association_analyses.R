@@ -47,6 +47,9 @@ sceptre_object@negative_control_pairs <- processed_data_table_list$calibration_c
 sceptre_object@positive_control_pairs_with_info <- processed_data_table_list$power_check
 sceptre_object@discovery_pairs_with_info <- processed_data_table_list$discovery_analysis
 
+# remove fields no longer needed
+sceptre_object@M_matrix <- matrix()
+
 # save the output
 for (analysis_name in names(processed_data_table_list)) {
   data_table <- processed_data_table_list[[analysis_name]]
