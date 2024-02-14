@@ -16,11 +16,11 @@ sceptre_object <- sceptre::read_ondisc_backed_sceptre_object(sceptre_object_fp =
 sceptre_object@functs_called[[analysis_type]] <- TRUE
 sceptre_object@last_function_called <- analysis_type
 
-# 3. prune the sceptre_object
+# 3. prune the pairs_with_info fields of the sceptre_object
 if (analysis_type == "run_calibration_check") {
-  # pass
+  sceptre_object@negative_control_pairs <- data.frame()
 } else if (analysis_type == "run_power_check") {
-  # pass
+  sceptre_object@positive_control_pairs_with_info <- data.frame()
 } else { # discovery analysis
   sceptre_object@discovery_pairs_with_info <- data.frame()
 }
@@ -56,9 +56,9 @@ p <- sceptre::plot(sceptre_object)
 
 # 7. delete unecessary info from sceptre_object
 if (analysis_type == "run_calibration_check") {
-  # pass
+  sceptre_object@calibration_result <- sceptre_object@calibration_result[,"p_value",drop=FALSE]
 } else if (analysis_type == "run_power_check") {
-  # pass
+  sceptre_object@power_result <- data.frame()
 } else { # discovery analysis
   sceptre_object <- NULL
 }
