@@ -20,6 +20,10 @@ sceptre_object <- sceptre::read_ondisc_backed_sceptre_object(sceptre_object_fp =
                                                              response_odm_file_fp = response_odm_fp,
                                                              grna_odm_file_fp = grna_odm_fp)
 
+# remove disc pairs
+sceptre_object@discovery_pairs <- data.frame()
+gc() |> invisible()
+
 # load the grna to pod map; determine the grnas in use
 grna_to_pod_map <- readRDS(grna_to_pod_map_fp)
 grnas_in_use <- subset(grna_to_pod_map, pod_id == grna_pod)$grna_id
