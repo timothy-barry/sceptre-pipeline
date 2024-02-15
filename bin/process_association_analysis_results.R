@@ -23,6 +23,7 @@ if (analysis_type == "run_calibration_check") {
   sceptre_object@positive_control_pairs_with_info <- data.frame()
 } else { # discovery analysis
   sceptre_object@discovery_pairs_with_info <- data.frame()
+  sceptre_object@covariate_matrix <- matrix()
 }
 gc() |> invisible()
 
