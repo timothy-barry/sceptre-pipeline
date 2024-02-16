@@ -32,5 +32,8 @@ nextflow run /Users/tib163/research_code/sceptre-pipeline/main.nf \
  --output_directory $output_directory \
  --grna_assignment_method thresholding \
  --response_n_nonzero_range_lower 0.07 \
- --pipeline_stop assign_grnas \
- --discovery_pairs trans
+ --pipeline_stop run_discovery_analysis \
+ --discovery_pairs trans \
+ --pair_pod_size 5000000
+ -resume
+ 
