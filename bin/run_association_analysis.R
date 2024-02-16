@@ -44,6 +44,7 @@ for (col in cols) {
     result[[col]] <- factor(result[[col]])
   }
 }
+
 saveRDS(result, "result.rds")
 if (sceptre_object@control_group_complement) {
   precomputations <- sceptre_object@response_precomputations

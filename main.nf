@@ -44,11 +44,11 @@ params.pair_pod_size = 25000
 // 7. computation: time
 params.set_analysis_parameters_time = "15m" // set analysis parameters
 params.prepare_assign_grnas_time = "15m" // prepare grna assignments
-params.assign_grnas_time_per_grna = "5s" // assign grnas
+params.assign_grnas_time_per_grna = "2s" // assign grnas
 params.combine_assign_grnas_time = "15m" // process grna assignments
 params.run_qc_time = "60m" // run qc
 params.prepare_association_analysis_time = "15m" // prepare association analyses
-params.run_association_analysis_time_per_pair = "1s" // run association analysis
+params.run_association_analysis_time_per_pair = "0.1s" // run association analysis
 params.combine_association_analysis_time = "15m" // process association analysis
 // 8. computation: memory
 params.set_analysis_parameters_memory = "4GB" // set analysis parameters
@@ -283,11 +283,83 @@ process prepare_association_analysis {
   """
 }
 
-// PROCESS E.2: nuclear quality control
+// PROCESS E.2: quality control trans
+process run_qc_trans {
+  publishDir "${params.output_directory}", mode: 'copy', overwrite: true, pattern: "*.png"
+  publishDir "${params.output_directory}", mode: 'copy', overwrite: true, pattern: "*.txt"
 
-// PROCESS F.2: nuclear prepare association analysis
+  time params.run_qc_time
+  memory params.run_qc_memory
 
-// PROCESS G: nuclear association analysis
+  input:
+  path "sceptre_object_fp"
+  path "response_odm_fp"
+  path "grna_odm_fp"
+
+  output:
+  path "plot_covariates.png"
+  path "plot_cellwise_qc.png"
+  path "analysis_summary.txt"
+  path "sceptre_object.rds", emit: sceptre_object_ch
+  
+  """
+  run_qc_nuclear.R $sceptre_object_fp \
+  $response_odm_fp \
+  $grna_odm_fp \
+  ${params.response_n_umis_range_lower} \
+  ${params.response_n_umis_range_upper} \
+  ${params.response_n_nonzero_range_lower} \
+  ${params.response_n_nonzero_range_upper} \
+  ${params.p_mito_threshold}
+  """
+}
+
+// PROCESS F.2: prepare association analysis trans
+process prepare_association_analysis_trans {
+  time params.prepare_association_analysis_time
+  memory params.prepare_association_analysis_memory
+
+  input:
+  path "sceptre_object_fp"
+  path "response_odm_fp"
+  path "grna_odm_fp"
+
+  output:
+  path "discovery_analysis_pods", emit: discovery_analysis_pods_ch
+  path "response_to_pod_map.rds", emit: response_to_pod_map_ch
+  
+  """
+  prepare_association_analysis_nuclear.R $sceptre_object_fp \
+  $response_odm_fp \
+  $grna_odm_fp \
+  ${params.pair_pod_size}
+  """
+}
+
+// PROCESS G: association analysis trans
+process run_discovery_analysis_trans {
+  debug true
+  // time {params.run_association_analysis_time_per_pair * params.pair_pod_size} INVESTIGATE: time directive not working
+  time "5000000s"
+  memory params.run_association_analysis_memory
+  
+  input:
+  path "sceptre_object_fp"
+  path "response_odm_fp"
+  path "grna_odm_fp"
+  path "response_to_pod_map_fp"
+  val "pair_pod"
+  
+  """
+  echo $sceptre_object_fp \
+  $response_odm_fp \
+  $grna_odm_fp \
+  $response_to_pod_map_fp \
+  $pair_pod \
+  ${params.n_nonzero_trt_thresh} \
+  ${params.n_nonzero_cntrl_thresh}
+  """
+}
 
 /***************
 * MAIN WORKFLOW
@@ -402,6 +474,33 @@ workflow {
     )
     } 
   } else { // going nuclear
+    if (step_rank >= 2) {
+    // 7. run cellwise qc
+    run_qc_trans(
+      combine_assign_grnas.out.sceptre_object_ch,
+      Channel.fromPath(params.response_odm_fp).first(),
+      Channel.fromPath(params.grna_odm_fp).first(),
+    )
+    }
     
+    if (step_rank >= 5) {
+    // 8. prepare association analysis
+    prepare_association_analysis_trans(
+      run_qc_trans.out.sceptre_object_ch,
+      Channel.fromPath(params.response_odm_fp).first(),
+      Channel.fromPath(params.grna_odm_fp).first(),
+    )
+    discovery_analysis_pods_ch = prepare_association_analysis_trans.out.discovery_analysis_pods_ch.splitText().map{it.trim()}
+    response_to_pod_map_ch = prepare_association_analysis_trans.out.response_to_pod_map_ch
+    
+    // 9. run association analysis
+    run_discovery_analysis_trans(
+      run_qc_trans.out.sceptre_object_ch,
+      Channel.fromPath(params.response_odm_fp).first(),
+      Channel.fromPath(params.grna_odm_fp).first(),
+      response_to_pod_map_ch,
+      discovery_analysis_pods_ch
+    )
+    }
   }
 }
