@@ -80,8 +80,10 @@ if ("$params.trial" == "true") {
   println "Running pipeline in trial mode."
 }
 disc_pairs = params.discovery_pairs
+nuclear = false
 if ("$params.discovery_pairs" == "trans") {
   disc_pairs = "${baseDir}/resources/trans_placeholder.rds"
+  nuclear = true
 }
 
 /**********
@@ -219,7 +221,7 @@ process combine_assign_grnas {
   """
 }
 
-// PROCESS E: quality control
+// PROCESS E.1: quality control
 process run_qc {
   publishDir "${params.output_directory}", mode: 'copy', overwrite: true, pattern: "*.png"
   publishDir "${params.output_directory}", mode: 'copy', overwrite: true, pattern: "*.txt"
@@ -252,7 +254,7 @@ process run_qc {
   """
 }
 
-// PROCESS F: prepare association analysis
+// PROCESS F.1: prepare association analysis
 process prepare_association_analysis {
   time params.prepare_association_analysis_time
   memory params.prepare_association_analysis_memory
@@ -280,6 +282,12 @@ process prepare_association_analysis {
   ${params.pair_pod_size}
   """
 }
+
+// PROCESS E.2: nuclear quality control
+
+// PROCESS F.2: nuclear prepare association analysis
+
+// PROCESS G: nuclear association analysis
 
 /***************
 * MAIN WORKFLOW
@@ -334,62 +342,66 @@ workflow {
     grna_assignments_ch
   )
   }
+  
+  if (!nuclear) {
+    if (step_rank >= 2) {
+    // 7. run quality control
+    run_qc(
+      combine_assign_grnas.out.sceptre_object_ch,
+      Channel.fromPath(params.response_odm_fp).first(),
+      Channel.fromPath(params.grna_odm_fp).first(),
+    )
+    }
 
-  if (step_rank >= 2) {
-  // 7. run quality control
-  run_qc(
-    combine_assign_grnas.out.sceptre_object_ch,
-    Channel.fromPath(params.response_odm_fp).first(),
-    Channel.fromPath(params.grna_odm_fp).first(),
-  )
-  }
+    if (step_rank >= 3) {
+    // 8. prepare association analyses
+    prepare_association_analysis(
+      run_qc.out.sceptre_object_ch,
+      Channel.fromPath(params.response_odm_fp).first(),
+      Channel.fromPath(params.grna_odm_fp).first()
+    )
 
-  if (step_rank >= 3) {
-  // 8. prepare association analyses
-  prepare_association_analysis(
-    run_qc.out.sceptre_object_ch,
-    Channel.fromPath(params.response_odm_fp).first(),
-    Channel.fromPath(params.grna_odm_fp).first()
-  )
+    // 9. run calibration check
+    calibration_check_pods_ch = prepare_association_analysis.out.calibration_check_pods_ch.splitText().map{it.trim()}
+    run_calibration_check_ch = prepare_association_analysis.out.run_calibration_check_ch.splitText().map{it.trim()}.first()
+    run_analysis_subworkflow_calibration_check(
+      prepare_association_analysis.out.sceptre_object_ch,
+      Channel.fromPath(params.response_odm_fp).first(),
+      Channel.fromPath(params.grna_odm_fp).first(),
+      calibration_check_pods_ch,
+      run_calibration_check_ch,
+      Channel.from("run_calibration_check").first()
+    )
+    }
 
-  // 9. run calibration check
-  calibration_check_pods_ch = prepare_association_analysis.out.calibration_check_pods_ch.splitText().map{it.trim()}
-  run_calibration_check_ch = prepare_association_analysis.out.run_calibration_check_ch.splitText().map{it.trim()}.first()
-  run_analysis_subworkflow_calibration_check(
-    prepare_association_analysis.out.sceptre_object_ch,
-    Channel.fromPath(params.response_odm_fp).first(),
-    Channel.fromPath(params.grna_odm_fp).first(),
-    calibration_check_pods_ch,
-    run_calibration_check_ch,
-    Channel.from("run_calibration_check").first()
-  )
-  }
+    if (step_rank >= 4) {
+    // 10. run power check
+    power_check_pods_ch = prepare_association_analysis.out.power_check_pods_ch.splitText().map{it.trim()}
+    run_power_check_ch = prepare_association_analysis.out.run_power_check_ch.splitText().map{it.trim()}.first()
+    run_analysis_subworkflow_power_check(
+      run_analysis_subworkflow_calibration_check.out.first(),
+      Channel.fromPath(params.response_odm_fp).first(),
+      Channel.fromPath(params.grna_odm_fp).first(),
+      power_check_pods_ch,
+      run_power_check_ch,
+      Channel.from("run_power_check").first()
+    )
+    }
 
-  if (step_rank >= 4) {
-  // 10. run power check
-  power_check_pods_ch = prepare_association_analysis.out.power_check_pods_ch.splitText().map{it.trim()}
-  run_power_check_ch = prepare_association_analysis.out.run_power_check_ch.splitText().map{it.trim()}.first()
-  run_analysis_subworkflow_power_check(
-    run_analysis_subworkflow_calibration_check.out.first(),
-    Channel.fromPath(params.response_odm_fp).first(),
-    Channel.fromPath(params.grna_odm_fp).first(),
-    power_check_pods_ch,
-    run_power_check_ch,
-    Channel.from("run_power_check").first()
-  )
-  }
-
-  if (step_rank >= 5) {
-  // 11. run discovery analysis
-  discovery_analysis_pods_ch = prepare_association_analysis.out.discovery_analysis_pods_ch.splitText().map{it.trim()}
-  run_discovery_analysis_ch = prepare_association_analysis.out.run_discovery_analysis_ch.splitText().map{it.trim()}.first()
-  run_analysis_subworkflow_discovery_analysis(
-    run_analysis_subworkflow_power_check.out.first(),
-    Channel.fromPath(params.response_odm_fp).first(),
-    Channel.fromPath(params.grna_odm_fp).first(),
-    discovery_analysis_pods_ch,
-    run_discovery_analysis_ch,
-    Channel.from("run_discovery_analysis").first()
-  )
+    if (step_rank >= 5) {
+    // 11. run discovery analysis
+    discovery_analysis_pods_ch = prepare_association_analysis.out.discovery_analysis_pods_ch.splitText().map{it.trim()}
+    run_discovery_analysis_ch = prepare_association_analysis.out.run_discovery_analysis_ch.splitText().map{it.trim()}.first()
+    run_analysis_subworkflow_discovery_analysis(
+      run_analysis_subworkflow_power_check.out.first(),
+      Channel.fromPath(params.response_odm_fp).first(),
+      Channel.fromPath(params.grna_odm_fp).first(),
+      discovery_analysis_pods_ch,
+      run_discovery_analysis_ch,
+      Channel.from("run_discovery_analysis").first()
+    )
+    } 
+  } else { // going nuclear
+    
   }
 }
