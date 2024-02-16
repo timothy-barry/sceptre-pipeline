@@ -50,18 +50,6 @@ if (identical(resampling_mechanism, "default")) {
   resampling_mechanism <- if (sceptre_object@run_permutations) "permutations" else "crt"
 }
 
-# multiple_testing_method
-if (identical(multiple_testing_method, "default")) {
-  multiple_testing_method <- sceptre_object@multiple_testing_method
-}
-
-# multiple_testing_alpha
-if (identical(multiple_testing_alpha, "default")) {
-  multiple_testing_alpha <- sceptre_object@multiple_testing_alpha
-} else {
-  multiple_testing_alpha <- as.numeric(multiple_testing_alpha)
-}
-
 # formula_object
 formula_object <- readRDS(formula_object_fp)
 if (identical(formula_object, NULL)) {
@@ -70,22 +58,45 @@ if (identical(formula_object, NULL)) {
 
 # discovery_pairs
 discovery_pairs <- readRDS(discovery_pairs)
-if (identical(discovery_pairs, NULL)) {
-  discovery_pairs <- sceptre_object@discovery_pairs
-}
-if (trial) {
-  n_pairs <- nrow(discovery_pairs)
-  discovery_pairs <- discovery_pairs |> dplyr::sample_n(min(100, n_pairs))
+nuclear <- identical(discovery_pairs, "trans")
+if (nuclear) {
+  discovery_pairs <- data.frame(grna_target = character(0), response_id = character(0))
+} else {
+  if (identical(discovery_pairs, NULL)) {
+    discovery_pairs <- sceptre_object@discovery_pairs
+  }
+  if (trial) {
+    n_pairs <- nrow(discovery_pairs)
+    discovery_pairs <- discovery_pairs |> dplyr::sample_n(min(100, n_pairs))
+  }
 }
 
 # positive_control_pairs
-positive_control_pairs <- readRDS(positive_control_pairs)
-if (identical(positive_control_pairs, NULL)) {
-  positive_control_pairs <- sceptre_object@positive_control_pairs
+if (nuclear) {
+  positive_control_pairs <- data.frame(grna_target = character(0), response_id = character(0))
+} else {
+  positive_control_pairs <- readRDS(positive_control_pairs)
+  if (identical(positive_control_pairs, NULL)) {
+    positive_control_pairs <- sceptre_object@positive_control_pairs
+  }
+  if (trial) {
+    n_pairs <- nrow(positive_control_pairs)
+    positive_control_pairs <- positive_control_pairs |> dplyr::sample_n(min(100, n_pairs))
+  }
 }
-if (trial) {
-  n_pairs <- nrow(positive_control_pairs)
-  positive_control_pairs <- positive_control_pairs |> dplyr::sample_n(min(100, n_pairs))
+
+# multiple_testing_method
+if (nuclear) {
+  multiple_testing_method <- "none"
+} else if (identical(multiple_testing_method, "default")) {
+  multiple_testing_method <- sceptre_object@multiple_testing_method
+}
+
+# multiple_testing_alpha
+if (identical(multiple_testing_alpha, "default")) {
+  multiple_testing_alpha <- sceptre_object@multiple_testing_alpha
+} else {
+  multiple_testing_alpha <- as.numeric(multiple_testing_alpha)
 }
 
 # set the analysis parameters
@@ -102,6 +113,7 @@ sceptre_object <- sceptre::set_analysis_parameters(
   multiple_testing_method = multiple_testing_method,
   multiple_testing_alpha = multiple_testing_alpha
 )
+if (nuclear) sceptre_object@nuclear <- TRUE
 
 # write the sceptre_object
 saveRDS(sceptre_object, "sceptre_object.rds")
