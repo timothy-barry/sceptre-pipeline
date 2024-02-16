@@ -55,7 +55,7 @@ params.set_analysis_parameters_memory = "4GB" // set analysis parameters
 params.prepare_assign_grnas_memory = "4GB" // prepare grna assignments
 params.assign_grnas_memory = "4GB" // assign grnas
 params.combine_assign_grnas_memory = "4GB"  // process grna assignments
-params.run_qc_memory = "4GB" // run qc
+params.run_qc_memory = "8GB" // run qc
 params.prepare_association_analysis_memory = "4GB" // prepare association analyses
 params.run_association_analysis_memory = "4GB" // run association analysis
 params.combine_association_analysis_memory = "4GB" // process association analysis
@@ -203,7 +203,7 @@ process combine_assign_grnas {
   path "analysis_summary.txt"
   path "grna_assignment_matrix.rds"
   path "sceptre_object.rds", emit: sceptre_object_ch
-  
+
   """
   process_grna_assignments.R $sceptre_object_fp \
   $response_odm_fp \
@@ -330,7 +330,7 @@ workflow {
     grna_assignments_ch
   )
   }
-  
+
   if (step_rank >= 2) {
   // 7. run quality control
   run_qc(

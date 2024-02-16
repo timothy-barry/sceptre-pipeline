@@ -38,6 +38,7 @@ args_to_pass[["response_n_umis_range"]] <- response_n_umis_range
 args_to_pass[["response_n_nonzero_range"]] <- response_n_nonzero_range
 
 # call the qc function
+gc() |> invisible()
 sceptre_object <- do.call(what = sceptre::run_qc, args = args_to_pass)
 
 # create plots

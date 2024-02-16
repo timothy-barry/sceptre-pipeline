@@ -49,7 +49,7 @@ if (analysis_type == "run_calibration_check") {
 # 6. process the response precomputations (if using the complement set as the control group, and not running a discovery analysis)
 if (sceptre_object@control_group_complement && analysis_type != "run_discovery_analysis") {
   precomputation_list <- lapply(precomp_fps, readRDS) |> unlist(recursive = FALSE)
-  sceptre_object@response_precomputations <- c(sceptre_object@response_precomputations, precomputation_list)    
+  sceptre_object@response_precomputations <- c(sceptre_object@response_precomputations, precomputation_list)
 }
 
 # 6. create the plot
@@ -57,7 +57,7 @@ p <- sceptre::plot(sceptre_object)
 
 # 7. delete unecessary info from sceptre_object
 if (analysis_type == "run_calibration_check") {
-  sceptre_object@calibration_result <- result_df[,c("p_value", "log_2_fold_change")]
+  sceptre_object@calibration_result <- result_df[,c("p_value", "log_2_fold_change", "significant")]
 } else if (analysis_type == "run_power_check") {
   # pass
 } else { # discovery analysis
@@ -68,7 +68,7 @@ if (analysis_type == "run_calibration_check") {
 if (analysis_type == "run_discovery_analysis") {
   saveRDS(NULL, "sceptre_object.rds")
 } else {
-  saveRDS(sceptre_object, "sceptre_object.rds") 
+  saveRDS(sceptre_object, "sceptre_object.rds")
 }
 saveRDS(result_df, paste0("results_", analysis_type, ".rds"))
 ggplot2::ggsave(filename = paste0("plot_", analysis_type, ".png"), plot = p,
