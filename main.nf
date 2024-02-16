@@ -79,6 +79,10 @@ if (step_rank == -1) {
 if ("$params.trial" == "true") {
   println "Running pipeline in trial mode."
 }
+disc_pairs = params.discovery_pairs
+if ("$params.discovery_pairs" == "trans") {
+  disc_pairs = "${baseDir}/resources/trans_placeholder.rds"
+}
 
 /**********
 * PROCESSES
@@ -288,7 +292,7 @@ workflow {
       Channel.fromPath(params.response_odm_fp, checkIfExists : true),
       Channel.fromPath(params.grna_odm_fp, checkIfExists : true),
       Channel.fromPath(params.formula_object, checkIfExists : true),
-      Channel.fromPath(params.discovery_pairs, checkIfExists : true),
+      Channel.fromPath(disc_pairs, checkIfExists : true),
       Channel.fromPath(params.positive_control_pairs, checkIfExists : true)
     )
   }
