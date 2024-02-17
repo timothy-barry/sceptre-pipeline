@@ -34,6 +34,6 @@ nextflow run /Users/tib163/research_code/sceptre-pipeline/main.nf \
  --response_n_nonzero_range_lower 0.07 \
  --pipeline_stop run_discovery_analysis \
  --discovery_pairs trans \
- --pair_pod_size 5000000
+ --pair_pod_size 5000000 \
  -resume
  

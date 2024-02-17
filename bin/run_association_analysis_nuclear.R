@@ -34,13 +34,14 @@ grna_target_df <- sceptre_object@grna_target_data_frame |>
    dplyr::select(grna_target, grna_group)
 discovery_pairs <- grna_target_df[rep(seq(1L, nrow(grna_target_df)), times = length(curr_response_ids)),] 
 discovery_pairs$response_id <- rep(curr_response_ids, each = nrow(grna_target_df))
-sceptre_object@discovery_pairs <- discovery_pairs
+sceptre_object@discovery_pairs <- discovery_pairs |> dplyr::slice(1:5000)
 
 # 4. run pairwise qc
 sceptre_object <- sceptre:::run_qc_pt_2(sceptre_object)
 
 # 5. prune sceptre_object
 sceptre_object@discovery_pairs <- data.frame()
+sceptre_object@M_matrix <- matrix()
 gc() |> invisible()
 
 # 6. run discovery analysis
