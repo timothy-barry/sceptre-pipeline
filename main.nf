@@ -338,10 +338,9 @@ process prepare_association_analysis_trans {
 
 // PROCESS G: association analysis trans
 process run_discovery_analysis_trans {
-  debug true
-  // time {params.run_association_analysis_time_per_pair * params.pair_pod_size} INVESTIGATE: time directive not working
-  time "5000000s"
+  publishDir "${params.output_directory}/result", mode: 'copy', overwrite: true, pattern: "*.parquet"
   memory params.run_association_analysis_memory
+  // time {params.run_association_analysis_time_per_pair * params.pair_pod_size} INVESTIGATE: time directive not working
   
   input:
   path "sceptre_object_fp"
@@ -350,8 +349,11 @@ process run_discovery_analysis_trans {
   path "response_to_pod_map_fp"
   val "pair_pod"
   
+  output:
+  "result_*.parquet"
+  
   """
-  echo $sceptre_object_fp \
+  run_association_analysis_nuclear.R $sceptre_object_fp \
   $response_odm_fp \
   $grna_odm_fp \
   $response_to_pod_map_fp \
