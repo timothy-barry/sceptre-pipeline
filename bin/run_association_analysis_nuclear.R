@@ -34,7 +34,15 @@ grna_target_df <- sceptre_object@grna_target_data_frame |>
    dplyr::select(grna_target, grna_group)
 discovery_pairs <- grna_target_df[rep(seq(1L, nrow(grna_target_df)), times = length(curr_response_ids)),] 
 discovery_pairs$response_id <- rep(curr_response_ids, each = nrow(grna_target_df))
-sceptre_object@discovery_pairs <- discovery_pairs |> dplyr::slice(1:5000)
+sceptre_object@discovery_pairs <- discovery_pairs
+
+if (TRUE) {
+  discovery_pairs <- discovery_pairs |>
+    dplyr::filter(response_id %in% sample(curr_response_ids, 20)) |>
+    dplyr::group_by(response_id) |>
+    dplyr::sample_n(20)
+  sceptre_object@discovery_pairs <- discovery_pairs
+}
 
 # 4. run pairwise qc
 sceptre_object <- sceptre:::run_qc_pt_2(sceptre_object)
@@ -45,7 +53,14 @@ sceptre_object@M_matrix <- matrix()
 gc() |> invisible()
 
 # 6. run discovery analysis
-sceptre_object <- sceptre::run_discovery_analysis(sceptre_object = sceptre_object, parallel = FALSE)
+if (sceptre_object@n_ok_discovery_pairs >= 1L) {
+  sceptre_object <- sceptre::run_discovery_analysis(sceptre_object = sceptre_object, parallel = FALSE) 
+} else {
+  result_df <- sceptre_object@discovery_pairs_with_info
+  result_df$p_value <- NA
+  result_df$log_2_fold_change <- NA
+  sceptre_object@discovery_result <- sceptre:::process_discovery_result(result_df, sceptre_object)
+}
 
 # 7. convert char columns into factors; remove significant column
 result <- sceptre_object@discovery_result
