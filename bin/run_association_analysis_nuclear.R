@@ -10,6 +10,7 @@ curr_pod_id <- as.integer(args[5])
 n_nonzero_trt_thresh <- args[6]
 n_nonzero_cntrl_thresh <- args[7]
 trial <- as.logical(args[8])
+use_parquet <- as.logical(args[9])
 
 # 1. load the sceptre object
 sceptre_object <- sceptre::read_ondisc_backed_sceptre_object(sceptre_object_fp = sceptre_object_fp,
@@ -77,5 +78,5 @@ for (col in cols) {
 }
 
 # 8. save result
-fp <- paste0("result_", curr_pod_id, ".parquet")
+fp <- paste0("result_", curr_pod_id, if (use_parquet) ".parquet" else ".rds")
 arrow::write_parquet(result, sink = fp, chunk_size = nrow(result))
