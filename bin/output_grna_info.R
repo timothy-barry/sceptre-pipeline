@@ -12,7 +12,6 @@ trial <- as.logical(args[5])
 sceptre_object <- sceptre::read_ondisc_backed_sceptre_object(sceptre_object_fp = sceptre_object_fp,
                                                              response_odm_file_fp = response_odm_fp,
                                                              grna_odm_file_fp = grna_odm_fp)
-
 # get the gRNAs in use and obtain the gRNA-to-pod map
 grnas_in_use <- sceptre:::determine_grnas_in_use(sceptre_object, trial)
 grna_to_pod_map <- data.frame(grna_id = grnas_in_use,

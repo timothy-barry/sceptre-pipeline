@@ -301,7 +301,7 @@ process run_qc_trans {
   path "plot_cellwise_qc.png"
   path "analysis_summary.txt"
   path "sceptre_object.rds", emit: sceptre_object_ch
-  
+
   """
   run_qc_nuclear.R $sceptre_object_fp \
   $response_odm_fp \
@@ -327,7 +327,7 @@ process prepare_association_analysis_trans {
   output:
   path "discovery_analysis_pods", emit: discovery_analysis_pods_ch
   path "response_to_pod_map.rds", emit: response_to_pod_map_ch
-  
+
   """
   prepare_association_analysis_nuclear.R $sceptre_object_fp \
   $response_odm_fp \
@@ -341,17 +341,17 @@ process run_discovery_analysis_trans {
   publishDir "${params.output_directory}/trans_results", mode: 'copy', overwrite: true, pattern: "*.parquet"
   memory params.run_association_analysis_memory
   // time {params.run_association_analysis_time_per_pair * params.pair_pod_size} INVESTIGATE: time directive not working
-  
+
   input:
   path "sceptre_object_fp"
   path "response_odm_fp"
   path "grna_odm_fp"
   path "response_to_pod_map_fp"
   val "pair_pod"
-  
+
   output:
   path "result_${pair_pod}.parquet"
-  
+
   """
   run_association_analysis_nuclear.R $sceptre_object_fp \
   $response_odm_fp \
@@ -359,7 +359,8 @@ process run_discovery_analysis_trans {
   $response_to_pod_map_fp \
   $pair_pod \
   ${params.n_nonzero_trt_thresh} \
-  ${params.n_nonzero_cntrl_thresh}
+  ${params.n_nonzero_cntrl_thresh} \
+  ${params.trial}
   """
 }
 
@@ -416,7 +417,7 @@ workflow {
     grna_assignments_ch
   )
   }
-  
+
   if (!nuclear) {
     if (step_rank >= 2) {
     // 7. run quality control
@@ -474,7 +475,7 @@ workflow {
       run_discovery_analysis_ch,
       Channel.from("run_discovery_analysis").first()
     )
-    } 
+    }
   } else { // going nuclear
     if (step_rank >= 2) {
     // 7. run cellwise qc
@@ -484,7 +485,7 @@ workflow {
       Channel.fromPath(params.grna_odm_fp).first(),
     )
     }
-    
+
     if (step_rank >= 5) {
     // 8. prepare association analysis
     prepare_association_analysis_trans(
@@ -494,7 +495,7 @@ workflow {
     )
     discovery_analysis_pods_ch = prepare_association_analysis_trans.out.discovery_analysis_pods_ch.splitText().map{it.trim()}
     response_to_pod_map_ch = prepare_association_analysis_trans.out.response_to_pod_map_ch
-    
+
     // 9. run association analysis
     run_discovery_analysis_trans(
       run_qc_trans.out.sceptre_object_ch,
