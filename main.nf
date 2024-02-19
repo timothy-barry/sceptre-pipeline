@@ -59,6 +59,8 @@ params.run_qc_memory = "8GB" // run qc
 params.prepare_association_analysis_memory = "4GB" // prepare association analyses
 params.run_association_analysis_memory = "4GB" // run association analysis
 params.combine_association_analysis_memory = "4GB" // process association analysis
+// 9. output file type
+params.use_parquet = "true"
 
 /********************
 * INCLUDE SUBWORKFLOW
@@ -338,7 +340,7 @@ process prepare_association_analysis_trans {
 
 // PROCESS G: association analysis trans
 process run_discovery_analysis_trans {
-  publishDir "${params.output_directory}/trans_results", mode: 'copy', overwrite: true, pattern: "*.parquet"
+  publishDir "${params.output_directory}/trans_results", mode: 'copy', overwrite: true, pattern: "result_${pair_pod}*"
   memory params.run_association_analysis_memory
   // time {params.run_association_analysis_time_per_pair * params.pair_pod_size} INVESTIGATE: time directive not working
 
@@ -350,7 +352,7 @@ process run_discovery_analysis_trans {
   val "pair_pod"
 
   output:
-  path "result_${pair_pod}.parquet"
+  path "result_${pair_pod}*"
 
   """
   run_association_analysis_nuclear.R $sceptre_object_fp \
@@ -360,7 +362,8 @@ process run_discovery_analysis_trans {
   $pair_pod \
   ${params.n_nonzero_trt_thresh} \
   ${params.n_nonzero_cntrl_thresh} \
-  ${params.trial}
+  ${params.trial} \
+  ${params.use_parquet}
   """
 }
 
