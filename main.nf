@@ -318,7 +318,7 @@ process run_qc_trans {
 
 // PROCESS F.2: prepare association analysis trans
 process prepare_association_analysis_trans {
-  publishDir "${params.output_directory}/trans_results", mode: 'copy', overwrite: true, pattern: "response_to_pod_map.rds"
+  publishDir "${params.output_directory}", mode: 'copy', overwrite: true, pattern: "response_to_pod_map.rds"
   
   time params.prepare_association_analysis_time
   memory params.prepare_association_analysis_memory
