@@ -60,7 +60,7 @@ params.prepare_association_analysis_memory = "4GB" // prepare association analys
 params.run_association_analysis_memory = "4GB" // run association analysis
 params.combine_association_analysis_memory = "4GB" // process association analysis
 // 9. output file type
-params.use_parquet = "true"
+params.use_parquet = "true" // when running massive-scale "trans" analysis, save results as .parquet (true) or .rds (false)
 
 /********************
 * INCLUDE SUBWORKFLOW
@@ -318,6 +318,8 @@ process run_qc_trans {
 
 // PROCESS F.2: prepare association analysis trans
 process prepare_association_analysis_trans {
+  publishDir "${params.output_directory}/trans_results", mode: 'copy', overwrite: true, pattern: "response_to_pod_map.rds"
+  
   time params.prepare_association_analysis_time
   memory params.prepare_association_analysis_memory
 
