@@ -40,7 +40,7 @@ params.n_calibration_pairs = "default"
 params.calibration_group_size = "default"
 // 6. computation: parallelization
 params.grna_pod_size = 150
-params.pair_pod_size = 25000
+if ("$params.discovery_pairs" == "trans") params.pair_pod_size = 500000 else params.pair_pod_size = 25000
 // 7. computation: time
 params.set_analysis_parameters_time = "15m" // set analysis parameters
 params.prepare_assign_grnas_time = "15m" // prepare grna assignments
