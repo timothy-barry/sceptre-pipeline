@@ -21,7 +21,8 @@ n_pods <- ceiling(n_responses * n_grna_groups / pair_pod_size)
 
 # map each response to a pod
 pods <- rep(x = seq(1L, n_pods), length.out = n_responses) |> sample()
-response_to_pod_map <- data.frame(response_id = responses, pod_id = pods)
+response_to_pod_map <- data.frame(response_id = responses, pod_id = pods) |>
+  dplyr::arrange(pod_id, response_id)
 
 # write the response-to-pod map as well as the pod ids
 sceptre:::write_vector(unique(response_to_pod_map$pod), "discovery_analysis_pods")
