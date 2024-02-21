@@ -345,7 +345,7 @@ process prepare_association_analysis_trans {
 process run_discovery_analysis_trans {
   publishDir "${params.output_directory}/trans_results", mode: 'copy', overwrite: true, pattern: "result_${pair_pod}*"
   memory params.run_association_analysis_memory
-  // time {params.run_association_analysis_time_per_pair * params.pair_pod_size} INVESTIGATE: time directive not working
+  time {params.run_association_analysis_time_per_pair * params.pair_pod_size}
 
   input:
   path "sceptre_object_fp"
