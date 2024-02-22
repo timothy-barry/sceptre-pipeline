@@ -41,7 +41,6 @@ params.calibration_group_size = "default"
 // 6. computation: parallelization
 params.grna_pod_size = 150
 if ("$params.discovery_pairs" == "trans") params.pair_pod_size = 500000 else params.pair_pod_size = 25000
-println "$params.pair_pod_size"
 // 7. computation: time
 params.set_analysis_parameters_time = "15m" // set analysis parameters
 params.prepare_assign_grnas_time = "15m" // prepare grna assignments
@@ -49,7 +48,7 @@ params.assign_grnas_time_per_grna = "2s" // assign grnas
 params.combine_assign_grnas_time = "15m" // process grna assignments
 params.run_qc_time = "60m" // run qc
 params.prepare_association_analysis_time = "15m" // prepare association analyses
-params.run_association_analysis_time_per_pair = "0.1s" // run association analysis
+params.run_association_analysis_time_per_pair = "0.05s" // run association analysis
 params.combine_association_analysis_time = "15m" // process association analysis
 // 8. computation: memory
 params.set_analysis_parameters_memory = "4GB" // set analysis parameters
