@@ -51,7 +51,7 @@ sceptre_object@discovery_pairs <- data.frame()
 sceptre_object@positive_control_pairs <- data.frame()
 sceptre_object@grna_assignments_raw <- list()
 sceptre_object@initial_grna_assignment_list <- list()
-sceptre_object@ondisc_grna_assignment_info <- list()
+sceptre_object@import_grna_assignment_info <- list()
 sceptre_object@covariate_data_frame <- data.frame()
 
 # write outputs to disk

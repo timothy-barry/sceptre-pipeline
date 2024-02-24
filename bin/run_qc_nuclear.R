@@ -39,7 +39,7 @@ p2 <- sceptre:::plot_cellwise_qc(sceptre_object)
 # remove fields no longer needed
 sceptre_object@grna_assignments_raw <- list()
 sceptre_object@initial_grna_assignment_list <- list()
-sceptre_object@ondisc_grna_assignment_info <- list()
+sceptre_object@import_grna_assignment_info <- list()
 sceptre_object@covariate_data_frame <- data.frame()
 
 # write outputs to disk
