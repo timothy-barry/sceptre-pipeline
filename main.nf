@@ -10,7 +10,7 @@ params.trial = "false"
 // 2. set analysis parameters
 params.side = "default"
 params.grna_integration_strategy = "default"
-params.fit_parametric_curve = "default"
+params.resampling_approximation = "default"
 params.control_group = "default"
 params.resampling_mechanism = "default"
 params.multiple_testing_method = "default"
@@ -116,7 +116,7 @@ process set_analysis_parameters {
   $grna_odm_fp \
   ${params.side} \
   ${params.grna_integration_strategy} \
-  ${params.fit_parametric_curve} \
+  ${params.resampling_approximation} \
   ${params.control_group} \
   ${params.resampling_mechanism} \
   ${params.multiple_testing_method} \
