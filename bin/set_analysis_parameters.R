@@ -8,7 +8,7 @@ response_odm_fp <- args[2]
 grna_odm_fp <- args[3]
 side <- args[4]
 grna_integration_strategy <- args[5]
-fit_parametric_curve <- args[6]
+resampling_approximation <- args[6]
 control_group <- args[7]
 resampling_mechanism <- args[8]
 multiple_testing_method <- args[9]
@@ -33,11 +33,9 @@ if (identical(grna_integration_strategy, "default")) {
   grna_integration_strategy <- sceptre_object@grna_integration_strategy
 }
 
-# fit_parametric_curve
-if (identical(fit_parametric_curve, "default")) {
-  fit_parametric_curve <- sceptre_object@fit_parametric_curve
-} else {
-  fit_parametric_curve <- as.logical(fit_parametric_curve)
+# resampling_approximation
+if (identical(resampling_approximation, "default")) {
+  resampling_approximation <- sceptre_object@resampling_approximation
 }
 
 # control_group
@@ -107,7 +105,7 @@ sceptre_object <- sceptre::set_analysis_parameters(
   side = side,
   grna_integration_strategy = grna_integration_strategy,
   formula_object = formula_object,
-  fit_parametric_curve = fit_parametric_curve,
+  resampling_approximation = resampling_approximation,
   control_group = control_group,
   resampling_mechanism = resampling_mechanism,
   multiple_testing_method = multiple_testing_method,
