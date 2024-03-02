@@ -7,8 +7,9 @@ response_odm_fp <- args[2]
 grna_odm_fp <- args[3]
 method <- args[4]
 umi_fraction_threshold <- args[5]
-grna_assignment_formula_fp <- args[6]
-grna_assignment_fps <- args[seq(7, length(args))]
+min_grna_n_umis_threshold <- args[6]
+grna_assignment_formula_fp <- args[7]
+grna_assignment_fps <- args[seq(8, length(args))]
 
 # load the sceptre object
 sceptre_object <- sceptre::read_ondisc_backed_sceptre_object(sceptre_object_fp = sceptre_object_fp,
@@ -21,8 +22,12 @@ if (identical(method, "default")) method <- if (sceptre_object@low_moi) "maximum
 if (method == "maximum") {
   sceptre_object@nf_pipeline <- FALSE
   args_to_pass <- list(sceptre_object = sceptre_object, method = "maximum")
-  if (!identical(umi_fraction_threshold, "default")) {
-    args_to_pass[["umi_fraction_threshold"]] <- as.numeric(umi_fraction_threshold)
+  optional_args_names <- c("umi_fraction_threshold", "min_grna_n_umis_threshold")
+  for (optional_arg_name in optional_args_names) {
+    optional_arg_value <- get(x = optional_arg_name)
+    if (!identical(optional_arg_value, "default")) {
+      args_to_pass[[optional_arg_name]] <- as.numeric(optional_arg_value)
+    }
   }
   sceptre_object <- do.call(sceptre::assign_grnas, args = args_to_pass)
 } else {
