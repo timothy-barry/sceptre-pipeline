@@ -22,6 +22,7 @@ params.positive_control_pairs = "${baseDir}/resources/placeholder_file.rds"
 params.grna_assignment_method = "default"
 params.threshold = "default"
 params.umi_fraction_threshold = "default"
+params.min_grna_n_umis_threshold = "default"
 params.n_em_rep = "default"
 params.n_nonzero_cells_cutoff = "default"
 params.backup_threshold = "default"
@@ -159,7 +160,10 @@ process assign_grnas {
 
   when:
   !(params.grna_assignment_method == "maximum" || (low_moi == "true" && params.grna_assignment_method == "default"))
-
+  
+  //when:
+  //params.grna_assignment_method != "maximum"
+  
   input:
   path "sceptre_object_fp"
   path "response_odm_fp"
@@ -188,6 +192,32 @@ process assign_grnas {
   $grna_assignment_formula
   """
 }
+
+// PROCESS C.1 assign_grnas_dummy
+process dummy_assign_grnas {
+  time "1m"
+  memory "1GB"
+  
+  when:
+  params.grna_assignment_method == "maximum" || (low_moi == "true" && params.grna_assignment_method == "default")
+  
+  //when:
+  //params.grna_assignment_method == "maximum"
+
+  input:
+  path "sceptre_object_fp"
+  val "low_moi"
+
+  output:
+  path "grna_assignments.rds", emit: grna_assignments_ch
+  path "grna_assignment_formula.rds", emit: grna_assignment_formula_ch
+
+  """
+  touch grna_assignments.rds
+  touch grna_assignment_formula.rds
+  """
+}
+
 
 // PROCESS D: process gRNA assignments
 process combine_assign_grnas {
@@ -218,6 +248,7 @@ process combine_assign_grnas {
   $grna_odm_fp \
   ${params.grna_assignment_method} \
   ${params.umi_fraction_threshold} \
+  ${params.min_grna_n_umis_threshold} \
   $grna_assignment_formula \
   grna_assignments*
   """
@@ -408,11 +439,15 @@ workflow {
     low_moi_ch,
     Channel.fromPath(params.grna_assignment_formula).first()
   )
-
+  dummy_assign_grnas(
+    set_analysis_parameters.out.sceptre_object_ch.first(),
+    low_moi_ch
+  )
+  
   // 5. process output from above process
-  grna_assignments_ch = assign_grnas.out.grna_assignments_ch.ifEmpty(params.sceptre_object_fp).collect()
-  grna_assignment_formula_ch = assign_grnas.out.grna_assignment_formula_ch.first()
-
+  grna_assignments_ch = assign_grnas.out.grna_assignments_ch.mix(dummy_assign_grnas.out.grna_assignments_ch).collect()
+  grna_assignment_formula_ch = assign_grnas.out.grna_assignment_formula_ch.mix(dummy_assign_grnas.out.grna_assignment_formula_ch).first()
+  
   // 6. process the gRNA assignments
   combine_assign_grnas(
     set_analysis_parameters.out.sceptre_object_ch.first(),
