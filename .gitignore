@@ -1,2 +1,3 @@
 examples/.nextflow*
 .dev_examples/.nextflow*
+.DS_Store
