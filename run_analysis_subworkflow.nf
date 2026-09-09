@@ -32,6 +32,8 @@ process combine_association_analysis {
   publishDir "${params.output_directory}", mode: 'copy', overwrite: true, pattern: "*.png"
   publishDir "${params.output_directory}", mode: 'copy', overwrite: true, pattern: "*.txt"
   publishDir "${params.output_directory}", mode: 'copy', overwrite: true, pattern: "results_*"
+  // Publishes the final, fully-analyzed sceptre_object.rds instead of leaving it unwritten -- see the PR description.
+  publishDir "${params.output_directory}", mode: 'copy', overwrite: true, pattern: "sceptre_object.rds"
   
   time params.combine_association_analysis_time
   memory params.combine_association_analysis_memory

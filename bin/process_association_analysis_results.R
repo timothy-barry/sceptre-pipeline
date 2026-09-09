@@ -17,13 +17,13 @@ sceptre_object@functs_called[[analysis_type]] <- TRUE
 sceptre_object@last_function_called <- analysis_type
 
 # 3. prune the pairs_with_info fields of the sceptre_object
+#
+# The discovery-analysis branch no longer prunes @discovery_pairs_with_info or @covariate_matrix
+# here, since downstream power-analysis tooling reads them directly -- see the PR description.
 if (analysis_type == "run_calibration_check") {
   sceptre_object@negative_control_pairs <- data.frame()
 } else if (analysis_type == "run_power_check") {
   sceptre_object@positive_control_pairs_with_info <- data.frame()
-} else { # discovery analysis
-  sceptre_object@discovery_pairs_with_info <- data.frame()
-  sceptre_object@covariate_matrix <- matrix()
 }
 gc() |> invisible()
 
@@ -37,6 +37,10 @@ process_funct <- switch(analysis_type,
 result_df <- process_funct(result_df, sceptre_object)
 result_df$pod <- NULL
 
+# Plain data.frame, not data.table: same reasoning as prepare_association_analyses.R's
+# process_pair_data_table() -- sceptre_object's result slots reject a data.table at assignment.
+result_df <- as.data.frame(result_df)
+
 # 5. add results to the sceptre_object
 if (analysis_type == "run_calibration_check") {
   sceptre_object@calibration_result <- result_df
@@ -46,8 +50,11 @@ if (analysis_type == "run_calibration_check") {
   sceptre_object@discovery_result <- result_df
 }
 
-# 6. process the response precomputations (if using the complement set as the control group, and not running a discovery analysis)
-if (sceptre_object@control_group_complement && analysis_type != "run_discovery_analysis") {
+# 6. process the response precomputations (if using the complement set as the control group)
+#
+# No longer excludes run_discovery_analysis here -- see the PR description for why that silently
+# dropped valid precomputations for genes only tested in discovery pairs.
+if (sceptre_object@control_group_complement) {
   precomputation_list <- lapply(precomp_fps, readRDS) |> unlist(recursive = FALSE)
   sceptre_object@response_precomputations <- c(sceptre_object@response_precomputations, precomputation_list)
 }
@@ -65,11 +72,10 @@ if (analysis_type == "run_calibration_check") {
 }
 
 # save the outputs
-if (analysis_type == "run_discovery_analysis") {
-  saveRDS(NULL, "sceptre_object.rds")
-} else {
-  saveRDS(sceptre_object, "sceptre_object.rds")
-}
+#
+# The discovery-analysis branch used to write saveRDS(NULL, ...) here instead -- see the PR
+# description for why that's wrong and what it broke.
+saveRDS(sceptre_object, "sceptre_object.rds")
 saveRDS(result_df, paste0("results_", analysis_type, ".rds"))
 ggplot2::ggsave(filename = paste0("plot_", analysis_type, ".png"), plot = p,
                 device = "png", scale = 1.1, width = 5, height = 4, dpi = 330)

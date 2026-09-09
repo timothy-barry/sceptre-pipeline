@@ -46,13 +46,22 @@ sceptre_object <- do.call(what = sceptre::run_qc, args = args_to_pass)
 p1 <- sceptre::plot_covariates(sceptre_object)
 p2 <- sceptre::plot_run_qc(sceptre_object)
 
-# remove fields no longer needed
+# remove fields no longer needed by this pipeline's own downstream steps.
+#
+# @initial_grna_assignment_list and @covariate_data_frame are no longer pruned here, since
+# downstream power-analysis tooling reads them directly -- see the PR description for details.
+#
+# @covariate_data_frame is coerced to a plain data.frame defensively: it can already be a
+# data.table on the *raw* pre-pipeline object (confirmed on our own odm-backed inputs), from
+# however that object was originally imported, well before this script ever runs. Since it is no
+# longer pruned to empty, that taint now survives to the final object -- and a data.table fails
+# S4 slot-assignment validity the same way the pair/result tables did (see
+# prepare_association_analyses.R and process_association_analysis_results.R).
+sceptre_object@covariate_data_frame <- as.data.frame(sceptre_object@covariate_data_frame)
 sceptre_object@discovery_pairs <- data.frame()
 sceptre_object@positive_control_pairs <- data.frame()
 sceptre_object@grna_assignments_raw <- list()
-sceptre_object@initial_grna_assignment_list <- list()
 sceptre_object@import_grna_assignment_info <- list()
-sceptre_object@covariate_data_frame <- data.frame()
 
 # write outputs to disk
 saveRDS(sceptre_object, "sceptre_object.rds")
