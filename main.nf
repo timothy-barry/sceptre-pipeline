@@ -52,6 +52,8 @@ workflow {
     } else {
         validateParameters()
         def profiles = workflow.profile.tokenize(',')
+        log.info "Selected profiles: ${workflow.profile}; scientific execution mode: ${params.execution_mode}."
+        log.info 'The default task executor is local. Distributed mode partitions scientific work; scheduler selection comes from profiles/site configuration. Verify executor overrides before running on a cluster login node (docs/hpc.md, docs/recovery.md).'
         if (profiles.any { it in ['docker','apptainer'] } && !params.container_image)
             error 'The docker/apptainer profiles require --container_image.'
         def immutableOci = params.container_image && (params.container_image ==~ /[A-Za-z0-9._:\/-]+@sha256:[a-f0-9]{64}/ || params.container_image ==~ /sha256:[a-f0-9]{64}/)
