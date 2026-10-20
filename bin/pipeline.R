@@ -42,6 +42,9 @@ validate_pipeline_method <- function(object) {
     if ("get_perturbation_fit_method" %in% api &&
         !identical(sceptre::get_perturbation_fit_method(object), "glm.fit"))
         fail("Experimental fast_logistic is supported only by direct R execution; switch to glm.fit before creating or reading pipeline input.")
+    if ("get_result_methods" %in% api &&
+        any(sceptre::get_result_methods(object) == "wilcoxon_unadjusted"))
+        fail("Experimental Wilcoxon is unsupported in pipeline bundles; use run_wilcoxon() directly with a separate prepared object.")
     invisible(object)
 }
 validate_object <- function(object) {
