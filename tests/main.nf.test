@@ -1,0 +1,180 @@
+// Genuine native execution. Inputs are created by tests/ci/run-nf-test.sh.
+// CI always enables the distributed case; no stub processes are used.
+def compareSavedWorkflow = { fixture, output, stop, analyses, backing = 'none' ->
+    def root = System.getenv('SCEPTRE_CI_ROOT')
+    def runRoot = System.getenv('SCEPTRE_CI_OUT')
+    def image = System.getenv('SCEPTRE_CONTAINER_IMAGE')
+    assert root && runRoot && image
+    def command = ['docker', 'run', '--rm', '-v', "${root}:${root}".toString(),
+        '-v', "${runRoot}:${runRoot}".toString(), '-w', root, image,
+        'Rscript', '--vanilla', 'tests/ci/compare-workflow.R', fixture.toString(),
+        output.toString(), '271828', stop.toString(), analyses.toString(), backing.toString()]
+    def process = new ProcessBuilder(command).inheritIO().start()
+    assert process.waitFor() == 0
+    true
+}
+
+// Generate with Rscript tests/make-input.R "$SCEPTRE_TEST_FIXTURE" first.
+// This suite executes native R work; it never uses -stub-run.
+nextflow_pipeline {
+    name 'Schema-3 complete-family SCEPTRE workflow'
+    script "main.nf"
+    tag 'pipeline'
+
+    test('Runs every requested complete family') {
+        when {
+            params {
+                input_bundle = "${System.getenv('SCEPTRE_TEST_FIXTURE')}/input"
+                analysis_config = "${System.getenv('SCEPTRE_TEST_FIXTURE')}/config.rds"
+                environment_lock = "${System.getenv('SCEPTRE_TEST_FIXTURE')}/lock.rds"
+                backing_directory = "$baseDir/resources/empty_backing"
+                outdir = "$outputDir"
+                container_image = System.getenv('SCEPTRE_CONTAINER_IMAGE')
+            }
+        }
+        then {
+            assert workflow.success
+            assert workflow.trace.succeeded().size() == 8
+            assert workflow.trace.failed().size() == 0
+            assert compareSavedWorkflow(System.getenv('SCEPTRE_TEST_FIXTURE'), outputDir, 'analysis', 'calibration,power,discovery')
+            assert path("$outputDir/exports").exists()
+            ['parameters', 'assignment', 'qc', 'calibration', 'power', 'discovery'].each { stage ->
+                assert path("$outputDir/$stage/state/sceptre_object.rds").size() > 0
+                assert path("$outputDir/$stage/state/manifest.rds").size() > 0
+            }
+        }
+    }
+
+    test('QC stop does not launch result families') {
+        when {
+            params {
+                input_bundle = "${System.getenv('SCEPTRE_TEST_FIXTURE')}/input"
+                analysis_config = "${System.getenv('SCEPTRE_TEST_FIXTURE')}/config.rds"
+                environment_lock = "${System.getenv('SCEPTRE_TEST_FIXTURE')}/lock.rds"
+                backing_directory = "$baseDir/resources/empty_backing"
+                outdir = "$outputDir"
+                container_image = System.getenv('SCEPTRE_CONTAINER_IMAGE')
+                stop_after = 'qc'
+            }
+        }
+        then {
+            assert workflow.success
+            assert workflow.trace.succeeded().size() == 5
+            assert compareSavedWorkflow(System.getenv('SCEPTRE_TEST_FIXTURE'), outputDir, 'qc', 'none')
+            assert path("$outputDir/qc/state/manifest.rds").exists()
+            assert !path("$outputDir/calibration").exists()
+            assert !path("$outputDir/power").exists()
+            assert !path("$outputDir/discovery").exists()
+        }
+    }
+
+    test('Discovery runs directly after QC without calibration') {
+        when {
+            params {
+                input_bundle = "${System.getenv('SCEPTRE_TEST_FIXTURE')}/input"
+                analysis_config = "${System.getenv('SCEPTRE_TEST_FIXTURE')}/config.rds"
+                environment_lock = "${System.getenv('SCEPTRE_TEST_FIXTURE')}/lock.rds"
+                backing_directory = "$baseDir/resources/empty_backing"
+                outdir = "$outputDir"
+                container_image = System.getenv('SCEPTRE_CONTAINER_IMAGE')
+                analyses = 'discovery'
+            }
+        }
+        then {
+            assert workflow.success
+            assert workflow.trace.succeeded().size() == 6
+            assert compareSavedWorkflow(System.getenv('SCEPTRE_TEST_FIXTURE'), outputDir, 'analysis', 'discovery')
+            assert path("$outputDir/discovery/state/manifest.rds").exists()
+            assert !path("$outputDir/calibration").exists()
+            assert !path("$outputDir/power").exists()
+        }
+    }
+
+    test('Schema rejects invalid stage before scientific work') {
+        when {
+            params {
+                input_bundle = "${System.getenv('SCEPTRE_TEST_FIXTURE')}/input"
+                analysis_config = "${System.getenv('SCEPTRE_TEST_FIXTURE')}/config.rds"
+                environment_lock = "${System.getenv('SCEPTRE_TEST_FIXTURE')}/lock.rds"
+                outdir = "$outputDir"
+                container_image = System.getenv('SCEPTRE_CONTAINER_IMAGE')
+                stop_after = 'misspelled'
+            }
+        }
+        then {
+            assert workflow.failed
+            assert path("$metaDir/nextflow.log").text.contains('stop_after')
+            assert !path("$outputDir/parameters").exists()
+        }
+    }
+
+    test('Duplicate families fail before scientific work') {
+        when {
+            params {
+                input_bundle = "${System.getenv('SCEPTRE_TEST_FIXTURE')}/input"
+                analysis_config = "${System.getenv('SCEPTRE_TEST_FIXTURE')}/config.rds"
+                environment_lock = "${System.getenv('SCEPTRE_TEST_FIXTURE')}/lock.rds"
+                outdir = "$outputDir"
+                container_image = System.getenv('SCEPTRE_CONTAINER_IMAGE')
+                analyses = 'discovery,discovery'
+            }
+        }
+        then {
+            assert workflow.failed
+            assert path("$metaDir/nextflow.log").text.contains('unique comma-separated')
+            assert !path("$outputDir/parameters").exists()
+        }
+    }
+
+    test('Schema rejects nonpositive array sizes before scientific work') {
+        when {
+            params {
+                input_bundle = "${System.getenv('SCEPTRE_TEST_FIXTURE')}/input"
+                analysis_config = "${System.getenv('SCEPTRE_TEST_FIXTURE')}/config.rds"
+                environment_lock = "${System.getenv('SCEPTRE_TEST_FIXTURE')}/lock.rds"
+                outdir = "$outputDir"
+                container_image = System.getenv('SCEPTRE_CONTAINER_IMAGE')
+                array_size = 0
+            }
+        }
+        then {
+            assert workflow.failed
+            assert path("$metaDir/nextflow.log").text.contains('array_size')
+            assert !path("$outputDir/parameters").exists()
+        }
+    }
+
+    // Opt in only with a package candidate that exposes the certified seam.
+    // Listing tests also proves whether the environment selected this test.
+    if (System.getenv('SCEPTRE_TEST_DISTRIBUTED') == 'true') {
+        test('Certified distributed units finalize complete families') {
+            tag 'distributed'
+            when {
+                params {
+                    input_bundle = "${System.getenv('SCEPTRE_TEST_FIXTURE')}/input"
+                    analysis_config = "${System.getenv('SCEPTRE_TEST_FIXTURE')}/config.rds"
+                    environment_lock = "${System.getenv('SCEPTRE_TEST_FIXTURE')}/lock.rds"
+                    backing_directory = "$baseDir/resources/empty_backing"
+                    outdir = "$outputDir"
+                    container_image = System.getenv('SCEPTRE_CONTAINER_IMAGE')
+                    execution_mode = 'distributed'
+                    n_work_units = 3
+                }
+            }
+            then {
+                assert workflow.success
+                assert workflow.trace.failed().size() == 0
+                assert workflow.trace.succeeded().size() > 8
+                def names = workflow.trace.succeeded().collect { it.name }
+                assert names.count { it.contains('SCEPTRE_WORKER') } > 3
+                assert names.count { it.contains('SCEPTRE_COLLECT') } == 3
+                assert compareSavedWorkflow(System.getenv('SCEPTRE_TEST_FIXTURE'), outputDir, 'analysis', 'calibration,power,discovery')
+                ['calibration', 'power', 'discovery'].each { stage ->
+                    assert path("$outputDir/$stage/state/manifest.rds").size() > 0
+                    assert path("$outputDir/$stage/state/sceptre_object.rds").size() > 0
+                }
+                assert path("$outputDir/exports").exists()
+            }
+        }
+    }
+}

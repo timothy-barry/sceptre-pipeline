@@ -1,0 +1,94 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "timothy-barry/sceptre-pipeline pipeline parameters",
+  "description": "Certified complete-family SCEPTRE scientific workflows",
+  "type": "object",
+  "properties": {
+    "input_bundle": {
+      "type": "string",
+      "minLength": 1,
+      "format": "directory-path"
+    },
+    "analysis_config": {
+      "type": "string",
+      "minLength": 1,
+      "format": "file-path"
+    },
+    "environment_lock": {
+      "type": "string",
+      "minLength": 1,
+      "format": "file-path"
+    },
+    "backing_directory": {
+      "type": "string",
+      "minLength": 1,
+      "format": "directory-path"
+    },
+    "outdir": {
+      "type": "string",
+      "minLength": 1
+    },
+    "analyses": {
+      "type": "string"
+    },
+    "stop_after": {
+      "type": "string",
+      "enum": [
+        "parameters",
+        "assignment",
+        "qc",
+        "analysis"
+      ]
+    },
+    "seed": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 2147483647
+    },
+    "container_image": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "Immutable OCI digest, or an absolute local .sif path with container_image_sha256 under the apptainer profile"
+    },
+    "help": {
+      "type": "boolean",
+      "description": "Print parameter help and exit"
+    },
+    "execution_mode": {
+      "type": "string",
+      "enum": [
+        "reference",
+        "distributed"
+      ],
+      "description": "Reference complete-family call or certified package work-unit execution"
+    },
+    "n_work_units": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 1000000,
+      "description": "Requested whole-key work units per family, capped by eligible keys"
+    },
+    "array_size": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Maximum distributed workers per scheduler array; used only by the slurm profile"
+    },
+    "container_image_sha256": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[a-f0-9]{64}$",
+      "description": "Required SHA256 of local SIF image bytes; verified before tasks and bound to run identity"
+    }
+  },
+  "required": [
+    "input_bundle",
+    "analysis_config",
+    "environment_lock"
+  ],
+  "additionalProperties": false,
+  "$id": "https://raw.githubusercontent.com/timothy-barry/sceptre-pipeline/main/nextflow_schema.json"
+}

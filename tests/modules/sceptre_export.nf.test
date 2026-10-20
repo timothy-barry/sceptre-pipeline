@@ -1,0 +1,62 @@
+def checkExportedResults = { mode, output ->
+    def root = System.getenv('SCEPTRE_CI_ROOT')
+    def runRoot = System.getenv('SCEPTRE_CI_OUT')
+    def fixtures = System.getenv('SCEPTRE_MODULE_FIXTURES')
+    def image = System.getenv('SCEPTRE_CONTAINER_IMAGE')
+    assert root && runRoot && fixtures && image
+    def command = ['docker', 'run', '--rm', '-v', "${root}:${root}".toString(),
+        '-v', "${runRoot}:${runRoot}".toString(), '-w', root, image,
+        'Rscript', '--vanilla', 'tests/modules/collect-export-assert.R', mode, fixtures, output.toString()]
+    def assertion = new ProcessBuilder(command).inheritIO().start()
+    assert assertion.waitFor() == 0
+    true
+}
+nextflow_process {
+    name 'Certified scientific result export module'
+    script "modules/local/sceptre_export/main.nf"
+    process 'SCEPTRE_EXPORT'
+    tag 'module'
+    test('Exports exact certified discovery tables and marks other families omitted') {
+        when {
+            params {
+                outdir = "$outputDir"
+                container_image = System.getenv('SCEPTRE_CONTAINER_IMAGE')
+            }
+            process {
+                """
+                input[0] = tuple([id: 'fixture'], file('${System.getenv('SCEPTRE_MODULE_FIXTURES')}/discovery'))
+                input[1] = file('${System.getenv('SCEPTRE_MODULE_FIXTURES')}/config.rds')
+                input[2] = file('${System.getenv('SCEPTRE_MODULE_FIXTURES')}/lock.rds')
+                input[3] = file('$baseDir/resources/empty_backing')
+                input[4] = file('$baseDir/bin')
+                """
+            }
+        }
+        then {
+            assert process.success
+            assert process.out.exports[0][0].id == 'fixture'
+            assert checkExportedResults('export-discovery', process.out.exports[0][1])
+        }
+    }
+    test('Exports QC-only report without inventing analysis result tables') {
+        when {
+            params {
+                outdir = "$outputDir"
+                container_image = System.getenv('SCEPTRE_CONTAINER_IMAGE')
+            }
+            process {
+                """
+                input[0] = tuple([id: 'fixture'], file('${System.getenv('SCEPTRE_MODULE_FIXTURES')}/qc'))
+                input[1] = file('${System.getenv('SCEPTRE_MODULE_FIXTURES')}/config.rds')
+                input[2] = file('${System.getenv('SCEPTRE_MODULE_FIXTURES')}/lock.rds')
+                input[3] = file('$baseDir/resources/empty_backing')
+                input[4] = file('$baseDir/bin')
+                """
+            }
+        }
+        then {
+            assert process.success
+            assert checkExportedResults('export-qc', process.out.exports[0][1])
+        }
+    }
+}

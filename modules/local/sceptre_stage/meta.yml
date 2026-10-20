@@ -1,0 +1,50 @@
+name: sceptre_stage
+description: Execute one public SCEPTRE stage and publish an atomic certified artifact; statistical families are finalized in one package call.
+keywords: [sceptre, crispr, complete-family]
+tools:
+  - sceptre:
+      description: Statistical analysis of single-cell CRISPR screens
+      homepage: https://github.com/Katsevich-Lab/sceptre
+      licence: [GPL-3]
+input:
+  - - meta:
+        type: map
+        description: Stable screen id, independent of scientific scope.
+    - state:
+        type: directory
+        description: Certified predecessor bundle with closed serialized object.
+  - config:
+      type: file
+      description: Exact scientific configuration RDS bound into the manifest.
+      pattern: '*.rds'
+  - lock:
+      type: file
+      description: Exact installed-package, dependency and R identity.
+      pattern: '*.rds'
+  - backing:
+      type: directory
+      description: Process-local reopening source for optional backed counts.
+  - tools_dir:
+      type: directory
+      description: Staged pipeline R helpers; content participates in the task cache key.
+  - stage:
+      type: string
+      description: parameters, assignment, qc, calibration, power or discovery.
+  - seed:
+      type: integer
+      description: Initial workflow seed; later stages restore the certified serialized RNG state.
+output:
+  - state:
+      - meta:
+          type: map
+          description: Input metadata retained unchanged.
+      - state:
+          type: directory
+          description: Atomically completed schema-1 bundle containing a schema-3 object and provenance.
+  - versions:
+      - versions.yml:
+          type: file
+          description: Installed package version and content identity.
+          pattern: versions.yml
+authors: []
+maintainers: []

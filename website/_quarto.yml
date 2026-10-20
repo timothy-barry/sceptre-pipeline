@@ -1,0 +1,116 @@
+project:
+  type: website
+  output-dir: _site
+  render:
+    - "*.qmd"
+
+website:
+  title: "SCEPTRE pipeline"
+  description: "A Nextflow workflow for single-cell CRISPR screens, with certified handoffs and complete-family results."
+  navbar:
+    background: light
+    logo: assets/sceptre-mark.svg
+    logo-alt: "SCEPTRE pipeline home"
+    title: "SCEPTRE <span class='brand-secondary'>pipeline</span>"
+    collapse-below: lg
+    left:
+      - href: index.qmd
+        text: Overview
+      - href: demo.qmd
+        text: Demo
+      - href: usage.qmd
+        text: Usage
+      - href: parameters.qmd
+        text: Parameters
+      - href: outputs.qmd
+        text: Outputs
+      - text: Deployment
+        menu:
+          - href: containers.qmd
+            text: Containers
+          - href: hpc.qmd
+            text: Slurm & Apptainer
+          - href: usage.qmd#slurm-worker-arrays
+            text: Slurm worker arrays
+          - href: array-validation.qmd
+            text: Scheduler validation
+      - text: Engineering
+        menu:
+          - href: architecture.qmd
+            text: Architecture & migration
+          - href: distributed-interface.qmd
+            text: Distributed interface
+          - href: ci.qmd
+            text: Continuous integration
+          - href: coverage.qmd
+            text: Scientific test coverage
+          - href: benchmark.qmd
+            text: Real-screen benchmark
+          - href: scale-boundaries.qmd
+            text: Real-screen scale boundaries
+          - href: validation.qmd
+            text: Scientific qualification
+          - href: nf-core.qmd
+            text: nf-core principles
+    right:
+      - icon: github
+        href: https://github.com/timothy-barry/sceptre-pipeline
+        aria-label: "Pipeline source on GitHub"
+  search:
+    location: navbar
+    type: overlay
+  sidebar:
+    style: docked
+    collapse-level: 2
+    contents:
+      - section: "RUN A SCREEN"
+        contents:
+          - demo.qmd
+          - usage.qmd
+          - parameters.qmd
+          - outputs.qmd
+          - report.qmd
+      - section: "DEPLOY"
+        contents:
+          - containers.qmd
+          - hpc.qmd
+          - array-validation.qmd
+      - section: "UNDERSTAND & VERIFY"
+        contents:
+          - architecture.qmd
+          - distributed-interface.qmd
+          - ci.qmd
+          - coverage.qmd
+          - benchmark.qmd
+          - scale-boundaries.qmd
+          - validation.qmd
+          - nf-core.qmd
+  page-footer:
+    border: false
+    left: "SCEPTRE pipeline · Single-cell CRISPR screen analysis"
+    right:
+      - text: "GPL-3.0"
+        href: LICENSE.txt
+      - text: "Source"
+        href: https://github.com/timothy-barry/sceptre-pipeline
+
+format:
+  html:
+    theme:
+      - cosmo
+      - assets/theme.scss
+    css: assets/site.css
+    toc: true
+    toc-depth: 3
+    code-copy: true
+    code-overflow: wrap
+    anchor-sections: true
+    smooth-scroll: false
+    link-external-newwindow: false
+    include-after-body: assets/site-footer.html
+
+filters:
+  - assets/table-scroll.lua
+
+execute:
+  enabled: false

@@ -1,0 +1,4 @@
+.build/
+*.image-id
+*.build.log
+__pycache__/

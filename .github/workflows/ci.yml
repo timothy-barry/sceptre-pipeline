@@ -1,0 +1,176 @@
+name: Pipeline checks
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: pipeline-checks-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+defaults:
+  run:
+    shell: bash
+env:
+  NXF_VER: '25.10.4'
+  NXF_ANSI_LOG: 'false'
+  NXF_OPTS: '-Xms256m -Xmx1g'
+jobs:
+  schema:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: '3.12.8'
+      - run: pip install nf-core==4.1.0
+      - run: nf-core pipelines schema lint --dir .
+      - run: bash -n tests/run-nextflow.sh tests/check-array-config.sh tests/ci/run-nf-test.sh tests/ci/check-sif-identity.sh
+      - run: python3 -m py_compile container/prepare-context.py tests/ci/require-nf-test.py
+      - name: Verify bundled scientific source identity and rejection guards
+        run: python3 tests/ci/check-runtime-source.py
+  scientific:
+    # Automatic PR/push checks need neither an unpublished package ref nor secrets.
+    needs: schema
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-java@cf277c60eb25467037889841efdb72551f06f6c3 # v4
+        with:
+          distribution: temurin
+          java-version: '17.0.10+7'
+      - uses: nf-core/setup-nextflow@6c2e22b4d901f0c42ca66c5069f8026df026d165 # v2
+        with:
+          version: '25.10.4'
+      - name: Check opt-in scheduler configuration
+        run: bash tests/check-array-config.sh
+      - name: Reject invalid SIF and mutable OCI identity before task submission
+        run: bash tests/ci/check-sif-identity.sh "$RUNNER_TEMP/sif-guard"
+      - name: Install checksum-pinned nf-test 0.9.5
+        run: |
+          mkdir -p "$RUNNER_TEMP/nf-test"
+          curl -fsSL --retry 3 https://github.com/askimed/nf-test/releases/download/v0.9.5/nf-test-0.9.5.tar.gz \
+            -o "$RUNNER_TEMP/nf-test/release.tar.gz"
+          echo 'b7679eb90cdc9642bfa89e9634db02ce6e699de53ad35ef0e2f4847634fc1641  '"$RUNNER_TEMP/nf-test/release.tar.gz" | sha256sum -c -
+          tar -xzf "$RUNNER_TEMP/nf-test/release.tar.gz" -C "$RUNNER_TEMP/nf-test"
+          echo '39516b1e7cc1eb4603001e2a6cbb6370b483f9a918db51dfb58a93608eca5602  '"$RUNNER_TEMP/nf-test/nf-test.jar" | sha256sum -c -
+          java -version 2>&1 | tee "$RUNNER_TEMP/nf-test/java-version.txt"
+          nextflow -version | tee "$RUNNER_TEMP/nf-test/nextflow-version.txt"
+          java -jar "$RUNNER_TEMP/nf-test/nf-test.jar" version | tee "$RUNNER_TEMP/nf-test/nf-test-version.txt"
+      - name: Measure native nf-test file coverage and verify README badges
+        run: |
+          java -jar "$RUNNER_TEMP/nf-test/nf-test.jar" coverage --csv "$RUNNER_TEMP/nf-test/coverage.csv"
+          java -jar "$RUNNER_TEMP/nf-test/nf-test.jar" coverage --html "$RUNNER_TEMP/nf-test/coverage.html"
+          python3 tests/ci/update-badges.py "$RUNNER_TEMP/nf-test/coverage.csv" --check
+      - name: Build the bundled exact-source scientific runtime
+        run: |
+          python3 container/prepare-context.py --source-manifest tests/runtime/source.json \
+            --output "$RUNNER_TEMP/context" | tee "$RUNNER_TEMP/context-receipt.json"
+          docker build --progress plain --iidfile "$RUNNER_TEMP/image-id" "$RUNNER_TEMP/context" \
+            2>&1 | tee "$RUNNER_TEMP/container-build.log"
+          echo "SCEPTRE_CONTAINER_IMAGE=$(cat "$RUNNER_TEMP/image-id")" >> "$GITHUB_ENV"
+          docker image inspect "$(cat "$RUNNER_TEMP/image-id")" > "$RUNNER_TEMP/image-inspect.json"
+          docker run --rm "$(cat "$RUNNER_TEMP/image-id")" \
+            sh -c 'cat /opt/sceptre/source.json /opt/sceptre/session-info.txt /opt/sceptre/packages.tsv' \
+            > "$RUNNER_TEMP/runtime-provenance.txt"
+      - name: Execute all real nf-test branches, including distributed workers
+        run: bash tests/ci/run-nf-test.sh "$RUNNER_TEMP/nf-test/nf-test.jar" "$RUNNER_TEMP/nf-test"
+      - name: Complete-family comparisons with mandatory backed execution
+        run: |
+          mkdir -p "$RUNNER_TEMP/direct" "$RUNNER_TEMP/distributed"
+          docker run --rm -v "$PWD:$PWD" -v "$RUNNER_TEMP:$RUNNER_TEMP" -w "$PWD" \
+            -e REQUIRE_ONDISC=true "$SCEPTRE_CONTAINER_IMAGE" \
+            Rscript tests/direct-comparison.R "$RUNNER_TEMP/direct" 2>&1 | tee "$RUNNER_TEMP/direct.log"
+          docker run --rm -v "$PWD:$PWD" -v "$RUNNER_TEMP:$RUNNER_TEMP" -w "$PWD" \
+            -e REQUIRE_ONDISC=true "$SCEPTRE_CONTAINER_IMAGE" \
+            Rscript tests/distributed-comparison.R "$RUNNER_TEMP/distributed" 2>&1 | tee "$RUNNER_TEMP/distributed.log"
+      - name: Exact one, multiple, uneven and excess unit-partition matrix
+        run: |
+          mkdir -p "$RUNNER_TEMP/unit-matrix"
+          docker run --rm -v "$PWD:$PWD" -v "$RUNNER_TEMP:$RUNNER_TEMP" -w "$PWD" \
+            "$SCEPTRE_CONTAINER_IMAGE" Rscript tests/ci/unit-partition-matrix.R "$RUNNER_TEMP/unit-matrix" \
+            2>&1 | tee "$RUNNER_TEMP/unit-matrix.log"
+      - name: Scientific report values, omitted stages and rendering isolation
+        run: |
+          docker run --rm -v "$PWD:$PWD" -v "$RUNNER_TEMP:$RUNNER_TEMP" -w "$PWD" \
+            "$SCEPTRE_CONTAINER_IMAGE" Rscript report/check.R "$RUNNER_TEMP/report-validation" \
+            2>&1 | tee "$RUNNER_TEMP/report-validation.log"
+          docker run --rm -v "$PWD:$PWD" -v "$RUNNER_TEMP:$RUNNER_TEMP" -w "$PWD" \
+            "$SCEPTRE_CONTAINER_IMAGE" Rscript --vanilla report/check-memory.R "$RUNNER_TEMP/report-memory" 100000 render \
+            2>&1 | tee "$RUNNER_TEMP/report-memory.log"
+      - name: Complete synthetic demo and report bundle
+        env:
+          SCEPTRE_DEMO_PROFILE: test,docker
+        run: |
+          SCEPTRE_DEMO_IMAGE="$SCEPTRE_CONTAINER_IMAGE" bash demo/demo.sh "$RUNNER_TEMP/demo" \
+            2>&1 | tee "$RUNNER_TEMP/demo.log"
+          docker run --rm -v "$PWD:$PWD" -v "$RUNNER_TEMP:$RUNNER_TEMP" -w "$PWD" \
+            "$SCEPTRE_CONTAINER_IMAGE" Rscript demo/check-output.R "$RUNNER_TEMP/demo"
+      - name: Real Nextflow comparisons, resume and failed-worker rejection
+        run: |
+          bash tests/run-nextflow.sh "$RUNNER_TEMP/integration" 2>&1 | tee "$RUNNER_TEMP/integration.log"
+          SCEPTRE_EXECUTION_MODE=distributed bash tests/run-nextflow.sh "$RUNNER_TEMP/integration-distributed" \
+            2>&1 | tee "$RUNNER_TEMP/integration-distributed.log"
+      - name: Missing-family semantic false-positive guard
+        run: |
+          docker run --rm -v "$PWD:$PWD" -v "$RUNNER_TEMP:$RUNNER_TEMP" -w "$PWD" \
+            "$SCEPTRE_CONTAINER_IMAGE" Rscript tests/ci/check-missing-family.R \
+            "$RUNNER_TEMP/integration/fixture" "$RUNNER_TEMP/integration/results" "$RUNNER_TEMP/missing-family" \
+            2>&1 | tee "$RUNNER_TEMP/missing-family.log"
+      - name: Preserve diagnostics and scientific runtime identity
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: scientific-validation-${{ github.run_id }}-${{ github.run_attempt }}
+          retention-days: 14
+          include-hidden-files: true
+          if-no-files-found: warn
+          path: |
+            tests/runtime/source.json
+            ${{ runner.temp }}/sif-guard/*.log
+            ${{ runner.temp }}/context/source.json
+            ${{ runner.temp }}/context/source.sha256
+            ${{ runner.temp }}/context/optional.sha256
+            ${{ runner.temp }}/context-receipt.json
+            ${{ runner.temp }}/container-build.log
+            ${{ runner.temp }}/image-id
+            ${{ runner.temp }}/image-inspect.json
+            ${{ runner.temp }}/runtime-provenance.txt
+            ${{ runner.temp }}/*.log
+            ${{ runner.temp }}/direct/direct-comparison.rds
+            ${{ runner.temp }}/distributed/distributed-comparison.rds
+            ${{ runner.temp }}/unit-matrix/unit-partition-matrix.rds
+            ${{ runner.temp }}/report-validation/*report/report-status.json
+            ${{ runner.temp }}/report-validation/*report/report.html
+            ${{ runner.temp }}/report-memory/metrics.csv
+            ${{ runner.temp }}/report-memory/report.html
+            ${{ runner.temp }}/report-memory/render-allocations.txt
+            ${{ runner.temp }}/demo/demo-receipt.json
+            ${{ runner.temp }}/demo/results/exports/scientific-report
+            ${{ runner.temp }}/demo/results/pipeline_info
+            ${{ runner.temp }}/nf-test/*.txt
+            ${{ runner.temp }}/nf-test/*.log
+            ${{ runner.temp }}/nf-test/*.tap
+            ${{ runner.temp }}/nf-test/*.xml
+            ${{ runner.temp }}/nf-test/coverage.csv
+            ${{ runner.temp }}/nf-test/coverage.html
+            ${{ runner.temp }}/nf-test/work/tests/**/meta/nextflow.log
+            ${{ runner.temp }}/nf-test/work/tests/**/meta/trace.csv
+            ${{ runner.temp }}/nf-test/work/tests/**/work/**/.command.log
+            ${{ runner.temp }}/nf-test/work/tests/**/work/**/.command.err
+            ${{ runner.temp }}/nf-test/work/tests/**/work/**/.command.out
+            ${{ runner.temp }}/integration*/results/pipeline_info
+            ${{ runner.temp }}/integration*/*.log
+            ${{ runner.temp }}/integration*/resume-trace.tsv
+            ${{ runner.temp }}/integration*/work/**/.command.log
+            ${{ runner.temp }}/integration*/work/**/.command.err
+            ${{ runner.temp }}/integration*/work/**/.command.out
+            ${{ runner.temp }}/integration*/failure-work/**/.command.log
+            ${{ runner.temp }}/integration*/failure-work/**/.command.err
+            ${{ runner.temp }}/integration*/failure-work/**/.command.out

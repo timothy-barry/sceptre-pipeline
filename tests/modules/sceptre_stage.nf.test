@@ -1,0 +1,32 @@
+nextflow_process {
+    name 'Public parameters stage module'
+    script "modules/local/sceptre_stage/main.nf"
+    process 'SCEPTRE_STAGE'
+    tag 'module'
+    test('Writes a real object, manifest and version identity') {
+        when {
+            params {
+                outdir = "$outputDir"
+                container_image = System.getenv('SCEPTRE_CONTAINER_IMAGE')
+            }
+            process {
+                """
+                input[0] = tuple([id: 'fixture'], file('${System.getenv('SCEPTRE_TEST_FIXTURE')}/input'))
+                input[1] = file('${System.getenv('SCEPTRE_TEST_FIXTURE')}/config.rds')
+                input[2] = file('${System.getenv('SCEPTRE_TEST_FIXTURE')}/lock.rds')
+                input[3] = file('$baseDir/resources/empty_backing')
+                input[4] = file('$baseDir/bin')
+                input[5] = 'parameters'
+                input[6] = 271828
+                """
+            }
+        }
+        then {
+            assert process.success
+            assert process.out.state[0][0].id == 'fixture'
+            assert path("${process.out.state[0][1]}/manifest.rds").size() > 0
+            assert path("${process.out.state[0][1]}/sceptre_object.rds").size() > 0
+            assert path(process.out.versions[0]).text.contains('installed_sha256:')
+        }
+    }
+}

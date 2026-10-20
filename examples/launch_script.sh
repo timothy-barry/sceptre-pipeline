@@ -1,33 +1,21 @@
-#!/bin/bash
-# Limit NF driver to 4 GB memory
-nextflow pull timothy-barry/sceptre-pipeline
-export NXF_OPTS="-Xms500M -Xmx4G"
-
-##########################
-# REQUIRED INPUT ARGUMENTS
-##########################
-data_directory=$HOME"/sceptre_data/"
-# sceptre object
-sceptre_object_fp=$data_directory"sceptre_object.rds"
-# response ODM
-response_odm_fp=$data_directory"gene.odm"
-# grna ODM
-grna_odm_fp=$data_directory"grna.odm"
-
-##################
-# OUTPUT DIRECTORY
-##################
-output_directory=$HOME"/sceptre_outputs"
-
-#################
-# Invoke pipeline
-#################
-nextflow run timothy-barry/sceptre-pipeline -r main \
- --sceptre_object_fp $sceptre_object_fp \
- --response_odm_fp $response_odm_fp \
- --grna_odm_fp $grna_odm_fp \
- --output_directory $output_directory \
- --grna_assignment_method mixture \
- --pair_pod_size 1000 \
- --grna_pod_size 25 \
- --trial
+#!/usr/bin/env bash
+set -euo pipefail
+# Prepare these artifacts with the qualified package/runtime; see docs/usage.md.
+: "${SCEPTRE_INPUT_BUNDLE:?Set an absolute input bundle directory}"
+: "${SCEPTRE_ANALYSIS_CONFIG:?Set an absolute analysis_config.rds path}"
+: "${SCEPTRE_ENVIRONMENT_LOCK:?Set an absolute environment_lock.rds path}"
+: "${SCEPTRE_OUTPUT_DIRECTORY:?Set a fresh absolute output directory}"
+pipeline_directory=$(cd "$(dirname "$0")/.." && pwd)
+args=(run "$pipeline_directory/main.nf"
+  --input_bundle "$SCEPTRE_INPUT_BUNDLE"
+  --analysis_config "$SCEPTRE_ANALYSIS_CONFIG"
+  --environment_lock "$SCEPTRE_ENVIRONMENT_LOCK"
+  --outdir "$SCEPTRE_OUTPUT_DIRECTORY"
+  --analyses "${SCEPTRE_ANALYSES:-calibration,power,discovery}")
+if [[ -n "${SCEPTRE_BACKING_DIRECTORY:-}" ]]; then
+  args+=(--backing_directory "$SCEPTRE_BACKING_DIRECTORY")
+fi
+if [[ -n "${SCEPTRE_CONTAINER_IMAGE:-}" ]]; then
+  args+=(-profile docker --container_image "$SCEPTRE_CONTAINER_IMAGE")
+fi
+nextflow "${args[@]}" "$@"

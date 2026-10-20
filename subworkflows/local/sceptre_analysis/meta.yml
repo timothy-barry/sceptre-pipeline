@@ -1,0 +1,32 @@
+name: sceptre_analysis
+description: Execute a complete result family through the reference public call or certified package prepare, worker and collector boundary.
+keywords: [sceptre, certified-execution, complete-family]
+components:
+  - sceptre_stage
+  - sceptre_prepare
+  - sceptre_worker
+  - sceptre_collect
+input:
+  - state:
+      description: Value channel of tuple(meta, certified predecessor state directory).
+  - config:
+      description: Value channel with manifest-bound scientific configuration RDS.
+  - lock:
+      description: Value channel with exact package and runtime identity RDS.
+  - backing:
+      description: Value channel with backing files reopened locally by each process.
+  - tools_dir:
+      description: Value channel with staged R helper directory included in cache identity.
+  - stage:
+      description: Family name calibration, power or discovery.
+  - seed:
+      description: Original analysis seed checked against the serialized RNG handoff.
+  - execution_mode:
+      description: reference uses the whole-family public call; distributed uses certified whole-key units and a whole-family collector.
+  - n_units:
+      description: Requested unit count; package certificate fixes actual ordered scope and RNG policy.
+output:
+  - state:
+      description: Completed whole-family state only. Worker proposals are raw and unfinalized; missing, duplicate or incompatible proposals cannot finalize a family.
+authors: []
+maintainers: []

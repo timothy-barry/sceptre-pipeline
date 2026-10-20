@@ -1,0 +1,54 @@
+name: sceptre_worker
+description: Execute one certified whole-key unit using freshly prepared process-local resources and emit a raw unfinalized proposal.
+keywords: [sceptre, certified-execution, complete-family]
+tools:
+  - sceptre:
+      description: Statistical analysis of single-cell CRISPR screens
+      homepage: https://github.com/Katsevich-Lab/sceptre
+      licence: [GPL-3]
+input:
+  - - meta:
+        type: map
+        description: Stable pipeline screen id; scientific scope belongs to the package execution certificate.
+    - state:
+        type: directory
+        description: Certified predecessor state with a closed serialized schema-3 object.
+  - config:
+      type: file
+      description: Manifest-bound scientific configuration RDS.
+      pattern: '*.rds'
+  - lock:
+      type: file
+      description: Exact installed package, optional backend and runtime identity RDS.
+      pattern: '*.rds'
+  - backing:
+      type: directory
+      description: Count backing files for process-local reopen; no serialized live handles.
+  - tools_dir:
+      type: directory
+      description: Staged R helpers included in task cache content identity.
+  - execution:
+      type: directory
+      description: Frozen certified package execution plan and ordered unit scope; excludes process-local contexts, pointers and cached draws.
+  - stage:
+      type: string
+      description: calibration, power or discovery family.
+  - seed:
+      type: integer
+      description: Original workflow seed checked against the serialized RNG handoff; native seed ownership remains in the package.
+  - unit_id:
+      type: string
+      description: Exact certified unit identifier; arbitrary pair partitions and ad hoc task seeds are unsupported.
+output:
+  - proposal:
+      - proposal:
+          type: file
+          description: Raw certified worker proposal, never a completed ResultRecord family; collector validation is required before publication.
+          pattern: proposal_unit-*.rds
+  - versions:
+      - versions.yml:
+          type: file
+          description: Installed package and execution dependency versions.
+          pattern: versions.yml
+authors: []
+maintainers: []

@@ -1,0 +1,73 @@
+def checkCollectedState = { output ->
+    def root = System.getenv('SCEPTRE_CI_ROOT')
+    def runRoot = System.getenv('SCEPTRE_CI_OUT')
+    def fixtures = System.getenv('SCEPTRE_MODULE_FIXTURES')
+    def image = System.getenv('SCEPTRE_CONTAINER_IMAGE')
+    assert root && runRoot && fixtures && image
+    def command = ['docker', 'run', '--rm', '-v', "${root}:${root}".toString(),
+        '-v', "${runRoot}:${runRoot}".toString(), '-w', root, image,
+        'Rscript', '--vanilla', 'tests/modules/collect-export-assert.R', 'collect', fixtures, output.toString()]
+    def assertion = new ProcessBuilder(command).inheritIO().start()
+    assert assertion.waitFor() == 0
+    true
+}
+nextflow_process {
+    name 'Certified complete-family collection module'
+    script "modules/local/sceptre_collect/main.nf"
+    process 'SCEPTRE_COLLECT'
+    tag 'module'
+    test('Collects all proposals into the exact public reference family') {
+        when {
+            params {
+                outdir = "$outputDir"
+                container_image = System.getenv('SCEPTRE_CONTAINER_IMAGE')
+            }
+            process {
+                """
+                input[0] = tuple([id: 'fixture'], file('${System.getenv('SCEPTRE_MODULE_FIXTURES')}/qc'))
+                input[1] = file('${System.getenv('SCEPTRE_MODULE_FIXTURES')}/config.rds')
+                input[2] = file('${System.getenv('SCEPTRE_MODULE_FIXTURES')}/lock.rds')
+                input[3] = file('$baseDir/resources/empty_backing')
+                input[4] = file('$baseDir/bin')
+                input[5] = file('${System.getenv('SCEPTRE_MODULE_FIXTURES')}/execution')
+                input[6] = file('${System.getenv('SCEPTRE_MODULE_FIXTURES')}/proposals/*.rds')
+                input[7] = 'discovery'
+                input[8] = 271828
+                """
+            }
+        }
+        then {
+            assert process.success
+            assert process.out.state[0][0].id == 'fixture'
+            assert checkCollectedState(process.out.state[0][1])
+            assert path(process.out.versions[0]).text.contains('installed_sha256:')
+        }
+    }
+    test('Rejects incomplete proposals without publishing a completed family') {
+        when {
+            params {
+                outdir = "$outputDir"
+                container_image = System.getenv('SCEPTRE_CONTAINER_IMAGE')
+            }
+            process {
+                """
+                input[0] = tuple([id: 'fixture'], file('${System.getenv('SCEPTRE_MODULE_FIXTURES')}/qc'))
+                input[1] = file('${System.getenv('SCEPTRE_MODULE_FIXTURES')}/config.rds')
+                input[2] = file('${System.getenv('SCEPTRE_MODULE_FIXTURES')}/lock.rds')
+                input[3] = file('$baseDir/resources/empty_backing')
+                input[4] = file('$baseDir/bin')
+                input[5] = file('${System.getenv('SCEPTRE_MODULE_FIXTURES')}/execution')
+                input[6] = file('${System.getenv('SCEPTRE_MODULE_FIXTURES')}/proposals/proposal_unit-000001.rds')
+                input[7] = 'discovery'
+                input[8] = 271828
+                """
+            }
+        }
+        then {
+            assert process.failed
+            assert process.trace.failed().size() == 1
+            assert !path("$outputDir/discovery/state").exists()
+            assert path("$metaDir/nextflow.log").text.contains('Collection requires every expected work unit exactly once.')
+        }
+    }
+}

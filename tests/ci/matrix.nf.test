@@ -1,0 +1,237 @@
+// Genuine native execution matrix. Inputs are created by tests/ci/run-nf-test.sh.
+// No conditional test discovery and no stub processes.
+def compareSavedWorkflow = { fixture, output, stop, analyses, backing = 'none' ->
+    def root = System.getenv('SCEPTRE_CI_ROOT')
+    def runRoot = System.getenv('SCEPTRE_CI_OUT')
+    def image = System.getenv('SCEPTRE_CONTAINER_IMAGE')
+    assert root && runRoot && image
+    def command = ['docker', 'run', '--rm', '-v', "${root}:${root}".toString(),
+        '-v', "${runRoot}:${runRoot}".toString(), '-w', root, image,
+        'Rscript', '--vanilla', 'tests/ci/compare-workflow.R', fixture.toString(),
+        output.toString(), '271828', stop.toString(), analyses.toString(), backing.toString()]
+    def process = new ProcessBuilder(command).inheritIO().start()
+    assert process.waitFor() == 0
+    true
+}
+
+nextflow_pipeline {
+    name 'Scientific branch and artifact matrix'
+    script "main.nf"
+    tag 'pipeline'
+    tag 'matrix'
+
+    test('Parameters stop executes no assignment, QC or families') {
+        when {
+            params {
+                input_bundle = "${System.getenv('SCEPTRE_TEST_FIXTURE')}/input"
+                analysis_config = "${System.getenv('SCEPTRE_TEST_FIXTURE')}/config.rds"
+                environment_lock = "${System.getenv('SCEPTRE_TEST_FIXTURE')}/lock.rds"
+                outdir = "$outputDir"
+                container_image = System.getenv('SCEPTRE_CONTAINER_IMAGE')
+                stop_after = 'parameters'
+            }
+        }
+        then {
+            assert workflow.success
+            assert workflow.trace.succeeded().size() == 2
+            assert compareSavedWorkflow(System.getenv('SCEPTRE_TEST_FIXTURE'), outputDir, 'parameters', 'none')
+        }
+    }
+    test('Assignment stop preserves exact assignments and RNG') {
+        when {
+            params {
+                input_bundle = "${System.getenv('SCEPTRE_TEST_FIXTURE')}/input"
+                analysis_config = "${System.getenv('SCEPTRE_TEST_FIXTURE')}/config.rds"
+                environment_lock = "${System.getenv('SCEPTRE_TEST_FIXTURE')}/lock.rds"
+                outdir = "$outputDir"
+                container_image = System.getenv('SCEPTRE_CONTAINER_IMAGE')
+                stop_after = 'assignment'
+            }
+        }
+        then {
+            assert workflow.success
+            assert workflow.trace.succeeded().size() == 4
+            assert compareSavedWorkflow(System.getenv('SCEPTRE_TEST_FIXTURE'), outputDir, 'assignment', 'none')
+        }
+    }
+    test('Empty analysis selection stops after QC without family tasks') {
+        when {
+            params {
+                input_bundle = "${System.getenv('SCEPTRE_TEST_FIXTURE')}/input"
+                analysis_config = "${System.getenv('SCEPTRE_TEST_FIXTURE')}/config.rds"
+                environment_lock = "${System.getenv('SCEPTRE_TEST_FIXTURE')}/lock.rds"
+                outdir = "$outputDir"
+                container_image = System.getenv('SCEPTRE_CONTAINER_IMAGE')
+                analyses = ''
+            }
+        }
+        then {
+            assert workflow.success
+            assert workflow.trace.succeeded().size() == 5
+            assert compareSavedWorkflow(System.getenv('SCEPTRE_TEST_FIXTURE'), outputDir, 'analysis', 'none')
+        }
+    }
+    test('Calibration alone matches direct full-family tables and plans') {
+        when {
+            params {
+                input_bundle = "${System.getenv('SCEPTRE_TEST_FIXTURE')}/input"
+                analysis_config = "${System.getenv('SCEPTRE_TEST_FIXTURE')}/config.rds"
+                environment_lock = "${System.getenv('SCEPTRE_TEST_FIXTURE')}/lock.rds"
+                outdir = "$outputDir"
+                container_image = System.getenv('SCEPTRE_CONTAINER_IMAGE')
+                analyses = 'calibration'
+            }
+        }
+        then {
+            assert workflow.success
+            assert workflow.trace.succeeded().size() == 6
+            assert compareSavedWorkflow(System.getenv('SCEPTRE_TEST_FIXTURE'), outputDir, 'analysis', 'calibration')
+        }
+    }
+    test('Power alone matches direct full-family tables and plans') {
+        when {
+            params {
+                input_bundle = "${System.getenv('SCEPTRE_TEST_FIXTURE')}/input"
+                analysis_config = "${System.getenv('SCEPTRE_TEST_FIXTURE')}/config.rds"
+                environment_lock = "${System.getenv('SCEPTRE_TEST_FIXTURE')}/lock.rds"
+                outdir = "$outputDir"
+                container_image = System.getenv('SCEPTRE_CONTAINER_IMAGE')
+                analyses = 'power'
+            }
+        }
+        then {
+            assert workflow.success
+            assert workflow.trace.succeeded().size() == 6
+            assert compareSavedWorkflow(System.getenv('SCEPTRE_TEST_FIXTURE'), outputDir, 'analysis', 'power')
+        }
+    }
+    test('One-unit permutations preserve complete tables, fits and RNG') {
+        when {
+            params {
+                input_bundle = "${System.getenv('SCEPTRE_MATRIX_FIXTURES')}/low_nt_permutation/input"
+                analysis_config = "${System.getenv('SCEPTRE_MATRIX_FIXTURES')}/low_nt_permutation/config.rds"
+                environment_lock = "${System.getenv('SCEPTRE_MATRIX_FIXTURES')}/low_nt_permutation/lock.rds"
+                outdir = "$outputDir"
+                container_image = System.getenv('SCEPTRE_CONTAINER_IMAGE')
+                execution_mode = 'distributed'
+                n_work_units = 1
+            }
+        }
+        then {
+            assert workflow.success
+            def names = workflow.trace.succeeded().collect { it.name }
+            assert names.count { it.contains('SCEPTRE_WORKER') } == 3
+            assert names.count { it.contains('SCEPTRE_COLLECT') } == 3
+            assert compareSavedWorkflow("${System.getenv('SCEPTRE_MATRIX_FIXTURES')}/low_nt_permutation", outputDir, 'analysis', 'calibration,power,discovery')
+        }
+    }
+    test('Excess-unit empirical CRT preserves whole-family budgets and RNG') {
+        when {
+            params {
+                input_bundle = "${System.getenv('SCEPTRE_MATRIX_FIXTURES')}/high_empirical_crt/input"
+                analysis_config = "${System.getenv('SCEPTRE_MATRIX_FIXTURES')}/high_empirical_crt/config.rds"
+                environment_lock = "${System.getenv('SCEPTRE_MATRIX_FIXTURES')}/high_empirical_crt/lock.rds"
+                outdir = "$outputDir"
+                container_image = System.getenv('SCEPTRE_CONTAINER_IMAGE')
+                execution_mode = 'distributed'
+                n_work_units = 99
+            }
+        }
+        then {
+            assert workflow.success
+            assert workflow.trace.failed().size() == 0
+            assert compareSavedWorkflow("${System.getenv('SCEPTRE_MATRIX_FIXTURES')}/high_empirical_crt", outputDir, 'analysis', 'calibration,power,discovery')
+        }
+    }
+    test('Backed permutation workers match direct saved-state semantics') {
+        when {
+            params {
+                input_bundle = "${System.getenv('SCEPTRE_MATRIX_FIXTURES')}/low_nt_permutation_backed/input"
+                analysis_config = "${System.getenv('SCEPTRE_MATRIX_FIXTURES')}/low_nt_permutation_backed/config.rds"
+                environment_lock = "${System.getenv('SCEPTRE_MATRIX_FIXTURES')}/low_nt_permutation_backed/lock.rds"
+                backing_directory = "${System.getenv('SCEPTRE_MATRIX_FIXTURES')}/low_nt_permutation_backed/backing"
+                outdir = "$outputDir"
+                container_image = System.getenv('SCEPTRE_CONTAINER_IMAGE')
+                execution_mode = 'distributed'
+                n_work_units = 3
+            }
+        }
+        then {
+            assert workflow.success
+            assert workflow.trace.failed().size() == 0
+            assert compareSavedWorkflow("${System.getenv('SCEPTRE_MATRIX_FIXTURES')}/low_nt_permutation_backed", outputDir, 'analysis', 'calibration,power,discovery', "${System.getenv('SCEPTRE_MATRIX_FIXTURES')}/low_nt_permutation_backed/backing")
+        }
+    }
+    test('Unsupported backed CRT rejects before any completed family') {
+        when {
+            params {
+                input_bundle = "${System.getenv('SCEPTRE_MATRIX_FIXTURES')}/low_nt_crt_backed/input"
+                analysis_config = "${System.getenv('SCEPTRE_MATRIX_FIXTURES')}/low_nt_crt_backed/config.rds"
+                environment_lock = "${System.getenv('SCEPTRE_MATRIX_FIXTURES')}/low_nt_crt_backed/lock.rds"
+                backing_directory = "${System.getenv('SCEPTRE_MATRIX_FIXTURES')}/low_nt_crt_backed/backing"
+                outdir = "$outputDir"
+                container_image = System.getenv('SCEPTRE_CONTAINER_IMAGE')
+                execution_mode = 'distributed'
+            }
+        }
+        then {
+            assert workflow.failed
+            def log = path("$metaDir/nextflow.log").text.toLowerCase()
+            assert log.contains("must be set to 'permutations' when using an ondisc-backed sceptre_object")
+            assert workflow.trace.failed().any { it.name.contains(':PARAMETERS') }
+            ['calibration', 'power', 'discovery'].each { stage ->
+                assert !path("$outputDir/$stage/state/manifest.rds").exists()
+            }
+        }
+    }
+    test('Wrong runtime lock fails before parameters execute') {
+        when {
+            params {
+                input_bundle = "${System.getenv('SCEPTRE_MATRIX_FIXTURES')}/wrong_runtime/input"
+                analysis_config = "${System.getenv('SCEPTRE_MATRIX_FIXTURES')}/wrong_runtime/config.rds"
+                environment_lock = "${System.getenv('SCEPTRE_MATRIX_FIXTURES')}/wrong_runtime/lock.rds"
+                outdir = "$outputDir"
+                container_image = System.getenv('SCEPTRE_CONTAINER_IMAGE')
+            }
+        }
+        then {
+            assert workflow.failed
+            assert path("$metaDir/nextflow.log").text.contains('Runtime/package identity mismatch')
+            assert !path("$outputDir/parameters").exists()
+        }
+    }
+    test('Corrupt input object fails checksum before parameters execute') {
+        when {
+            params {
+                input_bundle = "${System.getenv('SCEPTRE_MATRIX_FIXTURES')}/corrupt_input/input"
+                analysis_config = "${System.getenv('SCEPTRE_MATRIX_FIXTURES')}/corrupt_input/config.rds"
+                environment_lock = "${System.getenv('SCEPTRE_MATRIX_FIXTURES')}/corrupt_input/lock.rds"
+                outdir = "$outputDir"
+                container_image = System.getenv('SCEPTRE_CONTAINER_IMAGE')
+            }
+        }
+        then {
+            assert workflow.failed
+            assert path("$metaDir/nextflow.log").text.toLowerCase().contains('checksum')
+            assert !path("$outputDir/parameters").exists()
+        }
+    }
+    test('Nonpositive work-unit request fails schema before tasks') {
+        when {
+            params {
+                input_bundle = "${System.getenv('SCEPTRE_TEST_FIXTURE')}/input"
+                analysis_config = "${System.getenv('SCEPTRE_TEST_FIXTURE')}/config.rds"
+                environment_lock = "${System.getenv('SCEPTRE_TEST_FIXTURE')}/lock.rds"
+                outdir = "$outputDir"
+                container_image = System.getenv('SCEPTRE_CONTAINER_IMAGE')
+                execution_mode = 'distributed'
+                n_work_units = 0
+            }
+        }
+        then {
+            assert workflow.failed
+            assert path("$metaDir/nextflow.log").text.contains('n_work_units')
+            assert !path("$outputDir/parameters").exists()
+        }
+    }
+}

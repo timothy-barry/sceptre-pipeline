@@ -1,3 +1,10 @@
 examples/.nextflow*
 .dev_examples/.nextflow*
 .DS_Store
+.nextflow*
+work/
+results/
+.nf-test/
+container/build/
+.nf-test.log
+.nf-test-*.nf
