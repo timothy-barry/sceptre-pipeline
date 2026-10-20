@@ -86,6 +86,12 @@ jobs:
           docker run --rm "$(cat "$RUNNER_TEMP/image-id")" \
             sh -c 'cat /opt/sceptre/source.json /opt/sceptre/session-info.txt /opt/sceptre/packages.tsv' \
             > "$RUNNER_TEMP/runtime-provenance.txt"
+      - name: Same-archive installed-package platform suite
+        run: |
+          docker run --rm -v "$PWD:$PWD" -v "$RUNNER_TEMP:$RUNNER_TEMP" -w "$PWD" \
+            "$SCEPTRE_CONTAINER_IMAGE" Rscript --vanilla tests/ci/check-installed-package.R \
+            tests/runtime/sceptre_0.99.0.tar.gz "$RUNNER_TEMP/installed-package" \
+            2>&1 | tee "$RUNNER_TEMP/installed-package.log"
       - name: Admission, migration, assignments and diagnostic guards
         run: |
           tar -xOf tests/runtime/sceptre_0.99.0.tar.gz \
@@ -170,6 +176,10 @@ jobs:
             ${{ runner.temp }}/image-id
             ${{ runner.temp }}/image-inspect.json
             ${{ runner.temp }}/runtime-provenance.txt
+            ${{ runner.temp }}/installed-package/runtime.json
+            ${{ runner.temp }}/installed-package/session.txt
+            ${{ runner.temp }}/installed-package/tests.json
+            ${{ runner.temp }}/installed-package/tests.rds
             ${{ runner.temp }}/*.log
             ${{ runner.temp }}/direct/direct-comparison.rds
             ${{ runner.temp }}/distributed/distributed-comparison.rds
