@@ -1,0 +1,12 @@
+{
+  "status": "prototype_deferred_public_setup_rejection",
+  "exit_code": 1,
+  "public_guard": "check_set_analysis_parameters requires permutations for backed response counts",
+  "requested_method": "crt",
+  "method_substituted": false,
+  "raw_kernel_parity_executed": false,
+  "support_enabled": false,
+  "log_sha256": "c12c485e1e375dde19a6345c184230194c14ba3fa2ab3820c6d76b322cc85119",
+  "backed_public_direct_result_produced": false,
+  "backed_distributed_result_produced": false
+}

@@ -12,6 +12,9 @@ report_preview <- function(x, depth = 0L, budget = NULL) {
     if (is.null(budget)) { budget <- new.env(parent = emptyenv()); budget$remaining <- 512L }
     if (budget$remaining <= 0L) return('<preview entry budget exhausted; see frozen report inputs>')
     budget$remaining <- budget$remaining - 1L
+    if (inherits(x, 'formula')) return(substr(paste(deparse(x, width.cutoff = 500L, nlines = 12L), collapse = ' '), 1L, 500L))
+    if (is.object(x) && is.list(x) && !is.data.frame(x) && !isS4(x))
+        return(paste0('<opaque ', substr(paste(utils::head(class(x), 3L), collapse = '/'), 1L, 500L), ' object omitted; see native export>'))
     if (depth >= 5L && (is.list(x) || isS4(x))) return('<nested content omitted; see frozen report inputs>')
     if (isS4(x)) return(report_preview(stats::setNames(lapply(methods::slotNames(x),
         function(name) methods::slot(x, name)), methods::slotNames(x)), depth + 1L, budget))
@@ -33,6 +36,7 @@ report_preview <- function(x, depth = 0L, budget = NULL) {
             '^(plan|spec|manifest|qualified_source|package|identity|analysis|assignment|qc|execution|calibration)$', names(x)[nested])]
         selected <- c(candidates[scalar], utils::head(unique(c(metadata, nested)), 12L))
         out <- lapply(x[selected], function(value) report_preview(value, depth + 1L, budget))
+        if (!is.null(names(out))) names(out) <- substr(names(out), 1L, 500L)
         if (count > length(selected)) out[['... omitted entries']] <- count - length(selected)
         return(out)
     }
@@ -63,31 +67,53 @@ report_scalar_table <- function(x, max_rows = NULL) {
 }
 scientific_report_html <- function(data, output, fragment = FALSE) {
     esc <- report_escape
-    table_html <- function(x) {
-        total <- if (is.data.frame(x)) nrow(x) else 0L
+    count_text <- function(value) format(value, scientific = FALSE, trim = TRUE)
+    bounded <- identical(data$report_schema, 2L)
+    complete_location <- if (bounded) 'Complete scalar rows are retained in the CSV downloads; complete native columns and analysis provenance are retained in each linked native export manifest.' else 'Complete scalar columns are retained in the CSV downloads, and all values in the frozen report inputs.'
+    table_html <- function(x, total_rows = NULL) {
+        total <- if (!is.null(total_rows)) total_rows else if (is.data.frame(x)) nrow(x) else 0L
+        omitted <- if (is.data.frame(x)) setdiff(names(x), names(report_scalar_table(x, max_rows = 0L))) else character()
         x <- report_scalar_table(x, max_rows = 100L)
-        if (!nrow(x)) return('<p class="empty">No rows available.</p>')
+        if (!nrow(x)) return(if (total > 0) paste0('<p class="empty">No rows included in this preview; ', count_text(total), ' complete saved rows remain available in the export.</p>') else '<p class="empty">No rows available.</p>')
         x[] <- lapply(x, function(column) {
             text <- as.character(column)
             ifelse(nchar(text) > 500L, paste0(substr(text, 1L, 500L), ' ... [text truncated]'), text)
         })
         rows <- apply(x, 1L, function(row) paste0('<tr>', paste0('<td>', esc(row), '</td>', collapse = ''), '</tr>'))
-        paste0('<p class="preview">', if (total > nrow(x)) paste0('Showing the first ', nrow(x), ' of ', total,
-            ' rows in saved order. Preview truncated; complete values are retained in the CSV downloads and frozen report inputs.') else paste0('Showing all ', total, ' rows.'),
-            '</p><div class="table-wrap"><table><thead><tr>', paste0('<th>', esc(names(x)), '</th>', collapse = ''),
+        paste0('<p class="preview">', if (total > nrow(x)) paste0('Showing the first ', nrow(x), ' of ', count_text(total),
+            paste0(' rows in saved order. Preview truncated. ', complete_location)) else paste0('Showing all ', count_text(total), ' rows.'),
+            '</p>', if (length(omitted)) paste0('<p class="preview">Non-scalar columns omitted from this HTML table and CSV: ', esc(paste(omitted, collapse = ', ')), '. Complete values are retained in report-data.rds.</p>'), '<div class="table-wrap"><table><thead><tr>', paste0('<th>', esc(names(x)), '</th>', collapse = ''),
             '</tr></thead><tbody>', paste(rows, collapse = ''), '</tbody></table></div>')
     }
-    code <- function(x) paste0('<p class="preview">Bounded preview: up to 64 short scalar settings and 12 other entries or rows per field, 5 nested levels, 512 visited entries, 500 characters per text value and 20,000 displayed characters. Complete settings and provenance are in the frozen report inputs.</p><pre>', esc(report_text(x)), '</pre>')
+    code <- function(x) paste0('<p class="preview">Bounded preview: up to 64 short scalar settings and 12 other entries or rows per field, 5 nested levels, 512 visited entries, 500 characters per text value and 20,000 displayed characters. Complete settings and provenance are in the original configuration/manifest files and scientific exports; the report view is bounded.</p><pre>', esc(report_text(x)), '</pre>')
     result_section <- function(key, title, description) {
         result <- data$analyses[[key]]
         if (!identical(result$status, 'completed')) return(paste0('<section id="', key, '"><h2>', title,
             '</h2><p class="empty">', esc(result$status), ': ', esc(result$reason), '</p></section>'))
-        significant <- if ('significant' %in% names(result$table)) sum(result$table$significant, na.rm = TRUE) else NA_integer_
-        paste0('<section id="', key, '"><h2>', title, '</h2><p>', description, '</p><p><strong>', nrow(result$table),
-            ' returned rows</strong>', if (!is.na(significant)) paste0('; ', significant, ' marked significant by SCEPTRE.') else '.',
-            '</p><p><a href="tables/', key, '.csv">Download scalar result columns (CSV)</a></p>',
-            table_html(result$table), '<details><summary>Frozen family, settings and realized resampling budgets</summary>', code(result$provenance), '</details></section>')
+        total <- if (!is.null(result$total_rows)) result$total_rows else nrow(result$table)
+        significant <- if (!is.null(result$significant_count)) result$significant_count else
+            if ('significant' %in% names(result$table)) sum(result$table$significant, na.rm = TRUE) else NA_integer_
+        download <- if (!is.null(result$download)) result$download else paste0('tables/', key, '.csv')
+        omission <- if (!is.null(result$omitted_column_count) && result$omitted_column_count > 0L)
+            paste0('<p class="preview">', result$omitted_column_count,
+                ' columns omitted from the preview (up to 12 named here): ', esc(paste(result$omitted_columns, collapse = ', ')),
+                '. Consult the complete export manifest for scalar CSV and native-column availability.</p>') else ''
+        paste0('<section id="', key, '"><h2>', title, '</h2><p>', description, '</p><p><strong>', count_text(total),
+            ' returned rows</strong>', if (!is.na(significant)) paste0('; ', count_text(significant), ' marked significant by SCEPTRE in the complete family.') else '.',
+            if (!total) ' Completed with no returned rows; this is not evidence of no effects.' else '',
+            '</p>', if (bounded) '<p class="preview">Counts above describe the complete saved family, including rows outside the deterministic preview.</p>',
+            if (is.character(result$method) && length(result$method) == 1L) paste0('<p>Saved method: <strong>', esc(result$method), '</strong>.</p>'),
+            '<p><a href="', esc(download), '">Download complete scalar result columns (CSV)</a></p>',
+            if (!is.null(result$export_receipt)) paste0('<details><summary>Complete export row count and streaming hash</summary>', code(result$export_receipt), '</details>'),
+            if (!is.null(result$native_export)) paste0('<p><a href="', esc(result$native_export$manifest), '">Complete native result and analysis provenance manifest</a> · SHA256 ', esc(result$native_export$sha256), '</p>'),
+            table_html(result$table, total), omission, '<details><summary>Frozen family summary, settings and realized resampling budgets</summary>', code(result$provenance), '</details></section>')
     }
+    provenance_links <- if (bounded) paste0('<p><a href="report-data.rds">Bounded frozen report view (RDS)</a> · <a href="export-manifests.rds">Complete CSV export manifests</a>',
+        if ('manifest.rds' %in% data$complete_provenance_files) ' · <a href="manifest.rds">Original pipeline manifest</a>',
+        if ('requested-config.rds' %in% data$complete_provenance_files) ' · <a href="requested-config.rds">Original requested configuration</a>',
+        ' · <a href="render.R">Editable renderer</a> · <a href="rerender.R">Rerender entry point</a> · <a href="report.qmd">Quarto source</a></p>') else
+        '<p><a href="report-data.rds">Frozen report inputs (RDS)</a> · <a href="manifest.rds">Pipeline manifest</a> · <a href="requested-config.rds">Requested configuration</a> · <a href="render.R">Editable renderer</a> · <a href="report.qmd">Quarto source</a></p>'
+
     body <- paste0('<header><p class="eyebrow">SCEPTRE · SCIENTIFIC RESULTS</p><h1>', esc(data$title), '</h1>',
         '<p>Saved analysis results, quality control and reproducibility record.</p><p class="stamp">', esc(data$generated_utc), '</p></header>',
         '<nav><a href="#qc">Assignment &amp; QC</a><a href="#calibration">Calibration</a><a href="#power">Positive controls</a><a href="#discovery">Discovery</a><a href="#settings">Settings</a><a href="#provenance">Provenance</a></nav>',
@@ -95,21 +121,21 @@ scientific_report_html <- function(data, output, fragment = FALSE) {
         '<section id="qc"><h2>Assignment and quality control</h2><div class="cards"><div><b>', data$qc$imported_cells,
         '</b><span>Imported cells</span></div><div><b>', data$qc$retained_cells, '</b><span>Cells retained for analysis</span></div><div><b>',
         data$qc$excluded_cells, '</b><span>Excluded cells</span></div></div><p>Completed preparation stages: ', esc(paste(data$qc$stages, collapse = ', ')),
-        '.</p><h3>Assignment membership counts</h3>', table_html(data$qc$assignments),
+        '.</p><h3>Assignment membership counts</h3>', table_html(data$qc$assignments, data$qc$assignment_total_rows),
         '<h3>Exclusions and retention metrics</h3>', code(data$qc$metrics),
         '<p>Exclusion categories may overlap; membership counts are not disjoint in high-MOI screens. Counts below describe the saved QC state, not a new filtering procedure.</p>',
         '<h3>Hypothesis-family QC</h3>', table_html(data$qc$families), '</section>',
         result_section('calibration', 'Calibration check', 'Negative-control associations characterize calibration for the sampled control family; this is not proof of calibration for every target.'),
         result_section('power', 'Power / positive controls', 'Observed positive-control results describe the supplied control pairs. They are not a general power guarantee for untested effects.'),
         result_section('discovery', 'Discovery analysis', 'Significance flags are copied from the completed SCEPTRE result after its complete-family integration and correction. Failed-QC requests remain visible where supplied by the public output.'),
-        '<section><h2>Figures</h2>', if (length(data$plots)) paste(vapply(data$plots, function(x) paste0('<figure><img src="plots/', esc(basename(x)), '" alt="', esc(basename(x)), '"><figcaption>', esc(basename(x)), '</figcaption></figure>'), character(1)), collapse = '') else '<p class="empty">No exported figures available for these completed stages.</p>', '</section>',
+        '<section><h2>Figures</h2>', if (length(data$plots)) paste(vapply(data$plots, function(x) paste0('<figure><img src="plots/', esc(basename(x)), '" alt="', esc(basename(x)), '"><figcaption>', esc(if (!is.null(data$plot_captions[[basename(x)]])) data$plot_captions[[basename(x)]] else basename(x)), '</figcaption></figure>'), character(1)), collapse = '') else '<p class="empty">No exported figures available for these completed stages.</p>', '</section>',
         '<section><h2>Warnings and availability</h2><p>Capture scope: reference-stage warnings are structured below. Structured aggregation of distributed worker warnings is unavailable; those warnings remain in the execution logs. An empty captured list does not establish that distributed execution emitted no warnings.</p>', if (length(data$warnings)) code(data$warnings) else '<p>No warnings were captured by this pipeline run. This is not a guarantee that upstream imports emitted none.</p>',
         '<p>Omitted, empty and unavailable stages are identified explicitly above. A report-rendering problem does not revoke an already certified scientific artifact.</p></section>',
         '<section id="settings"><h2>Requested versus resolved settings</h2><h3>Requested pipeline configuration</h3>', code(data$requested),
         '<h3>Resolved saved scientific settings</h3>', code(data$resolved),
         '<p>Requested canonical pairs define the target–response family; guide-group expansion and QC may produce a different number of working rows. Bonferroni guide integration and multiple-testing correction retain the package’s complete-family policy; this renderer does not recompute p-values or correction.</p></section>',
         '<section id="provenance"><h2>Exact provenance</h2><p>Seed, RNG handoff, package/runtime identity and parent/object checksums are retained in the manifest. Realized budgets and frozen choices appear under each completed analysis.</p>',
-        code(data$provenance), '<p><a href="report-data.rds">Frozen report inputs (RDS)</a> · <a href="manifest.rds">Pipeline manifest</a> · <a href="requested-config.rds">Requested configuration</a> · <a href="render.R">Editable renderer</a> · <a href="report.qmd">Quarto source</a></p></section></main><footer>Generated locally from saved SCEPTRE outputs. No analysis is rerun when rendering this bundle.</footer>')
+        code(data$provenance), provenance_links, '</section></main><footer>Generated locally from saved SCEPTRE outputs. No analysis is rerun when rendering this bundle.</footer>')
     style <- '<style>:root{font-family:system-ui,-apple-system,sans-serif;color:#20313a;background:#f2f5f4}body{margin:0}header,main,nav,footer{max-width:1120px;margin:auto;padding:24px 32px}header{padding-top:55px}h1{font-family:Georgia,serif;font-size:44px;line-height:1.1;margin:12px 0}h2{font-family:Georgia,serif;font-size:29px}h3{font-size:18px}p,li{line-height:1.65}a{color:#086c70}.eyebrow{font-size:12px;letter-spacing:2px;color:#086c70;font-weight:700}.stamp,footer{font-size:13px;color:#53666b}nav{display:flex;flex-wrap:wrap;gap:20px;border-top:1px solid #c5d3d0;border-bottom:1px solid #c5d3d0}section{padding:20px 0;border-bottom:1px solid #d0dcda}aside{padding:20px;background:#e4eeeb;border-left:4px solid #087c77;line-height:1.6}.cards{display:flex;flex-wrap:wrap;gap:18px}.cards div{background:white;border:1px solid #cddbd7;border-radius:8px;padding:20px;min-width:170px}.cards b{display:block;font-size:30px;color:#086c70}.cards span{font-size:14px}.table-wrap{max-height:420px;overflow:auto;background:white;border:1px solid #cddbd7}table{border-collapse:collapse;width:100%;font-size:13px}th,td{padding:10px 12px;border-bottom:1px solid #dde5e2;text-align:left;white-space:nowrap}th{position:sticky;top:0;background:#dceae6}tr:nth-child(even){background:#f7faf8}pre{font-size:12px;line-height:1.5;white-space:pre-wrap;overflow-wrap:anywhere;background:#e8eeeb;padding:16px;max-height:500px;overflow:auto}summary{cursor:pointer;padding:14px 0;font-weight:600}.empty{color:#65777c}img{max-width:100%;max-height:560px;object-fit:contain;background:white}figure{margin:20px 0}figcaption{font-size:12px;color:#64777b}@media(max-width:600px){header,main,nav,footer{padding:20px}h1{font-size:34px}.cards div{min-width:120px}}</style>'
     html <- if (fragment) paste0(style, body) else paste0('<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>', esc(data$title), '</title>', style, '</head><body>', body, '</body></html>')
     if (!is.null(output)) writeLines(html, output, useBytes = TRUE)

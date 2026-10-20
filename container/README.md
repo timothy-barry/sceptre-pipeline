@@ -21,7 +21,7 @@ The script deliberately refuses to overwrite an existing context. Choose a new r
 
 * R 4.5.1: `rocker/r-ver` multi-architecture index digest `sha256:03b023fbf7b1b24ac1bb8b2ac5fd7e15a767e67b40ff50c155e328110981c2aa` (resolved 2026-10-19; amd64 and arm64).
 * CRAN sources: fixed Posit CRAN snapshot `2025-07-01`. Base R provides Matrix. No unpinned system-package installation occurs in this recipe.
-* Optional ondisc 1.3.1: commit `58e851a95cfd381b316ac40ed4490e569bd40e2f`, source archive SHA256 checked by context preparation and Docker.
+* Optional ondisc 1.3.5: commit `589803edea2a66ad15e7f07186bee16c7739ab8c`, source archive SHA256 `806165dde5bdee21beec015d2bed4676ac1e30692b654b3196a4be5521bea3ab`, checked by context preparation and Docker. Its 456 source members match the exact Git archive used by the private Mac qualification.
 * zlib 1.3.2: official source and published SHA256 from [zlib.net](https://zlib.net/), built with position-independent static code for Rhdf5lib.
 * Rhdf5lib 1.30.0: Bioconductor 3.21 versioned source with a fixed SHA256.
 * The exact SCEPTRE commit and source archive SHA256 are recorded in `/opt/sceptre/source.json`. Installed package versions and runtime appear in `/opt/sceptre/packages.tsv` and `session-info.txt`. Docker validates every copied source archive's checksum before installation.

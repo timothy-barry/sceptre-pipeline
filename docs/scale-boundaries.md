@@ -59,7 +59,7 @@ pointer capacity of a single ordinary Matrix sparse object (2,147,483,647), so
 whole-screen conversion into that representation is unsuitable. This does not
 establish that the current backed scientific path handles the full screen.
 
-The package currently rejects **backed CRT**, affecting Gasperini's established
+Public parameter setup and the certified distributed executor reject **backed CRT**, affecting Gasperini's established
 CRT mode. Switching to permutations merely to fit a storage path would change
 the scientific procedure and requires an explicit benchmark choice.
 
@@ -99,3 +99,20 @@ The [DC-TAP benchmark](benchmark.md) covers a complete targeted 279-request fami
 with 10,932 cells, 93 responses and 110 guides. It supplies bounded real-data
 integration evidence; it does **not** qualify these larger screens or support a
 runtime extrapolation to them.
+
+## Completed bounded follow-up
+
+The [scale engineering harness and measurements](../benchmark/scale/README.md)
+now cover Gasperini subsets of 2,000, 8,000 and 16,000 cells. Each retained 24
+eligible hypotheses, six design columns and the naturally resolved
+B1/B2/B3 budgets of 499/0/2400, preserving original full-library covariates.
+Direct and adapter execution matched complete tables, result records, plans,
+preparation, fits and stage RNG states exactly. The separate actual local
+Nextflow 2k run completed ten tasks with concurrency one and the same comparison.
+
+These receipts bind worker package `fca6bde5` and pipeline `4578c52`; they are
+bounded implementation evidence for those artifacts. The final integrated
+runtime requires its own checks. Full-screen family/collector bounds, concurrent
+scaling and statistical calibration remain open. Compact metrics and hashes are
+public; all real-derived payloads and raw logs remain local. Public backed CRT
+setup rejects both execution modes, so its proposed prototype remains deferred.

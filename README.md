@@ -1,8 +1,10 @@
 # SCEPTRE pipeline
 
-[![Pipeline checks](https://github.com/timothy-barry/sceptre-pipeline/actions/workflows/ci.yml/badge.svg?branch=codex%2Fschema3-pipeline)](https://github.com/timothy-barry/sceptre-pipeline/actions/workflows/ci.yml?query=branch%3Acodex%2Fschema3-pipeline)
+[![Integration branch checks](https://github.com/timothy-barry/sceptre-pipeline/actions/workflows/ci.yml/badge.svg?branch=codex%2Fovernight-publication-pipeline)](https://github.com/timothy-barry/sceptre-pipeline/actions/workflows/ci.yml?query=branch%3Acodex%2Fovernight-publication-pipeline)
 [![nf-test file coverage](docs/badges/nf-test-coverage.svg)](docs/coverage.md#measured-nf-test-file-coverage)
 [![Pipeline version](docs/badges/version.svg)](nextflow.config)
+
+The checks badge tracks this integration review branch.
 
 Nextflow DSL2 execution of the schema-3 SCEPTRE workflow, with certified process
 handoffs and complete-family statistical results. This is a compatibility

@@ -1,11 +1,13 @@
 {
   "schema": 1,
   "repository": "https://github.com/Katsevich-Lab/sceptre",
-  "source_commit": "01bb39ccf8373ae8965a2679ee4813a63ea2d85d",
-  "qualification_commit": "9a4694450b5d456beedc11f3876ecb1cd84cb05c",
+  "source_commit": "7829075730f402f66daa1a27df16e09fe0f9f32d",
+  "qualification_commit": "7829075730f402f66daa1a27df16e09fe0f9f32d",
   "archive": "sceptre_0.99.0.tar.gz",
   "archive_kind": "R_CMD_build",
-  "archive_sha256": "606363fce32238354fc0d126d79f515973da7c8287ca43b14ce53ce2d00df4b7",
+  "archive_sha256": "40945603414e9a1bdcfcfb69d65e6ba85f067d585f3d0eec50e9fb952bd00f1a",
   "license": "GPL-3",
-  "qualified_on": "2026-10-19"
+  "qualified_on": "2026-10-20",
+  "qualification_timezone": "UTC",
+  "qualification_status": "repaired Rcpp constructor: full Mac suite/as-cran and original matched submission gates passed; final same-archive platform/runtime/native-probe/unique-input science gates pending"
 }

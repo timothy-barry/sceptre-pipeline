@@ -9,8 +9,8 @@ import shutil
 import subprocess
 
 HERE = pathlib.Path(__file__).resolve().parent
-ONDISC = "58e851a95cfd381b316ac40ed4490e569bd40e2f"
-ONDISC_SHA = "4a6ff86c762742c427e01a14c3cf0595dc61741b4101b8ecfb9666065536687b"
+ONDISC = "589803edea2a66ad15e7f07186bee16c7739ab8c"
+ONDISC_SHA = "806165dde5bdee21beec015d2bed4676ac1e30692b654b3196a4be5521bea3ab"
 ZLIB_SHA = "bb329a0a2cd0274d05519d61c667c062e06990d72e125ee2dfa8de64f0119d16"
 RHDF5_SHA = "170606eaa916cc0489bdc0a6dcf25fa13ee2c9275c95573b6145345d857c8746"
 p = argparse.ArgumentParser(description=__doc__)
@@ -82,7 +82,7 @@ if sha(out / "Rhdf5lib.tar.gz") != RHDF5_SHA:
 optional = {name: sha(out / name) for name in ("ondisc.tar.gz", "Rhdf5lib.tar.gz", "zlib.tar.gz")}
 (out / "optional.sha256").write_text("".join(f"{value}  {name}\n" for name, value in optional.items()))
 metadata = {"schema": 1, "source_resolution": resolution, "archive_kind": "R_CMD_build" if a.package_archive else "git_archive", "sceptre_commit": commit, "sceptre_archive_sha256": source_sha,
-            "ondisc_commit": ONDISC, "ondisc_version": "1.3.1",
+            "ondisc_commit": ONDISC, "ondisc_version": "1.3.5",
             "Rhdf5lib_version": "1.30.0", "zlib_version": "1.3.2", "optional_source_sha256": optional,
             "cran_snapshot": "https://packagemanager.posit.co/cran/2025-07-01",
             "base": "rocker/r-ver:4.5.1@sha256:03b023fbf7b1b24ac1bb8b2ac5fd7e15a767e67b40ff50c155e328110981c2aa"}

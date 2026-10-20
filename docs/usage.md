@@ -33,6 +33,19 @@ it does not overlay settings on a previous specification. Omit the entire
 An unconfigured object requires that section. Config files are executable R
 serialization from trusted local authors, not an untrusted interchange format.
 
+For an object prepared with `sceptre::set_grna_assignments()`, omit both the
+`analysis` and `assignment` sections to preserve its configured external calls.
+The assignment stage verifies current data/design/membership/provenance identity
+through the package getter; saved completion flags alone are insufficient.
+Stale or design-invalidated external calls fail before QC. Supplying an explicit
+`assignment = list(...)` requests ordinary package reassignment instead. Changing
+the analysis configuration invalidates existing assignments, so configure and
+reapply external calls in R before creating the bundle if they should be retained.
+Raw response/guide counts and full-library covariates remain in the immutable
+object. SingleCellExperiment import and results export are documented in the
+package's `single-cell-interoperability` vignette; optional SCE is needed only
+in the importing/exporting processes, not in pipeline execution processes.
+
 Assignment arguments are validated by method by the package. Irrelevant method
 arguments should be removed rather than relying on legacy pipeline filtering.
 Unknown sections/arguments and pipeline CLI flags fail early. Formulae and pair
@@ -78,10 +91,18 @@ the public reader with explicit verified paths. Active serialized handles reject
 The output RDS contains closed descriptors. Keep the original count files and
 use the public reader with explicit new paths when reopening/relocating outputs.
 
-The baseline optional backend supports permutation resampling; backed CRT fails
-before execution. In-memory high MOI resolves to complement controls, even if
-`nt_cells` is requested. Inspect the resolved manifest/settings rather than
-inferring the branch from a configuration label.
+Backed counts support permutation resampling through the public API.
+`set_analysis_parameters()` rejects CRT for ondisc-backed counts before either
+reference or distributed execution. Certified distributed preparation and
+execution-manifest validation also reject backed CRT. Backed CRT is therefore
+unsupported in both public pipeline modes; the existence of internal CRT code
+is not support or qualification of a bypass. Use the
+[qualification record](validation.md) for the exact tested storage/mode/runtime
+combination. Do not change resampling methods merely to bypass a backend guard.
+
+In-memory high MOI resolves to complement controls, even if `nt_cells` is
+requested. Inspect the resolved manifest/settings rather than inferring the
+branch from a configuration label.
 
 ## Environments and executors
 
@@ -208,3 +229,6 @@ See [distributed protocol](distributed-interface.md) for the input/resource/RNG
 contract and [validation](validation.md) for actual qualified branches. Installing
 a package with the same version number is insufficient: every process must use
 the exact locked implementation/runtime.
+
+For error interpretation, scheduler checks, failure recovery and report relocation,
+see [diagnose and recover a run](recovery.md).

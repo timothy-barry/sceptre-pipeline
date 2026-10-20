@@ -3,14 +3,14 @@
 FROM rocker/r-ver:4.5.1@sha256:03b023fbf7b1b24ac1bb8b2ac5fd7e15a767e67b40ff50c155e328110981c2aa
 ARG CRAN_SNAPSHOT=https://packagemanager.posit.co/cran/2025-07-01
 ARG WITH_ONDISC=true
-ENV TZ=Etc/UTC OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1
+ENV TZ=Etc/UTC OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MAKEFLAGS=-j2
 COPY install-dependencies.R /opt/sceptre/install-dependencies.R
 RUN CRAN_SNAPSHOT="$CRAN_SNAPSHOT" WITH_ONDISC="$WITH_ONDISC" Rscript /opt/sceptre/install-dependencies.R
 COPY ondisc.tar.gz Rhdf5lib.tar.gz zlib.tar.gz optional.sha256 /opt/sceptre/deps/
 RUN cd /opt/sceptre/deps && sha256sum -c optional.sha256 && \
     if [ "$WITH_ONDISC" = true ]; then \
       tar -xzf zlib.tar.gz && cd zlib-1.3.2 && \
-      CFLAGS="-O2 -fPIC" ./configure --static --prefix=/usr/local && make -j4 && make install && \
+      CFLAGS="-O2 -fPIC" ./configure --static --prefix=/usr/local && make -j2 && make install && \
       cd .. && R CMD INSTALL Rhdf5lib.tar.gz && R CMD INSTALL ondisc.tar.gz; fi && \
     rm -rf /opt/sceptre/deps
 COPY sceptre.tar.gz source.json source.sha256 /opt/sceptre/

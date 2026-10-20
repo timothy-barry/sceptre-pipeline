@@ -1,0 +1,40 @@
+{
+  "status": "exact_pass",
+  "tolerance": 0,
+  "compared": {
+    "parameters": {
+      "spec": "a72faf76bea39f010e4eae6d0fffcf9d989d468c24d360dae4d9a2e2e9a0c699",
+      "data_identity": "3580109e5e2c81ab673b5f08ef241f270f68c9b064e7b5b169c57a07bb5c45d9",
+      "preparation": "f45460e3f329e186bd9aa7c1c1bd75f38817b4f8ea5a7ed5286b1378117e6353",
+      "fits": "6e4af0150bab844d6aa13545b5b9e4eced7d3ae1acf1d5601f7ada7f8501bdab",
+      "RNGkind": "9d2ec7c3ef244b35ae5140b115334db97ba1f5d7ea2cd99d5c1f26b407052b08",
+      "RNGstate": "c40596d71b05542cde0b0d427f2f5dd0509b40cb827c3168eea44e9631968ec1"
+    },
+    "assignment": {
+      "spec": "1a7a2dd7f4bc529300628e7d08f50c5c63c798b5d42f43d752c49013dbf5266b",
+      "data_identity": "3580109e5e2c81ab673b5f08ef241f270f68c9b064e7b5b169c57a07bb5c45d9",
+      "preparation": "40215b6403c726caaa3961b34756562ce56971d6243dd09cc94b833c5743c425",
+      "fits": "6e4af0150bab844d6aa13545b5b9e4eced7d3ae1acf1d5601f7ada7f8501bdab",
+      "RNGkind": "9d2ec7c3ef244b35ae5140b115334db97ba1f5d7ea2cd99d5c1f26b407052b08",
+      "RNGstate": "c40596d71b05542cde0b0d427f2f5dd0509b40cb827c3168eea44e9631968ec1"
+    },
+    "qc": {
+      "spec": "0aa78e3ad9a4c17eeff9a2db99dda0dcf95742f73ab9fb230c4b1de5de459b28",
+      "data_identity": "3580109e5e2c81ab673b5f08ef241f270f68c9b064e7b5b169c57a07bb5c45d9",
+      "preparation": "596df0cab34100758cde488d599c3b8efc4c9d82aa7348522ad90998d545e74b",
+      "fits": "6e4af0150bab844d6aa13545b5b9e4eced7d3ae1acf1d5601f7ada7f8501bdab",
+      "RNGkind": "9d2ec7c3ef244b35ae5140b115334db97ba1f5d7ea2cd99d5c1f26b407052b08",
+      "RNGstate": "c40596d71b05542cde0b0d427f2f5dd0509b40cb827c3168eea44e9631968ec1"
+    },
+    "discovery": {
+      "spec": "0aa78e3ad9a4c17eeff9a2db99dda0dcf95742f73ab9fb230c4b1de5de459b28",
+      "data_identity": "3580109e5e2c81ab673b5f08ef241f270f68c9b064e7b5b169c57a07bb5c45d9",
+      "preparation": "596df0cab34100758cde488d599c3b8efc4c9d82aa7348522ad90998d545e74b",
+      "fits": "e05a042ae62028020549b9af4c483a62028c4399ce44b06ac35daee3bec4cb64",
+      "RNGkind": "9d2ec7c3ef244b35ae5140b115334db97ba1f5d7ea2cd99d5c1f26b407052b08",
+      "RNGstate": "c40596d71b05542cde0b0d427f2f5dd0509b40cb827c3168eea44e9631968ec1",
+      "table": "42253cef478af4c4af836753905e4a4af06d35a90ec4133841460fa29d714db4",
+      "record": "c72f661c786714ddc3370d233afe797d39c7bc6eaf7426c688e8464562de7595"
+    }
+  }
+}

@@ -35,11 +35,34 @@ validate_identity <- function(expected) {
     if (!identical(expected, package_identity()))
         fail("Runtime/package identity mismatch. Rebuild the environment lock and start a new run; do not resume across package changes.")
 }
+# Experimental direct-R fitters need separate pipeline runtime qualification.
+# Older qualified packages expose no selector and retain the reference method.
+validate_pipeline_method <- function(object) {
+    api <- getNamespaceExports("sceptre")
+    if ("get_perturbation_fit_method" %in% api &&
+        !identical(sceptre::get_perturbation_fit_method(object), "glm.fit"))
+        fail("Experimental fast_logistic is supported only by direct R execution; switch to glm.fit before creating or reading pipeline input.")
+    if ("get_result_methods" %in% api &&
+        any(sceptre::get_result_methods(object) == "wilcoxon_unadjusted"))
+        fail("Experimental Wilcoxon is unsupported in pipeline bundles; use run_wilcoxon() directly with a separate prepared object.")
+    invisible(object)
+}
 validate_object <- function(object) {
     if (!methods::is(object, "sceptre_object") ||
         !identical(object@schema_version, 3L))
         fail("Expected a current schema-3 sceptre_object; migrate/reimport with the qualified package before running.")
+    # Public same-choice selection normalizes historical schema-3 layout while
+    # retaining reference scientific identities. Older qualified packages have
+    # no selector and keep their existing boundary. Normalize only the missing
+    # historical representation, never repair a malformed current object here.
+    # Other schemas remain rejected.
+    api <- getNamespaceExports("sceptre")
+    if (all(c("get_perturbation_fit_method", "set_perturbation_fit_method") %in% api) &&
+        is.null(attr(object@spec, "perturbation_fit_method", exact = TRUE)))
+        object <- sceptre::set_perturbation_fit_method(object,
+            sceptre::get_perturbation_fit_method(object))
     methods::validObject(object)
+    validate_pipeline_method(object)
     invisible(object)
 }
 validate_config <- function(config) {
@@ -68,7 +91,7 @@ validate_config <- function(config) {
 # Explicit scientific scope is retained in the package spec; this manifest merely
 # certifies the serialized boundary and records pipeline stage completion.
 create_input <- function(object, dir, config, identity = package_identity(), backing = NULL) {
-    validate_object(object); validate_config(config); validate_identity(identity)
+    object <- validate_object(object); validate_config(config); validate_identity(identity)
     if (dir.exists(dir)) fail("Output directory already exists: ", dir)
     dir.create(dir, recursive = TRUE)
     backed <- methods::is(object@data@response_matrix, "BackedCountStore")
@@ -94,7 +117,7 @@ read_bundle <- function(dir, config, identity, backing = NULL) {
         object <- sceptre::read_ondisc_backed_sceptre_object(file.path(dir, "sceptre_object.rds"),
             file.path(backing, "response.odm"), file.path(backing, "grna.odm"))
     } else if (identical(m$backend, "memory")) object <- readRDS(file.path(dir, "sceptre_object.rds")) else fail("Unknown count backend.")
-    validate_object(object)
+    object <- validate_object(object)
     allowed <- c("parameters", "assignment", "qc", "calibration", "power", "discovery")
     if (!is.character(m$completed) || anyDuplicated(m$completed) || any(!m$completed %in% allowed) ||
         !identical(m$stage, if (length(m$completed)) tail(m$completed, 1L) else "input"))
@@ -138,6 +161,12 @@ run_stage <- function(config, input, output, stage, seed, backing = NULL, identi
     if (identical(stage, "parameters") && is.null(config$analysis)) {
         # Preserve a previously configured current object without reconstructing spec.
         if (is.null(object@preparation@stages$design)) fail("Supply config$analysis for an unconfigured input object.")
+    } else if (identical(stage, "assignment") && is.null(config$assignment) &&
+               identical(object@spec@grna_assignment_method, "external")) {
+        # The getter verifies the live preparation identity, including design,
+        # data, assignments and provenance. A saved completion flag alone is
+        # insufficient. Explicit config$assignment always requests reassignment.
+        sceptre::get_grna_assignments(object) |> invisible()
     } else {
         fun <- switch(stage, parameters = sceptre::set_analysis_parameters, assignment = sceptre::assign_grnas,
                       qc = sceptre::run_qc, calibration = sceptre::run_calibration_check,
@@ -155,7 +184,7 @@ run_stage <- function(config, input, output, stage, seed, backing = NULL, identi
     write_completed_bundle(object, m, input, output, stage, seed, identity)
 }
 write_completed_bundle <- function(object, m, input, output, stage, seed, identity) {
-    validate_object(object)
+    object <- validate_object(object)
     # Build in a temporary sibling; failed functions never publish a completed bundle.
     if (dir.exists(output)) fail("Output directory already exists: ", output)
     tmp <- tempfile(".stage-", tmpdir = dirname(output))

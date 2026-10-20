@@ -1,0 +1,450 @@
+{
+  "kind": "compact-aggregate-only-no-real-derived-payload",
+  "tested_package_commit": "fca6bde5e28dfa1f90ef41b193b308e7f2b7bca3",
+  "tested_pipeline_commit": "4578c52f003e39dd5bd931d58cf06d5e421227ee",
+  "subsets": [
+    {
+      "cells": 2000,
+      "requested": 24,
+      "eligible": 24,
+      "finite_p_values": 24,
+      "invalid_p_values": 0,
+      "B1": 499,
+      "B2": 0,
+      "B3": 2400,
+      "analyzed_cells": 2000,
+      "design_columns": 6,
+      "implementation_parity": "exact_pass",
+      "statistical_calibration": "not_assessed",
+      "family_sha256": "74e52ef841eb7921ba5821d6c570f617dd1066d486419fe58f8754a5efe92544",
+      "full_library_covariates_preserved": true,
+      "covariates_sha256": "3d2c84f645c6ba0690c9a1a1a15f844482a0c541b10d282c3d1422df733e6b39",
+      "source_count_subset_sha256": {
+        "response": "c2bd5a19f101dae3861fca6f0d275080fdef2be63cadd53af6dd0a78d502303c",
+        "guide": "6f15adfa819cfacb2495b89ec763d0af365a5837d88786a4da947285a0c95837"
+      },
+      "retained_case_bytes": 1661873,
+      "phase_resources": [
+        {
+          "cells": 2000,
+          "phase": "prepare",
+          "wall_seconds": 3.7420804160000003,
+          "peak_process_rss_bytes": 411320320,
+          "sampled_tree_peak_bytes": 412499968,
+          "exit_code": 0
+        },
+        {
+          "cells": 2000,
+          "phase": "direct",
+          "wall_seconds": 1.383298542,
+          "peak_process_rss_bytes": 315228160,
+          "sampled_tree_peak_bytes": 316440576,
+          "exit_code": 0
+        },
+        {
+          "cells": 2000,
+          "phase": "pipeline-adapters",
+          "wall_seconds": 2.48463325,
+          "peak_process_rss_bytes": 325402624,
+          "sampled_tree_peak_bytes": 326598656,
+          "exit_code": 0
+        },
+        {
+          "cells": 2000,
+          "phase": "compare",
+          "wall_seconds": 0.8374830000000006,
+          "peak_process_rss_bytes": 240238592,
+          "sampled_tree_peak_bytes": 241631232,
+          "exit_code": 0
+        }
+      ],
+      "direct_phase_times": {
+        "parameters": {
+          "stage": "parameters",
+          "elapsed_seconds": 0.1841,
+          "user_seconds": 0.165,
+          "system_seconds": 0.017
+        },
+        "assignment": {
+          "stage": "assignment",
+          "elapsed_seconds": 0.0373,
+          "user_seconds": 0.034,
+          "system_seconds": 0.003
+        },
+        "qc": {
+          "stage": "qc",
+          "elapsed_seconds": 0.0092,
+          "user_seconds": 0.009,
+          "system_seconds": 0.001
+        },
+        "discovery": {
+          "stage": "discovery",
+          "elapsed_seconds": 0.1604,
+          "user_seconds": 0.151,
+          "system_seconds": 0.008
+        }
+      },
+      "pipeline_adapter_phase_times": {
+        "parameters": {
+          "user.self": 0.923,
+          "sys.self": 0.095,
+          "elapsed": 1.026,
+          "user.child": 0,
+          "sys.child": 0
+        },
+        "assignment": {
+          "user.self": 0.108,
+          "sys.self": 0.012,
+          "elapsed": 0.121,
+          "user.child": 0,
+          "sys.child": 0
+        },
+        "qc": {
+          "user.self": 0.118,
+          "sys.self": 0.013,
+          "elapsed": 0.132,
+          "user.child": 0,
+          "sys.child": 0
+        },
+        "prepare_execution": {
+          "user.self": 0.133,
+          "sys.self": 0.013,
+          "elapsed": 0.147,
+          "user.child": 0,
+          "sys.child": 0
+        },
+        "unit-000003": {
+          "user.self": 0.156,
+          "sys.self": 0.014,
+          "elapsed": 0.171,
+          "user.child": 0,
+          "sys.child": 0
+        },
+        "unit-000002": {
+          "user.self": 0.167,
+          "sys.self": 0.011,
+          "elapsed": 0.179,
+          "user.child": 0,
+          "sys.child": 0
+        },
+        "unit-000001": {
+          "user.self": 0.139,
+          "sys.self": 0.011,
+          "elapsed": 0.152,
+          "user.child": 0,
+          "sys.child": 0
+        },
+        "collect": {
+          "user.self": 0.186,
+          "sys.self": 0.013,
+          "elapsed": 0.2,
+          "user.child": 0,
+          "sys.child": 0
+        }
+      }
+    },
+    {
+      "cells": 8000,
+      "requested": 24,
+      "eligible": 24,
+      "finite_p_values": 24,
+      "invalid_p_values": 0,
+      "B1": 499,
+      "B2": 0,
+      "B3": 2400,
+      "analyzed_cells": 8000,
+      "design_columns": 6,
+      "implementation_parity": "exact_pass",
+      "statistical_calibration": "not_assessed",
+      "family_sha256": "74e52ef841eb7921ba5821d6c570f617dd1066d486419fe58f8754a5efe92544",
+      "full_library_covariates_preserved": true,
+      "covariates_sha256": "51446cffc9bc5092198972792a6daba8e5dd7170b39365b15b02f77d3fd5b908",
+      "source_count_subset_sha256": {
+        "response": "bb410a25ba9018ccf08b9ac5ee25b4da07350b080da54b7200bea3035f810b64",
+        "guide": "5e17a3e2ef2a8e8d52d3f08ee4b47e232194d947cb87ec7a568d4d1585e0c757"
+      },
+      "retained_case_bytes": 5733685,
+      "phase_resources": [
+        {
+          "cells": 8000,
+          "phase": "prepare",
+          "wall_seconds": 3.793692042,
+          "peak_process_rss_bytes": 414515200,
+          "sampled_tree_peak_bytes": 415678464,
+          "exit_code": 0
+        },
+        {
+          "cells": 8000,
+          "phase": "direct",
+          "wall_seconds": 1.8021038330000003,
+          "peak_process_rss_bytes": 319602688,
+          "sampled_tree_peak_bytes": 320389120,
+          "exit_code": 0
+        },
+        {
+          "cells": 8000,
+          "phase": "pipeline-adapters",
+          "wall_seconds": 3.4556552499999995,
+          "peak_process_rss_bytes": 345866240,
+          "sampled_tree_peak_bytes": 343277568,
+          "exit_code": 0
+        },
+        {
+          "cells": 8000,
+          "phase": "compare",
+          "wall_seconds": 0.813235167000002,
+          "peak_process_rss_bytes": 253444096,
+          "sampled_tree_peak_bytes": 227016704,
+          "exit_code": 0
+        }
+      ],
+      "direct_phase_times": {
+        "parameters": {
+          "stage": "parameters",
+          "elapsed_seconds": 0.183,
+          "user_seconds": 0.165,
+          "system_seconds": 0.016
+        },
+        "assignment": {
+          "stage": "assignment",
+          "elapsed_seconds": 0.0395,
+          "user_seconds": 0.036,
+          "system_seconds": 0.003
+        },
+        "qc": {
+          "stage": "qc",
+          "elapsed_seconds": 0.0121,
+          "user_seconds": 0.011,
+          "system_seconds": 0.001
+        },
+        "discovery": {
+          "stage": "discovery",
+          "elapsed_seconds": 0.3321,
+          "user_seconds": 0.32,
+          "system_seconds": 0.01
+        }
+      },
+      "pipeline_adapter_phase_times": {
+        "parameters": {
+          "user.self": 1.036,
+          "sys.self": 0.092,
+          "elapsed": 1.139,
+          "user.child": 0,
+          "sys.child": 0
+        },
+        "assignment": {
+          "user.self": 0.231,
+          "sys.self": 0.014,
+          "elapsed": 0.247,
+          "user.child": 0,
+          "sys.child": 0
+        },
+        "qc": {
+          "user.self": 0.261,
+          "sys.self": 0.015,
+          "elapsed": 0.278,
+          "user.child": 0,
+          "sys.child": 0
+        },
+        "prepare_execution": {
+          "user.self": 0.159,
+          "sys.self": 0.015,
+          "elapsed": 0.176,
+          "user.child": 0,
+          "sys.child": 0
+        },
+        "unit-000003": {
+          "user.self": 0.287,
+          "sys.self": 0.016,
+          "elapsed": 0.307,
+          "user.child": 0,
+          "sys.child": 0
+        },
+        "unit-000002": {
+          "user.self": 0.244,
+          "sys.self": 0.014,
+          "elapsed": 0.26,
+          "user.child": 0,
+          "sys.child": 0
+        },
+        "unit-000001": {
+          "user.self": 0.302,
+          "sys.self": 0.014,
+          "elapsed": 0.318,
+          "user.child": 0,
+          "sys.child": 0
+        },
+        "collect": {
+          "user.self": 0.382,
+          "sys.self": 0.016,
+          "elapsed": 0.402,
+          "user.child": 0,
+          "sys.child": 0
+        }
+      }
+    },
+    {
+      "cells": 16000,
+      "requested": 24,
+      "eligible": 24,
+      "finite_p_values": 24,
+      "invalid_p_values": 0,
+      "B1": 499,
+      "B2": 0,
+      "B3": 2400,
+      "analyzed_cells": 16000,
+      "design_columns": 6,
+      "implementation_parity": "exact_pass",
+      "statistical_calibration": "not_assessed",
+      "family_sha256": "74e52ef841eb7921ba5821d6c570f617dd1066d486419fe58f8754a5efe92544",
+      "full_library_covariates_preserved": true,
+      "covariates_sha256": "2cc61b535d92639b24912bb08567c05c3740de65b8df375580a0721e3f8db2fe",
+      "source_count_subset_sha256": {
+        "response": "7277119fc523f55f2e36d84d926a37000c6f2c510e4ffb963cba0f2d2f319634",
+        "guide": "8a8063916d95cd1392db63d747d1ad56f80a9d39e36de4f823d81e3f60eaae30"
+      },
+      "retained_case_bytes": 12963673,
+      "phase_resources": [
+        {
+          "cells": 16000,
+          "phase": "prepare",
+          "wall_seconds": 4.122492333,
+          "peak_process_rss_bytes": 417120256,
+          "sampled_tree_peak_bytes": 416038912,
+          "exit_code": 0
+        },
+        {
+          "cells": 16000,
+          "phase": "direct",
+          "wall_seconds": 2.9645737919999995,
+          "peak_process_rss_bytes": 336478208,
+          "sampled_tree_peak_bytes": 337264640,
+          "exit_code": 0
+        },
+        {
+          "cells": 16000,
+          "phase": "pipeline-adapters",
+          "wall_seconds": 5.254288333000002,
+          "peak_process_rss_bytes": 356974592,
+          "sampled_tree_peak_bytes": 356810752,
+          "exit_code": 0
+        },
+        {
+          "cells": 16000,
+          "phase": "compare",
+          "wall_seconds": 0.9989063329999972,
+          "peak_process_rss_bytes": 249298944,
+          "sampled_tree_peak_bytes": 247070720,
+          "exit_code": 0
+        }
+      ],
+      "direct_phase_times": {
+        "parameters": {
+          "stage": "parameters",
+          "elapsed_seconds": 0.1934,
+          "user_seconds": 0.174,
+          "system_seconds": 0.018
+        },
+        "assignment": {
+          "stage": "assignment",
+          "elapsed_seconds": 0.0432,
+          "user_seconds": 0.04,
+          "system_seconds": 0.003
+        },
+        "qc": {
+          "stage": "qc",
+          "elapsed_seconds": 0.0167,
+          "user_seconds": 0.016,
+          "system_seconds": 0
+        },
+        "discovery": {
+          "stage": "discovery",
+          "elapsed_seconds": 0.6399,
+          "user_seconds": 0.62,
+          "system_seconds": 0.015
+        }
+      },
+      "pipeline_adapter_phase_times": {
+        "parameters": {
+          "user.self": 1.291,
+          "sys.self": 0.096,
+          "elapsed": 1.4,
+          "user.child": 0,
+          "sys.child": 0
+        },
+        "assignment": {
+          "user.self": 0.447,
+          "sys.self": 0.019,
+          "elapsed": 0.471,
+          "user.child": 0,
+          "sys.child": 0
+        },
+        "qc": {
+          "user.self": 0.504,
+          "sys.self": 0.02,
+          "elapsed": 0.528,
+          "user.child": 0,
+          "sys.child": 0
+        },
+        "prepare_execution": {
+          "user.self": 0.21,
+          "sys.self": 0.014,
+          "elapsed": 0.227,
+          "user.child": 0,
+          "sys.child": 0
+        },
+        "unit-000003": {
+          "user.self": 0.511,
+          "sys.self": 0.02,
+          "elapsed": 0.535,
+          "user.child": 0,
+          "sys.child": 0
+        },
+        "unit-000002": {
+          "user.self": 0.468,
+          "sys.self": 0.015,
+          "elapsed": 0.487,
+          "user.child": 0,
+          "sys.child": 0
+        },
+        "unit-000001": {
+          "user.self": 0.448,
+          "sys.self": 0.016,
+          "elapsed": 0.468,
+          "user.child": 0,
+          "sys.child": 0
+        },
+        "collect": {
+          "user.self": 0.714,
+          "sys.self": 0.022,
+          "elapsed": 0.742,
+          "user.child": 0,
+          "sys.child": 0
+        }
+      }
+    }
+  ],
+  "nextflow": {
+    "status": 0,
+    "wall_seconds": 24.821871458,
+    "sampled_tree_peak_bytes": 727580672,
+    "execution": "actual native local Nextflow; ten completed tasks; one task concurrently; isolated installed R runtime",
+    "limits": {
+      "tree_rss_bytes": 1610612736,
+      "wall_seconds": 120,
+      "JVM_heap_bytes": 536870912
+    },
+    "task_memory_note": "macOS trace RSS unavailable; sampled whole-process-tree peak includes JVM and task; not individual R task highwater",
+    "comparison": "exact_pass",
+    "tasks_completed": 10,
+    "tasks_failed": 0
+  },
+  "limits": [
+    "One warm observation per point; no performance extrapolation",
+    "Original source207324cells; selected8responses6guides3targets24requests",
+    "Full-library covariates retained from original closed state; original cell index order authority, no independent store barcode array",
+    "No scientific calibration or full-screen qualification",
+    "Actual NF sampled tree RSS sums per-process resident pages and includes JVM; not kernel highwater or unique physical RAM",
+    "Read-only rawdata; all count arrays, selected cells/families, tables/designs/fits/assignments/proposals/backing files and reports remain local"
+  ]
+}
