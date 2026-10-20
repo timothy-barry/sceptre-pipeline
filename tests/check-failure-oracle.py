@@ -28,7 +28,7 @@ with tempfile.TemporaryDirectory() as directory:
             probes.append(True)
             return
         raise AssertionError("Invalid evidence incorrectly certified")
-    for field,value in [("status","COMPLETED"),("name","SCEPTRE:QC (screen:qc)"),("exit","1")]:
+    for field,value in [("status","COMPLETED"),("name","SCEPTRE:QC (screen:qc)"),("name","SCEPTRE:NOT_DISCOVERY:SCEPTRE_STAGE (screen:discovery)"),("exit","1")]:
         changed=[dict(rows[0], **{field:value})]; trace(changed); rejects()
     trace(rows)
     (task / ".command.log").write_text('echo W09_TRANSIENT_FAILURE >&2\n')

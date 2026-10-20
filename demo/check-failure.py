@@ -10,7 +10,7 @@ def verify(run):
     run = Path(run)
     rows = list(csv.DictReader((run / "failure-trace.tsv").open(), delimiter="\t"))
     failed = [row for row in rows if row["status"] == "FAILED"]
-    if len(failed) != 1 or "DISCOVERY:SCEPTRE_STAGE " not in failed[0]["name"] or failed[0]["exit"] != "42":
+    if len(failed) != 1 or failed[0]["name"] != "SCEPTRE:DISCOVERY:SCEPTRE_STAGE (screen:discovery)" or failed[0]["exit"] != "42":
         raise ValueError("Expected exactly the discovery reference task FAILED with exit 42")
     if any("SCEPTRE_COLLECT" in row["name"] or "SCEPTRE_EXPORT" in row["name"] for row in rows):
         raise ValueError("Collector/export launched despite failed discovery")
