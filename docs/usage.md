@@ -91,13 +91,14 @@ the public reader with explicit verified paths. Active serialized handles reject
 The output RDS contains closed descriptors. Keep the original count files and
 use the public reader with explicit new paths when reopening/relocating outputs.
 
-The certified distributed work-unit API supports backed permutation resampling
-and rejects backed CRT during `prepare_execution()` and execution-manifest
-validation. Direct/reference analysis follows a separate CRT path; reaching that
-path does not establish backed-CRT support, memory bounds or numerical
-qualification. Use the [qualification record](validation.md) for the exact tested
-storage/mode/runtime combination. Do not change resampling methods merely to
-bypass a backend guard.
+Backed counts support permutation resampling through the public API.
+`set_analysis_parameters()` rejects CRT for ondisc-backed counts before either
+reference or distributed execution. Certified distributed preparation and
+execution-manifest validation also reject backed CRT. Backed CRT is therefore
+unsupported in both public pipeline modes; the existence of internal CRT code
+is not support or qualification of a bypass. Use the
+[qualification record](validation.md) for the exact tested storage/mode/runtime
+combination. Do not change resampling methods merely to bypass a backend guard.
 
 In-memory high MOI resolves to complement controls, even if `nt_cells` is
 requested. Inspect the resolved manifest/settings rather than inferring the
