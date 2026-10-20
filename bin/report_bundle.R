@@ -75,6 +75,15 @@ capture_report_source <- function(source, preview_rows = 100L) {
         if (!is.data.frame(table) || nrow(table) != count)
             stop("Result preview does not cover exactly the requested saved prefix: ", key, call. = FALSE)
         preview <- report_plain_preview(table, preview_rows)
+        if (is.character(summary$columns)) {
+            # The reader may have projected columns before touching any rows.
+            # Retain an exact omitted-column count without freezing the header.
+            preview$omitted_column_count <- length(summary$columns) - ncol(preview$table)
+            header <- utils::head(summary$columns, 64L)
+            preview$omitted_columns <- utils::head(header[!header %in% names(preview$table)], 12L)
+            if (preview$omitted_column_count < 0L)
+                stop("Preview has more columns than the certified schema: ", key, call. = FALSE)
+        }
         analyses[[key]] <- list(status = "completed", table = preview$table,
             total_rows = total, preview_rows = count, significant_count = significant,
             passing_count = passing, omitted_column_count = preview$omitted_column_count,

@@ -63,3 +63,13 @@ unchanged RNG, partial receipt rejection, a list-column tail sentinel outside
 the preview retained through native export/relocation, every generated relative
 asset link, and induced-renderer recovery. Actual 10xH store/RSS/time/export
 correction checks and final pipeline runtime tests have separate receipts.
+
+The chosen W01 SQLite store rejects unsupported list/matrix/custom-S3 result
+columns before publication; accepted flattened `z_null_*` columns remain part
+of the complete scalar export. The consumer contract's list-column fixture
+proves native completeness enforcement for a source format that supports such
+payloads; it does not qualify those types in the SQLite backend. Its adapter
+must project at most 32 named preview columns before reading rows, even when a
+result has many flattened null-score columns. Complete CSVs retain all columns
+by default. W01's planned portable native operation is
+`export_result_store_bundle()` with `open_result_store()` relocation.
