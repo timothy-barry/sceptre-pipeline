@@ -34,6 +34,13 @@ loaded <- read_bundle(input, config, runtime)$object
 stopifnot(identical(loaded, expected), identical(serialize(old, NULL), before),
     identical(hashes, c(hash_file(file.path(input, "manifest.rds")),
         hash_file(file.path(input, "sceptre_object.rds")))))
+# A malformed current representation still fails admission; it is not repaired
+# by the historical-layout normalization path.
+bad <- expected
+bad@spec@multiple_testing_alpha <- 2
+error <- tryCatch(validate_object(bad), error = function(e) e)
+stopifnot(inherits(error, "error"),
+    grepl("multiple_testing_alpha", conditionMessage(error), fixed = TRUE))
 wrong <- manifest
 wrong$package$installed_sha256 <- "other-runtime"
 saveRDS(wrong, file.path(input, "manifest.rds"))
