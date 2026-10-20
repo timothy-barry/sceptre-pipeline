@@ -98,6 +98,11 @@ jobs:
           docker run --rm -v "$PWD:$PWD" -w "$PWD" \
             "$SCEPTRE_CONTAINER_IMAGE" Rscript --vanilla report/check-bundle.R \
             2>&1 | tee "$RUNNER_TEMP/report-bundle.log"
+      - name: Actual validation signature file and cache guards
+        run: |
+          docker run --rm -v "$PWD:$PWD" -v "$RUNNER_TEMP:$RUNNER_TEMP" -w "$PWD" \
+            "$SCEPTRE_CONTAINER_IMAGE" Rscript --vanilla tests/ci/check-regular-file-signatures.R \
+            "$RUNNER_TEMP/regular-file-signatures" 2>&1 | tee "$RUNNER_TEMP/regular-file-signatures.log"
       - name: Admission, migration, assignments and diagnostic guards
         run: |
           tar -xOf tests/runtime/sceptre_0.99.0.tar.gz \
@@ -186,6 +191,8 @@ jobs:
             ${{ runner.temp }}/installed-package/session.txt
             ${{ runner.temp }}/installed-package/tests.json
             ${{ runner.temp }}/installed-package/tests.rds
+            ${{ runner.temp }}/regular-file-signatures/receipt.json
+            ${{ runner.temp }}/regular-file-signatures/*.log
             ${{ runner.temp }}/*.log
             ${{ runner.temp }}/direct/direct-comparison.rds
             ${{ runner.temp }}/distributed/distributed-comparison.rds

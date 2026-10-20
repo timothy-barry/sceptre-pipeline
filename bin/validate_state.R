@@ -8,12 +8,14 @@ config <- readRDS(args[1]); lock <- readRDS(args[3])
 validate_config(config); validate_identity(lock)
 read_bundle(args[2], config, lock, args[4]) |> invisible()
 helpers <- sort(list.files(helper_dir, full.names = TRUE))
+helpers <- helpers[!dir.exists(helpers)]
 helper_hashes <- vapply(helpers, hash_file, character(1)); names(helper_hashes) <- basename(helpers)
 options <- jsonlite::fromJSON(args[5])
 if (identical(options$execution_mode, 'distributed') &&
     !all(c('prepare_execution','execute_work_unit','collect_execution') %in% getNamespaceExports('sceptre')))
     fail('Distributed mode requires the qualified package work-unit API; use --execution_mode reference for this package.')
 sources <- sort(list.files(args[7], full.names = TRUE))
+sources <- sources[!dir.exists(sources)]
 if (!length(sources)) fail('Missing workflow/module/config implementation sources.')
 source_hashes <- vapply(sources, hash_file, character(1)); names(source_hashes) <- basename(sources)
 signature <- list(kind = 'sceptre-pipeline-run', schema = 1L,
