@@ -21,7 +21,7 @@ if (!"set_perturbation_fit_method" %in% getNamespaceExports("sceptre")) {
 }
 selected <- sceptre::set_perturbation_fit_method(fixture$object, "fast_logistic")
 expect_rejected <- function(expr, output = NULL) {
-    value <- tryCatch(force(expr), error = identity)
+    value <- tryCatch(force(expr), error = function(e) e)
     stopifnot(inherits(value, "error"),
         grepl("supported only by direct R execution", conditionMessage(value), fixed = TRUE))
     if (!is.null(output)) stopifnot(!file.exists(output), !dir.exists(output))
