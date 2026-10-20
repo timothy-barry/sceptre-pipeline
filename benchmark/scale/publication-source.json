@@ -1,0 +1,19 @@
+{
+  "source_commit": "280bc75",
+  "classification": "source scripts and compact synthetic scheduling aggregates; no real-derived arrays/tables/fits/images copied",
+  "copied_source_sha256": {
+    "bin/resource_admission.py": "e149d87a995423ac15fd87258a98dc55d883f4082454695caeb3fa954e4ff9cf",
+    "tests/test_resource_admission.py": "c6bfe2fe3ccf8ae27c8b1d1ce4c75463b75c7f626c4df4c8457791c9c8657615",
+    "benchmark/scale/prepare-gasperini.R": "c631f94b51db08e7a3a507cafc653118c16602d3a80baa70e4e6e9925d7ef34a",
+    "benchmark/scale/unit-index.R": "68d6f95dbeb1f92524f534f4e46e3a266726d15d955d905be1a6c4e779a7f5f9",
+    "benchmark/scale/probe-backed-crt.R": "9b734d236c3801af06a4eb5356c131afc72bd3cae685008fa07493f6ef34e910",
+    "benchmark/scale/run-index.py": "ff337e4993bd04aa95adcf98507943b3f27a3da4d179fd99518eeb70a684e135",
+    "benchmark/scale/run-nextflow-pilot.py": "11d39ad60880ebe8ef05739b57b89248faf484cc386eeb0534e296ef6973502a",
+    "benchmark/scale/run-real.py": "a54ac1342391b6bf083544e89d7a62e6fe99dbb15fb62ea721f06b7afccf5fae",
+    "benchmark/scale/pipeline-adapter.R": "08472d0a2c1138cfe615c28ba81e16aa3284cb7588cc3a53aa4c5f3c11bb0234",
+    "benchmark/scale/plot-index.R": "187c0ecc67e311d598027426e3eb311e0c06f5b4e79c426228e2b0afdf861c17",
+    "benchmark/scale/evidence/index/measurements.csv": "86da59714be74d5ac81d8fcbc54133bbf92fe942471882a682046817fadc9805",
+    "benchmark/scale/evidence/index/independent-unit-index.R": "993b973d81d1e7429d53060b838d004a2162688b6ef86ae7ab164de5757bc6dd",
+    "benchmark/scale/evidence/index/independent-unit-index.json": "af2e8cbdd5b819090cb7642b7d1eca70d1a3c67ff5884ee397b495e4e3947b01"
+  }
+}

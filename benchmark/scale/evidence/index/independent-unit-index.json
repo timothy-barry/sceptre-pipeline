@@ -1,0 +1,12 @@
+{
+  "baseline_commit": "840f33436a6811a45d712b78bc587d8a0bb8a25b",
+  "candidate_commit": "0b08690fde781a377d83c28bd3ce0d7da022d09b",
+  "source_sha256": {
+    "baseline": "efb196b652c37ccb6f5c8f146b91a3f166ccb0f4df47b0777a70cdf404e5d362",
+    "candidate": "be4cb64f0b6c9e3b12dea67bda5779d4ec95df1893237a2386d927de192356c8"
+  },
+  "scope": "Independent extracted exact R helper old/new comparison with synthetic S4 plan200 irregular/QC families,1600 unit/order/RNG comparisons; no installed or real-screen scale claim",
+  "exit": 0,
+  "stdout": "PASS 1600 exact unit/order/RNG comparisons across200 random irregular-key/QC families\n",
+  "stderr": ""
+}

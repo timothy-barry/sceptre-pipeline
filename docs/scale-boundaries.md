@@ -59,7 +59,7 @@ pointer capacity of a single ordinary Matrix sparse object (2,147,483,647), so
 whole-screen conversion into that representation is unsuitable. This does not
 establish that the current backed scientific path handles the full screen.
 
-The package currently rejects **backed CRT**, affecting Gasperini's established
+Public parameter setup and the certified distributed executor reject **backed CRT**, affecting Gasperini's established
 CRT mode. Switching to permutations merely to fit a storage path would change
 the scientific procedure and requires an explicit benchmark choice.
 
