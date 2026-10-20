@@ -1,0 +1,21 @@
+{
+  "initial_runner_context": {
+    "root": "/private/tmp/w06-qualification",
+    "install_exit": 0,
+    "install_seconds": 14.574900708,
+    "test_exit": 1,
+    "test_pass": 340,
+    "test_errors": 3,
+    "reason": "test_dir omitted package context; no science failure"
+  },
+  "corrected_package_and_adapter_parent_attempt": {
+    "root": "/private/tmp/w06-qualification-retry",
+    "test_pass": 348,
+    "test_fail": 0,
+    "test_warn": 0,
+    "test_skip": 0,
+    "partition_exit": 0,
+    "adapter_exit": 1,
+    "reason": "Standalone adapter omitted output parent directories;2k direct passed; fixed4578c52; no scientific changes"
+  }
+}

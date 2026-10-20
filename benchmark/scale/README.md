@@ -123,3 +123,60 @@ execution modes. Before enabling any prototype, preserve raw-count semantics,
 cell order, full-library covariates, fit and draw identities, and establish
 certificate/save-reopen/relocation/corruption behavior, realistic resource
 bounds and independent statistical validation. No support change is made here.
+
+## Completed bounded real-screen evidence
+
+The successful run used package `fca6bde5e28dfa1f90ef41b193b308e7f2b7bca3`
+(preindex plus admitted empirical-bound/finite-score corrections) and pipeline
+`4578c52f003e39dd5bd931d58cf06d5e421227ee`. Later documentation/preflight
+corrections reflect the actual public backed-CRT guard; historical receipts
+retain their executed source hashes. The indexing helper itself is unchanged
+from measured `0b08690`.
+
+All three subsets retained **24 requested/eligible hypotheses, 6 design columns,
+B1/B2/B3=499/0/2400**. Full-library covariates were preserved, and the requested
+family SHA256 was identical across cell sizes. Every table, full result record,
+plan, preparation component, fit cache and stage RNG state matched with zero
+tolerance. All 24 p-values per subset were finite and inside [0,1]. These are
+implementation and output-invariant checks; statistical calibration was not
+assessed.
+
+| Cells | Prepare s / R high-water MiB | Public direct s / MiB | Pipeline adapters s / MiB | Comparison s |
+|---:|---:|---:|---:|---:|
+| 2,000 | 3.742 / 392.3 | 1.383 / 300.6 | 2.485 / 310.3 | .837 |
+| 8,000 | 3.794 / 395.3 | 1.802 / 304.8 | 3.456 / 329.8 | .813 |
+| 16,000 | 4.122 / 397.8 | 2.965 / 320.9 | 5.254 / 340.4 | .999 |
+
+One observation per point, warm filesystem/package caches. Preparation reads
+bounded feature rows from the same original 207,324-cell backing and its full
+cell-covariate metadata before selecting cells, so its nearly flat cost is not
+a whole-screen memory bound. Adapter runs include serialized handoffs,
+certification and three serial worker invocations; these measurements show no
+end-to-end acceleration over direct R. The separate index curve isolates the
+avoidable scheduling cost.
+
+The actual 2k Nextflow run completed **10 tasks with concurrency one**, all exit
+zero, and passed the same exact scientific comparison. Workflow wall time was
+24.822 seconds, plus comparison/driver overhead (25.598 seconds total command).
+Maximum sampled process-tree RSS sum was 727,580,672 bytes (693.9 MiB), including
+JVM and task processes. This is neither a kernel high-water mark nor distinct
+physical RAM. macOS Nextflow did not provide individual task RSS; per-R-process
+high-water measurements are from the adapter/direct runs above. No sampled
+RSS/wall cap fired; these are sampled stop limits, not cgroup hard limits.
+
+The isolated package regression run passed **348 expectations, zero failures,
+warnings or skips**. The exact pipeline partition matrix passed permutation and
+CRT cases at one, multiple, uneven and excess unit counts. Two prior local
+attempts were retained: a test-runner package-context error and missing parent
+directories in the standalone adapter harness. Both were repaired without
+scientific changes; their receipts are not counted as scientific passes.
+
+Only [compact scalar metrics and hash receipts](evidence/real-aggregate/summary.json)
+are committed here. Full count subsets, cell/family tables, designs, assignments,
+fits, proposals, RDS files, reports and raw real-data logs remain local under
+`/private/tmp/w06-real-attempt3`. The backed-CRT attempt has its own explicit
+[negative gate receipt](evidence/real-aggregate/backed-crt-gate.json).
+The source-only/admitted publication boundary still requires W10/W11 review of
+the chosen complete Git ancestry; this workstream attests its newly added blobs.
+Full Gasperini/Replogle analysis, broad-response/large-family collection,
+concurrent scaling, cluster runs and backed-CRT support remain unqualified.
