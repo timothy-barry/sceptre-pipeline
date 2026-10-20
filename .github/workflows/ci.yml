@@ -86,6 +86,27 @@ jobs:
           docker run --rm "$(cat "$RUNNER_TEMP/image-id")" \
             sh -c 'cat /opt/sceptre/source.json /opt/sceptre/session-info.txt /opt/sceptre/packages.tsv' \
             > "$RUNNER_TEMP/runtime-provenance.txt"
+      - name: Admission, migration, assignments and diagnostic guards
+        run: |
+          tar -xOf tests/runtime/sceptre_0.99.0.tar.gz \
+            sceptre/tests/testthat/fixtures/saved-objects/sceptre-schema3-list-plans-2a0938e.rds \
+            > "$RUNNER_TEMP/historical-schema3.rds"
+          docker run --rm -v "$PWD:$PWD" -v "$RUNNER_TEMP:$RUNNER_TEMP" -w "$PWD" \
+            -e SCEPTRE_REQUIRE_EXPERIMENTAL_GUARD=true -e SCEPTRE_REQUIRE_WILCOXON_GUARD=true \
+            "$SCEPTRE_CONTAINER_IMAGE" Rscript --vanilla tests/check-experimental-method.R \
+            "$RUNNER_TEMP/method-admission" 2>&1 | tee "$RUNNER_TEMP/method-admission.log"
+          docker run --rm -v "$PWD:$PWD" -v "$RUNNER_TEMP:$RUNNER_TEMP" -w "$PWD" \
+            "$SCEPTRE_CONTAINER_IMAGE" Rscript --vanilla tests/check-schema3-migration.R \
+            "$RUNNER_TEMP/historical-schema3.rds" "$RUNNER_TEMP/schema3" \
+            2>&1 | tee "$RUNNER_TEMP/schema3.log"
+          docker run --rm -v "$PWD:$PWD" -v "$RUNNER_TEMP:$RUNNER_TEMP" -w "$PWD" \
+            "$SCEPTRE_CONTAINER_IMAGE" Rscript --vanilla tests/external-assignments.R \
+            "$RUNNER_TEMP/external-assignments" 2>&1 | tee "$RUNNER_TEMP/external-assignments.log"
+          docker run --rm -v "$PWD:$PWD" -w "$PWD" "$SCEPTRE_CONTAINER_IMAGE" \
+            Rscript --vanilla tests/check-diagnostics.R 2>&1 | tee "$RUNNER_TEMP/diagnostics.log"
+          python3 tests/check-failure-oracle.py 2>&1 | tee "$RUNNER_TEMP/failure-oracle.log"
+          python3 -m unittest discover -s tests -p test_resource_admission.py \
+            2>&1 | tee "$RUNNER_TEMP/resource-admission.log"
       - name: Execute all real nf-test branches, including distributed workers
         run: bash tests/ci/run-nf-test.sh "$RUNNER_TEMP/nf-test/nf-test.jar" "$RUNNER_TEMP/nf-test"
       - name: Complete-family comparisons with mandatory backed execution
