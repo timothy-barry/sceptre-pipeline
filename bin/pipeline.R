@@ -53,9 +53,12 @@ validate_object <- function(object) {
         fail("Expected a current schema-3 sceptre_object; migrate/reimport with the qualified package before running.")
     # Public same-choice selection normalizes historical schema-3 layout while
     # retaining reference scientific identities. Older qualified packages have
-    # no selector and keep their existing boundary. Other schemas remain rejected.
+    # no selector and keep their existing boundary. Normalize only the missing
+    # historical representation, never repair a malformed current object here.
+    # Other schemas remain rejected.
     api <- getNamespaceExports("sceptre")
-    if (all(c("get_perturbation_fit_method", "set_perturbation_fit_method") %in% api))
+    if (all(c("get_perturbation_fit_method", "set_perturbation_fit_method") %in% api) &&
+        is.null(attr(object@spec, "perturbation_fit_method", exact = TRUE)))
         object <- sceptre::set_perturbation_fit_method(object,
             sceptre::get_perturbation_fit_method(object))
     methods::validObject(object)
