@@ -1,37 +1,30 @@
-# Qualified source for automatic CI
+# Pinned candidate source for CI
 
 `sceptre_0.99.0.tar.gz` is the complete, unmodified `R CMD build` source archive
-qualified on 2026-10-19, including R/C++ sources, documentation, tests, notices,
-and example data. Its package `DESCRIPTION` records the original authors and
-`License: GPL-3`. The GPL-3 text is supplied in `COPYING`; original source notices
-remain in the archive. This source includes the locally developed schema-3
-refactor and hardening changes from 2026-10-19, followed by the qualified
-submission-diagnostic cleanup. The cleanup preserves native algorithms, scientific
-traversal, whole-family correction and resampling policy; its exact archive has
-separate package qualification at the evidence commit below.
+from package commit `a9727948fc7b8f74c3b4f461bd9a08ff2fe4fb18`.
+`source.json` binds the exact bytes by SHA256
+`32c760773f2c46673686e09b44506f09cd15c529fcde786801ca9e582cb692d5`.
+Original authors, source notices, GPL-3 license and `COPYING` are retained.
+The archive contains tracked package sources, tests, the existing bundled public
+example data and the standard built vignettes. Generated vignette output uses
+that bundled example; private scale/fitter benchmark outputs are excluded.
 
-The declared source commit is
-`01bb39ccf8373ae8965a2679ee4813a63ea2d85d`; qualification documentation is at
-`9a4694450b5d456beedc11f3876ecb1cd84cb05c`. These commits have not been published.
-`source.json` binds that qualification receipt to archive SHA256
-`606363fce32238354fc0d126d79f515973da7c8287ca43b14ce53ce2d00df4b7`.
-The archive checksum is the authoritative install input. A source commit in a
-receipt is provenance, not proof that a remote repository serves that commit.
+At this exact source/archive, the isolated Mac installed suite passed 6,463
+assertions across 299 cases with zero failures, errors, warnings or skips.
+BiocCheck1.49.30/Bioc3.24 under the original submission flags returned0E1W3N;
+strict original category and flagged-instance gates passed with zero new
+instances. The subsequent Mac `--as-cran` lane is still running. Final same-archive
+platform, fresh runtime and end-to-end/scientific/coverage qualification are
+separate gates and are not established by the bundled archive or its checksum.
 
-Bundling the source makes fork pull-request CI self-contained without package
-repository credentials, a local Git checkout, or an unpublished container image.
-No CI step falls back to the package's default branch or an older released API.
-The normal container builder still accepts exact local Git revisions.
+Bundling the complete source lets fork CI build without package repository
+credentials or an unpublished container. CI uses these exact bytes, with no
+fallback to a moving package branch. Run `python3 tests/ci/check-runtime-source.py`
+to check the receipt and its rejection cases before building the runtime.
+The container builder also accepts an explicit local Git revision/archive pair.
 
-To update this fixture, obtain a newly qualified complete source archive from
-the package owner, replace the archive, and update both commit fields and the
-SHA256 in `source.json` in the same review. Run
-`python3 tests/ci/check-runtime-source.py`, rebuild the image, and execute the
-scientific checks described in `docs/ci.md`. Preserve all source/license notices.
-Do not merely change the checksum to accept an unexplained archive.
-
-Earlier CI evidence under `docs/evidence/ci-20261019` qualifies source `169c16e`
-and its old archive. Those receipts remain historical; the feature checkpoint
-`a06cb2eafc18e89dd565e8ad23c0617918f2b13f` retains that previous bundled source.
-Combined-feature qualification of the current cleaned runtime is recorded under
-`docs/evidence/ci-cleaned-runtime-20261019`.
+The previous archive `606363fce32238354fc0d126d79f515973da7c8287ca43b14ce53ce2d00df4b7`
+at package source `01bb39ccf8373ae8965a2679ee4813a63ea2d85d` is a historical
+pre-overnight baseline. Its runtime, HPC and CI receipts retain their original
+scope; they do not qualify this new archive. The prior source remains recoverable
+from the frozen baseline Git history.

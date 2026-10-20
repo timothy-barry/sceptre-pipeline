@@ -1,11 +1,13 @@
 {
   "schema": 1,
   "repository": "https://github.com/Katsevich-Lab/sceptre",
-  "source_commit": "01bb39ccf8373ae8965a2679ee4813a63ea2d85d",
-  "qualification_commit": "9a4694450b5d456beedc11f3876ecb1cd84cb05c",
+  "source_commit": "a9727948fc7b8f74c3b4f461bd9a08ff2fe4fb18",
+  "qualification_commit": "a9727948fc7b8f74c3b4f461bd9a08ff2fe4fb18",
   "archive": "sceptre_0.99.0.tar.gz",
   "archive_kind": "R_CMD_build",
-  "archive_sha256": "606363fce32238354fc0d126d79f515973da7c8287ca43b14ce53ce2d00df4b7",
+  "archive_sha256": "32c760773f2c46673686e09b44506f09cd15c529fcde786801ca9e582cb692d5",
   "license": "GPL-3",
-  "qualified_on": "2026-10-19"
+  "qualified_on": "2026-10-20",
+  "qualification_timezone": "UTC",
+  "qualification_status": "candidate: installed full suite and matched submission gates passed; strict Mac and final pair pending"
 }
