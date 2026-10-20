@@ -151,6 +151,12 @@ run_stage <- function(config, input, output, stage, seed, backing = NULL, identi
     if (identical(stage, "parameters") && is.null(config$analysis)) {
         # Preserve a previously configured current object without reconstructing spec.
         if (is.null(object@preparation@stages$design)) fail("Supply config$analysis for an unconfigured input object.")
+    } else if (identical(stage, "assignment") && is.null(config$assignment) &&
+               identical(object@spec@grna_assignment_method, "external")) {
+        # The getter verifies the live preparation identity, including design,
+        # data, assignments and provenance. A saved completion flag alone is
+        # insufficient. Explicit config$assignment always requests reassignment.
+        sceptre::get_grna_assignments(object) |> invisible()
     } else {
         fun <- switch(stage, parameters = sceptre::set_analysis_parameters, assignment = sceptre::assign_grnas,
                       qc = sceptre::run_qc, calibration = sceptre::run_calibration_check,

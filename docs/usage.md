@@ -33,6 +33,19 @@ it does not overlay settings on a previous specification. Omit the entire
 An unconfigured object requires that section. Config files are executable R
 serialization from trusted local authors, not an untrusted interchange format.
 
+For an object prepared with `sceptre::set_grna_assignments()`, omit both the
+`analysis` and `assignment` sections to preserve its configured external calls.
+The assignment stage verifies current data/design/membership/provenance identity
+through the package getter; saved completion flags alone are insufficient.
+Stale or design-invalidated external calls fail before QC. Supplying an explicit
+`assignment = list(...)` requests ordinary package reassignment instead. Changing
+the analysis configuration invalidates existing assignments, so configure and
+reapply external calls in R before creating the bundle if they should be retained.
+Raw response/guide counts and full-library covariates remain in the immutable
+object. SingleCellExperiment import and results export are documented in the
+package's `single-cell-interoperability` vignette; optional SCE is needed only
+in the importing/exporting processes, not in pipeline execution processes.
+
 Assignment arguments are validated by method by the package. Irrelevant method
 arguments should be removed rather than relying on legacy pipeline filtering.
 Unknown sections/arguments and pipeline CLI flags fail early. Formulae and pair
