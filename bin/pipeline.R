@@ -51,6 +51,13 @@ validate_object <- function(object) {
     if (!methods::is(object, "sceptre_object") ||
         !identical(object@schema_version, 3L))
         fail("Expected a current schema-3 sceptre_object; migrate/reimport with the qualified package before running.")
+    # Public same-choice selection normalizes historical schema-3 layout while
+    # retaining reference scientific identities. Older qualified packages have
+    # no selector and keep their existing boundary. Other schemas remain rejected.
+    api <- getNamespaceExports("sceptre")
+    if (all(c("get_perturbation_fit_method", "set_perturbation_fit_method") %in% api))
+        object <- sceptre::set_perturbation_fit_method(object,
+            sceptre::get_perturbation_fit_method(object))
     methods::validObject(object)
     validate_pipeline_method(object)
     invisible(object)
@@ -81,7 +88,7 @@ validate_config <- function(config) {
 # Explicit scientific scope is retained in the package spec; this manifest merely
 # certifies the serialized boundary and records pipeline stage completion.
 create_input <- function(object, dir, config, identity = package_identity(), backing = NULL) {
-    validate_object(object); validate_config(config); validate_identity(identity)
+    object <- validate_object(object); validate_config(config); validate_identity(identity)
     if (dir.exists(dir)) fail("Output directory already exists: ", dir)
     dir.create(dir, recursive = TRUE)
     backed <- methods::is(object@data@response_matrix, "BackedCountStore")
@@ -107,7 +114,7 @@ read_bundle <- function(dir, config, identity, backing = NULL) {
         object <- sceptre::read_ondisc_backed_sceptre_object(file.path(dir, "sceptre_object.rds"),
             file.path(backing, "response.odm"), file.path(backing, "grna.odm"))
     } else if (identical(m$backend, "memory")) object <- readRDS(file.path(dir, "sceptre_object.rds")) else fail("Unknown count backend.")
-    validate_object(object)
+    object <- validate_object(object)
     allowed <- c("parameters", "assignment", "qc", "calibration", "power", "discovery")
     if (!is.character(m$completed) || anyDuplicated(m$completed) || any(!m$completed %in% allowed) ||
         !identical(m$stage, if (length(m$completed)) tail(m$completed, 1L) else "input"))
@@ -174,7 +181,7 @@ run_stage <- function(config, input, output, stage, seed, backing = NULL, identi
     write_completed_bundle(object, m, input, output, stage, seed, identity)
 }
 write_completed_bundle <- function(object, m, input, output, stage, seed, identity) {
-    validate_object(object)
+    object <- validate_object(object)
     # Build in a temporary sibling; failed functions never publish a completed bundle.
     if (dir.exists(output)) fail("Output directory already exists: ", output)
     tmp <- tempfile(".stage-", tmpdir = dirname(output))

@@ -6,7 +6,7 @@ source(file.path(dirname(normalizePath(script)), "pipeline.R"))
 if (!length(args) %in% c(4L, 5L)) fail("Usage: prepare_input.R OBJECT CONFIG OUTPUT LOCK [BACKING_DIRECTORY]")
 lock <- readRDS(args[4]); validate_identity(lock)
 object <- readRDS(args[1])
-validate_object(object)
+object <- validate_object(object)
 for (store in list(object@data@response_matrix, object@data@grna_matrix)) {
     if (methods::is(store, "BackedCountStore") && !is.null(store@handle))
         fail("Raw serialization contains a backed process handle. Save the source object with write_ondisc_backed_sceptre_object() before preparing the bundle.")
