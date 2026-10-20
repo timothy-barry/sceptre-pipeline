@@ -52,8 +52,8 @@ failure_args=(run "$root/main.nf" -c "$run/failure.config" -profile "$SCEPTRE_DE
 if (cd "$run" && nextflow "${failure_args[@]}") > "$run/induced-failure.log" 2>&1; then
   echo 'Expected transient discovery failure did not occur' >&2; exit 1
 fi
-grep -q W09_TRANSIENT_FAILURE "$run/induced-failure.log"
-test ! -d "$run/failure-results/discovery/state"
+cp "$run/failure-results/pipeline_info/trace.tsv" "$run/failure-trace.tsv"
+python3 "$root/demo/check-failure.py" "$run"
 failed_session=$(run_r -e 'cat(readRDS(file.path(commandArgs(TRUE)[1], "failure-results/run_signature.rds"))$options$session_id)' "$run")
 rm "$run/failure.flag"
 (cd "$run" && nextflow "${failure_args[@]}" -resume "$failed_session") > "$run/recovery.log" 2>&1
