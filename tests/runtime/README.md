@@ -1,4 +1,4 @@
-# Pinned candidate source for CI
+# Pinned package source for CI
 
 `sceptre_0.99.0.tar.gz` is the complete, unmodified `R CMD build` source archive
 from package commit `a9727948fc7b8f74c3b4f461bd9a08ff2fe4fb18`.
@@ -11,9 +11,11 @@ that bundled example; private scale/fitter benchmark outputs are excluded.
 
 At this exact source/archive, the isolated Mac installed suite passed 6,463
 assertions across 299 cases with zero failures, errors, warnings or skips.
-BiocCheck1.49.30/Bioc3.24 under the original submission flags returned0E1W3N;
+BiocCheck 1.49.30 / Bioc 3.24 under the original submission flags returned
+zero errors, one inherited warning and three inherited notes;
 strict original category and flagged-instance gates passed with zero new
-instances. The subsequent Mac `--as-cran` lane is still running. Final same-archive
+instances. Mac `--as-cran` also completed with zero errors, zero warnings and two notes.
+Final same-archive
 platform, fresh runtime and end-to-end/scientific/coverage qualification are
 separate gates and are not established by the bundled archive or its checksum.
 

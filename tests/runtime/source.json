@@ -9,5 +9,5 @@
   "license": "GPL-3",
   "qualified_on": "2026-10-20",
   "qualification_timezone": "UTC",
-  "qualification_status": "candidate: installed full suite and matched submission gates passed; strict Mac and final pair pending"
+  "qualification_status": "package Mac full suite/as-cran and original matched submission gates passed; final platform/runtime/E2E/science gates pending"
 }
