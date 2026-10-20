@@ -65,6 +65,7 @@ scientific_report_html <- function(data, output, fragment = FALSE) {
     esc <- report_escape
     table_html <- function(x) {
         total <- if (is.data.frame(x)) nrow(x) else 0L
+        omitted <- if (is.data.frame(x)) setdiff(names(x), names(report_scalar_table(x, max_rows = 0L))) else character()
         x <- report_scalar_table(x, max_rows = 100L)
         if (!nrow(x)) return('<p class="empty">No rows available.</p>')
         x[] <- lapply(x, function(column) {
@@ -73,8 +74,8 @@ scientific_report_html <- function(data, output, fragment = FALSE) {
         })
         rows <- apply(x, 1L, function(row) paste0('<tr>', paste0('<td>', esc(row), '</td>', collapse = ''), '</tr>'))
         paste0('<p class="preview">', if (total > nrow(x)) paste0('Showing the first ', nrow(x), ' of ', total,
-            ' rows in saved order. Preview truncated; complete values are retained in the CSV downloads and frozen report inputs.') else paste0('Showing all ', total, ' rows.'),
-            '</p><div class="table-wrap"><table><thead><tr>', paste0('<th>', esc(names(x)), '</th>', collapse = ''),
+            ' rows in saved order. Preview truncated; complete scalar columns are retained in the CSV downloads, and all values in the frozen report inputs.') else paste0('Showing all ', total, ' rows.'),
+            '</p>', if (length(omitted)) paste0('<p class="preview">Non-scalar columns omitted from this HTML table and CSV: ', esc(paste(omitted, collapse = ', ')), '. Complete values are retained in report-data.rds.</p>'), '<div class="table-wrap"><table><thead><tr>', paste0('<th>', esc(names(x)), '</th>', collapse = ''),
             '</tr></thead><tbody>', paste(rows, collapse = ''), '</tbody></table></div>')
     }
     code <- function(x) paste0('<p class="preview">Bounded preview: up to 64 short scalar settings and 12 other entries or rows per field, 5 nested levels, 512 visited entries, 500 characters per text value and 20,000 displayed characters. Complete settings and provenance are in the frozen report inputs.</p><pre>', esc(report_text(x)), '</pre>')
@@ -85,6 +86,7 @@ scientific_report_html <- function(data, output, fragment = FALSE) {
         significant <- if ('significant' %in% names(result$table)) sum(result$table$significant, na.rm = TRUE) else NA_integer_
         paste0('<section id="', key, '"><h2>', title, '</h2><p>', description, '</p><p><strong>', nrow(result$table),
             ' returned rows</strong>', if (!is.na(significant)) paste0('; ', significant, ' marked significant by SCEPTRE.') else '.',
+            if (!nrow(result$table)) ' Completed with no returned rows; this is not evidence of no effects.' else '',
             '</p><p><a href="tables/', key, '.csv">Download scalar result columns (CSV)</a></p>',
             table_html(result$table), '<details><summary>Frozen family, settings and realized resampling budgets</summary>', code(result$provenance), '</details></section>')
     }

@@ -64,3 +64,13 @@ associations in a synthetic screen are not biological-mechanism claims.
 Calibration is optional for other runs and is not a discovery prerequisite.
 The wrapper reports an unsuccessful rendering step separately even when science
 has completed; the saved scientific artifacts remain usable.
+
+## Executable acceptance and recovery walkthrough
+
+After building an exact image, run `demo/acceptance.sh NEW_DIRECTORY` with
+`SCEPTRE_DEMO_IMAGE=sha256:...`. It runs the public demo, validates its saved
+public results, reopens saved state, rerenders a relocated report without loading
+SCEPTRE, checks cached resume, induces a transient task failure and recovers it
+with an identical resume. It retains commands/logs and asserts that failed
+science was not published. See [recovery instructions](recovery.md). This is a
+small synthetic acceptance check, not statistical validation or a scale claim.

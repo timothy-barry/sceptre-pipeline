@@ -208,3 +208,6 @@ See [distributed protocol](distributed-interface.md) for the input/resource/RNG
 contract and [validation](validation.md) for actual qualified branches. Installing
 a package with the same version number is insufficient: every process must use
 the exact locked implementation/runtime.
+
+For error interpretation, scheduler checks, failure recovery and report relocation,
+see [diagnose and recover a run](recovery.md).
