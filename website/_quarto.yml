@@ -70,6 +70,7 @@ website:
           - parameters.qmd
           - outputs.qmd
           - report.qmd
+          - recovery.qmd
       - section: "DEPLOY"
         contents:
           - containers.qmd
