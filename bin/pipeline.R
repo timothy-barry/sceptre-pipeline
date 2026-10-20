@@ -35,11 +35,21 @@ validate_identity <- function(expected) {
     if (!identical(expected, package_identity()))
         fail("Runtime/package identity mismatch. Rebuild the environment lock and start a new run; do not resume across package changes.")
 }
+# Experimental direct-R fitters need separate pipeline runtime qualification.
+# Older qualified packages expose no selector and retain the reference method.
+validate_pipeline_method <- function(object) {
+    api <- getNamespaceExports("sceptre")
+    if ("get_perturbation_fit_method" %in% api &&
+        !identical(sceptre::get_perturbation_fit_method(object), "glm.fit"))
+        fail("Experimental fast_logistic is supported only by direct R execution; switch to glm.fit before creating or reading pipeline input.")
+    invisible(object)
+}
 validate_object <- function(object) {
     if (!methods::is(object, "sceptre_object") ||
         !identical(object@schema_version, 3L))
         fail("Expected a current schema-3 sceptre_object; migrate/reimport with the qualified package before running.")
     methods::validObject(object)
+    validate_pipeline_method(object)
     invisible(object)
 }
 validate_config <- function(config) {
