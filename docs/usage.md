@@ -78,10 +78,17 @@ the public reader with explicit verified paths. Active serialized handles reject
 The output RDS contains closed descriptors. Keep the original count files and
 use the public reader with explicit new paths when reopening/relocating outputs.
 
-The baseline optional backend supports permutation resampling; backed CRT fails
-before execution. In-memory high MOI resolves to complement controls, even if
-`nt_cells` is requested. Inspect the resolved manifest/settings rather than
-inferring the branch from a configuration label.
+The certified distributed work-unit API supports backed permutation resampling
+and rejects backed CRT during `prepare_execution()` and execution-manifest
+validation. Direct/reference analysis follows a separate CRT path; reaching that
+path does not establish backed-CRT support, memory bounds or numerical
+qualification. Use the [qualification record](validation.md) for the exact tested
+storage/mode/runtime combination. Do not change resampling methods merely to
+bypass a backend guard.
+
+In-memory high MOI resolves to complement controls, even if `nt_cells` is
+requested. Inspect the resolved manifest/settings rather than inferring the
+branch from a configuration label.
 
 ## Environments and executors
 
