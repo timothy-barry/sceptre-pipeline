@@ -54,6 +54,20 @@ bad <- source; original <- bad$describe
 bad$describe <- function(key) { x <- original(key); if (key == "discovery") x$summary$significant_rows <- 1000001; x }
 rejects(capture_report_source(bad))
 rejects(capture_report_source(source, preview_rows = 101L))
+bad <- source; bad$qc$stages <- list(family = seq_len(2000L))
+rejects(capture_report_source(bad))
+for (count in list(list(family = seq_len(2000L)), c(1L, 2L), -1L)) {
+    bad <- source; bad$qc$assignment_total_rows <- count
+    rejects(capture_report_source(bad))
+}
+attr(source$qc$stages, "global_family") <- seq_len(1000000L)
+`[.report_forbidden_reader` <- function(...) stop("Opaque metadata must not invoke a reader")
+source$requested$opaque <- structure(list(family = seq_len(1000000L)), class = "report_forbidden_reader")
+source$requested$formula <- ~ response_n_umis
+view <- capture_report_source(source)
+stopifnot(is.null(attr(view$qc$stages, "global_family")),
+    grepl("response_n_umis", view$requested$formula, fixed = TRUE),
+    as.numeric(object.size(view)) < 150000L)
 source <- make_source(125L)
 source$export_csv <- function(key, target) {
     # This tiny fixture stands in for the package streaming writer only in

@@ -12,6 +12,9 @@ report_preview <- function(x, depth = 0L, budget = NULL) {
     if (is.null(budget)) { budget <- new.env(parent = emptyenv()); budget$remaining <- 512L }
     if (budget$remaining <= 0L) return('<preview entry budget exhausted; see frozen report inputs>')
     budget$remaining <- budget$remaining - 1L
+    if (inherits(x, 'formula')) return(substr(paste(deparse(x, width.cutoff = 500L, nlines = 12L), collapse = ' '), 1L, 500L))
+    if (is.object(x) && is.list(x) && !is.data.frame(x) && !isS4(x))
+        return(paste0('<opaque ', substr(paste(utils::head(class(x), 3L), collapse = '/'), 1L, 500L), ' object omitted; see native export>'))
     if (depth >= 5L && (is.list(x) || isS4(x))) return('<nested content omitted; see frozen report inputs>')
     if (isS4(x)) return(report_preview(stats::setNames(lapply(methods::slotNames(x),
         function(name) methods::slot(x, name)), methods::slotNames(x)), depth + 1L, budget))
@@ -33,6 +36,7 @@ report_preview <- function(x, depth = 0L, budget = NULL) {
             '^(plan|spec|manifest|qualified_source|package|identity|analysis|assignment|qc|execution|calibration)$', names(x)[nested])]
         selected <- c(candidates[scalar], utils::head(unique(c(metadata, nested)), 12L))
         out <- lapply(x[selected], function(value) report_preview(value, depth + 1L, budget))
+        if (!is.null(names(out))) names(out) <- substr(names(out), 1L, 500L)
         if (count > length(selected)) out[['... omitted entries']] <- count - length(selected)
         return(out)
     }

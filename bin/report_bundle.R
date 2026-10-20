@@ -1,6 +1,7 @@
 # A pipeline-owned consumer of package-owned summaries, readers and exports.
 # This boundary never collects a full family or serializes the source object.
 report_count <- function(value, name, missing = FALSE) {
+    if (is.object(value)) stop("Report counts must be plain numeric scalars: ", name, call. = FALSE)
     if (missing && (is.null(value) || (length(value) == 1L && is.na(value)))) return(NA_real_)
     if (!is.numeric(value) || length(value) != 1L || !is.finite(value) ||
         value < 0 || value != floor(value) || value > 2^53)
@@ -26,7 +27,7 @@ report_plain_preview <- function(table, limit = 100L, column_limit = 32L) {
             paste0(substr(value, 1L, 500L), " ... [text truncated]"), value)
         value
     })
-    names(columns) <- names(table)[selected]
+    names(columns) <- substr(names(table)[selected], 1L, 500L)
     out <- structure(columns, class = "data.frame", row.names = .set_row_names(nrow(table)))
     omitted <- setdiff(seq_len(ncol(table)), selected)
     list(table = out, omitted_columns = utils::head(names(table)[omitted], 12L),
@@ -38,11 +39,24 @@ report_qc_view <- function(qc) {
         if (!is.data.frame(value)) return(data.frame())
         report_plain_preview(value[seq_len(min(nrow(value), 100L)), , drop = FALSE])$table
     }
+    stages <- qc$stages
+    if (is.null(stages)) stages <- character()
+    if (!is.character(stages) || is.object(stages) || !is.null(dim(stages)) ||
+        length(stages) > 64L || anyNA(stages) || any(nchar(stages) > 500L))
+        stop("QC stage names must be a compact plain character vector.", call. = FALSE)
+    attributes(stages) <- NULL
+    total <- qc$assignment_total_rows
+    if (is.null(total)) total <- if (is.data.frame(qc$assignments)) nrow(qc$assignments) else 0L
+    total <- report_count(total, "assignment_total_rows")
+    assignments <- table(qc$assignments)
+    if (nrow(assignments) != min(total, 100L))
+        stop("QC assignment preview does not match its exact row count.", call. = FALSE)
+    if (is.data.frame(qc$families) && nrow(qc$families) > 3L)
+        stop("QC family summaries must contain at most three analysis families.", call. = FALSE)
     list(imported_cells = report_count(qc$imported_cells, "imported cells", TRUE),
          retained_cells = report_count(qc$retained_cells, "retained cells", TRUE),
          excluded_cells = report_count(qc$excluded_cells, "excluded cells", TRUE),
-         stages = utils::head(qc$stages, 64L), assignments = table(qc$assignments),
-         assignment_total_rows = if (is.null(qc$assignment_total_rows)) nrow(qc$assignments) else qc$assignment_total_rows,
+         stages = stages, assignments = assignments, assignment_total_rows = total,
          families = table(qc$families), metrics = report_preview(qc$metrics))
 }
 
@@ -92,7 +106,12 @@ capture_report_source <- function(source, preview_rows = 100L) {
     }
     # report_preview performs a fixed-budget traversal. It does not recursively
     # snapshot all spec/plan fields or copy them into the portable view bundle.
-    list(report_schema = 2L, title = if (is.null(source$title)) "SCEPTRE scientific results" else source$title,
+    title <- source$title
+    if (is.null(title)) title <- "SCEPTRE scientific results"
+    if (!is.character(title) || is.object(title) || length(title) != 1L || is.na(title))
+        stop("Report title must be a plain character scalar.", call. = FALSE)
+    title <- substr(title, 1L, 500L)
+    list(report_schema = 2L, title = title,
          generated_utc = format(Sys.time(), tz = "UTC", usetz = TRUE),
          analyses = analyses, qc = report_qc_view(source$qc), requested = report_preview(source$requested),
          resolved = report_preview(source$resolved), provenance = report_preview(source$provenance),
