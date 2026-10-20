@@ -21,9 +21,12 @@ with tempfile.TemporaryDirectory() as directory:
             writer.writeheader(); writer.writerows(value)
     trace(rows)
     assert module.verify(run)["exit"] == 42
+    probes = []
     def rejects():
         try: module.verify(run)
-        except (ValueError, FileNotFoundError): return
+        except (ValueError, FileNotFoundError):
+            probes.append(True)
+            return
         raise AssertionError("Invalid evidence incorrectly certified")
     for field,value in [("status","COMPLETED"),("name","SCEPTRE:QC (screen:qc)"),("exit","1")]:
         changed=[dict(rows[0], **{field:value})]; trace(changed); rejects()
@@ -32,6 +35,7 @@ with tempfile.TemporaryDirectory() as directory:
     (task / ".command.run").write_text("W09_TRANSIENT_FAILURE\n")
     rejects() # Echoed-only and source-only markers are not emitted evidence.
     (task / ".command.log").unlink(); rejects()
+    (task / ".command.run").unlink(); rejects()
     (task / ".command.log").write_text("W09_TRANSIENT_FAILURE\n")
     (task / ".exitcode").write_text("1"); rejects()
     (task / ".exitcode").write_text("42")
@@ -41,4 +45,4 @@ with tempfile.TemporaryDirectory() as directory:
     published=run/"failure-results/discovery/state"; published.mkdir(parents=True); rejects(); published.rmdir()
     exported=run/"failure-results/exports"; exported.mkdir(); rejects(); exported.rmdir()
     (run/"failure-work/ab/123456ffff").mkdir(); rejects()
-print("PASS failure oracle positive fixture and 12 negative probes")
+print(f"PASS failure oracle positive fixture and {len(probes)} negative probes")
