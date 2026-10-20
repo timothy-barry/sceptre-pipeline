@@ -1,0 +1,23 @@
+# Preserve original independent-review log bytes, including terminal blank lines.
+docs/evidence/independent-review/**/*.log -whitespace
+
+# Preserve raw scheduler and test receipts with their original hashes.
+docs/evidence/arrays-20261019/** -text -whitespace
+
+# Keep captured presentation logs and receipts byte-for-byte.
+docs/evidence/presentation-20261019/** -text -whitespace
+
+# Preserve exact CI, TAP and runtime evidence bytes.
+docs/evidence/ci-20261019/** -text -whitespace
+
+benchmark/evidence/** -text -whitespace
+
+docs/evidence/hpc-20261019/** -text -whitespace
+
+docs/evidence/crt-dispatch-20261019/** -text -whitespace
+
+# Preserve current runtime, integration review and scale/build receipts.
+docs/evidence/ci-cleaned-runtime-20261019/** -text -whitespace
+docs/evidence/voice-final-review-20261019/** -text -whitespace
+docs/evidence/scale-inventory-20261019/** -text -whitespace
+docs/evidence/amd64-build-20261019/** -text -whitespace

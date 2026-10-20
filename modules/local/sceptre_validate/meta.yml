@@ -1,0 +1,51 @@
+name: sceptre_validate
+description: Validate the actual runtime and versioned schema-3 input artifact on every launch, including resume.
+keywords: [sceptre, validation, provenance]
+tools:
+  - sceptre:
+      description: Statistical analysis of single-cell CRISPR screens
+      homepage: https://github.com/Katsevich-Lab/sceptre
+      licence: [GPL-3]
+input:
+  - - meta:
+        type: map
+        description: Pipeline metadata with a stable screen id; contains no scientific settings.
+    - state:
+        type: directory
+        description: Imported versioned input bundle with manifest and closed serialized object.
+  - config:
+      type: file
+      description: Validated scientific configuration RDS.
+      pattern: '*.rds'
+  - lock:
+      type: file
+      description: Exact runtime and installed package identity RDS.
+      pattern: '*.rds'
+  - backing:
+      type: directory
+      description: Explicit count backing files, or the empty backing directory for memory inputs.
+  - tools_dir:
+      type: directory
+      description: Staged pipeline R helpers; content participates in the task cache key.
+  - previous_signature:
+      type: file
+      description: Previous published run signature for exact same-session resume, or the explicit no-previous-run sentinel for a fresh output directory.
+      pattern: '*.rds'
+  - run_options:
+      type: string
+      description: JSON-encoded execution options bound into the run signature with session, input, configuration, runtime and helper identities.
+  - implementation_sources:
+      type: file
+      description: Explicit staged list of production workflow, module, configuration, schema and helper source files bound into the implementation digest. External configuration literal include closure is hashed on the host and supplied as a digest in run_options; external files are never staged or mounted.
+output:
+  - ready:
+      - ready:
+          type: boolean
+          description: Success gate; the original input state is forwarded after this signal so resume cache keys remain stable.
+  - signature:
+      - run_signature.rds:
+          type: file
+          description: Certified run signature including workflow implementation SHA; prevents stale publication or resume after source or external configuration changes.
+          pattern: run_signature.rds
+authors: []
+maintainers: []

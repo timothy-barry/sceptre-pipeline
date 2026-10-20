@@ -1,0 +1,61 @@
+nextflow_process {
+    name 'Certified distributed worker module'
+    script "modules/local/sceptre_worker/main.nf"
+    process 'SCEPTRE_WORKER'
+    tag 'module'
+
+    test('Executes a real certified unit and emits its named proposal') {
+        when {
+            params {
+                outdir = "$outputDir"
+                container_image = System.getenv('SCEPTRE_CONTAINER_IMAGE')
+            }
+            process {
+                """
+                input[0] = tuple([id: 'fixture'], file('${System.getenv('SCEPTRE_MODULE_FIXTURES')}/qc'))
+                input[1] = file('${System.getenv('SCEPTRE_MODULE_FIXTURES')}/config.rds')
+                input[2] = file('${System.getenv('SCEPTRE_MODULE_FIXTURES')}/lock.rds')
+                input[3] = file('$baseDir/resources/empty_backing')
+                input[4] = file('$baseDir/bin')
+                input[5] = file('${System.getenv('SCEPTRE_MODULE_FIXTURES')}/execution')
+                input[6] = 'discovery'
+                input[7] = 271828
+                input[8] = 'unit-000001'
+                """
+            }
+        }
+        then {
+            assert process.success
+            assert process.out.proposal.size() == 1
+            assert path(process.out.proposal[0]).fileName.toString() == 'proposal_unit-000001.rds'
+            assert path(process.out.proposal[0]).size() > 0
+            assert path(process.out.versions[0]).text.contains('installed_sha256:')
+        }
+    }
+
+    test('Rejects a unit outside the certified execution plan') {
+        when {
+            params {
+                outdir = "$outputDir"
+                container_image = System.getenv('SCEPTRE_CONTAINER_IMAGE')
+            }
+            process {
+                """
+                input[0] = tuple([id: 'fixture'], file('${System.getenv('SCEPTRE_MODULE_FIXTURES')}/qc'))
+                input[1] = file('${System.getenv('SCEPTRE_MODULE_FIXTURES')}/config.rds')
+                input[2] = file('${System.getenv('SCEPTRE_MODULE_FIXTURES')}/lock.rds')
+                input[3] = file('$baseDir/resources/empty_backing')
+                input[4] = file('$baseDir/bin')
+                input[5] = file('${System.getenv('SCEPTRE_MODULE_FIXTURES')}/execution')
+                input[6] = 'discovery'
+                input[7] = 271828
+                input[8] = 'unit-999999'
+                """
+            }
+        }
+        then {
+            assert process.failed
+            assert path("$metaDir/nextflow.log").text.contains('Unknown certified work-unit ID.')
+        }
+    }
+}

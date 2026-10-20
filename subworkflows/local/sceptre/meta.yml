@@ -1,0 +1,28 @@
+name: sceptre
+description: Validate and execute complete-family public SCEPTRE stages with explicit preparation dependencies.
+keywords: [sceptre, complete-family, schema3]
+components:
+  - sceptre_validate
+  - sceptre_stage
+  - sceptre_analysis
+  - sceptre_export
+input:
+  - state:
+      description: Value channel containing tuple(meta map, imported state directory).
+  - config:
+      description: Value channel containing scientific configuration RDS.
+  - lock:
+      description: Value channel containing exact runtime identity RDS.
+  - backing:
+      description: Value channel containing optional backing files directory.
+  - analyses:
+      description: Unique requested family names; invocation order is calibration, power, discovery.
+  - stop_after:
+      description: Preparation stopping point or analysis.
+  - seed:
+      description: Initial workflow seed; certified RNG state is carried across subsequent stages.
+output:
+  - state:
+      description: Latest successful tuple(meta map, certified state directory); failures terminate without a partial finalized family.
+authors: []
+maintainers: []

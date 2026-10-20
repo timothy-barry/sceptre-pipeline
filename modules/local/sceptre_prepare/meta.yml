@@ -1,0 +1,55 @@
+name: sceptre_prepare
+description: Freeze a complete-family package execution certificate and certified whole-key work-unit scope.
+keywords: [sceptre, certified-execution, complete-family]
+tools:
+  - sceptre:
+      description: Statistical analysis of single-cell CRISPR screens
+      homepage: https://github.com/Katsevich-Lab/sceptre
+      licence: [GPL-3]
+input:
+  - - meta:
+        type: map
+        description: Stable pipeline screen id; scientific scope belongs to the package execution certificate.
+    - state:
+        type: directory
+        description: Certified predecessor state with a closed serialized schema-3 object.
+  - config:
+      type: file
+      description: Manifest-bound scientific configuration RDS.
+      pattern: '*.rds'
+  - lock:
+      type: file
+      description: Exact installed package, optional backend and runtime identity RDS.
+      pattern: '*.rds'
+  - backing:
+      type: directory
+      description: Count backing files for process-local reopen; no serialized live handles.
+  - tools_dir:
+      type: directory
+      description: Staged R helpers included in task cache content identity.
+  - stage:
+      type: string
+      description: calibration, power or discovery family.
+  - seed:
+      type: integer
+      description: Original workflow seed checked against the serialized RNG handoff; native seed ownership remains in the package.
+  - n_units:
+      type: integer
+      description: Requested work-unit count, capped at eligible keys by the package.
+output:
+  - execution:
+      - execution:
+          type: directory
+          description: Frozen package execution certificate and durable scientific inputs; no live worker contexts.
+  - units:
+      - unit_ids.txt:
+          type: file
+          description: Ordered certified unit identifiers used for fan-out.
+          pattern: unit_ids.txt
+  - versions:
+      - versions.yml:
+          type: file
+          description: Installed package and execution dependency versions.
+          pattern: versions.yml
+authors: []
+maintainers: []

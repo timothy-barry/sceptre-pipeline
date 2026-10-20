@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="143" height="20" role="img" aria-label="pipeline: 2.0.0-dev">
+<title>pipeline: 2.0.0-dev</title>
+<rect width="143" height="20" rx="3" fill="#555"/>
+<path fill="#007ec6" d="M68 0h75v20H68z"/>
+<g fill="#fff" text-anchor="middle" font-family="Verdana,DejaVu Sans,sans-serif" font-size="11">
+<text x="34" y="14">pipeline</text><text x="105.5" y="14">2.0.0-dev</text>
+</g></svg>

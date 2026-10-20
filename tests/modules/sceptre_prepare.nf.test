@@ -1,0 +1,62 @@
+nextflow_process {
+    name 'Certified distributed preparation module'
+    script "modules/local/sceptre_prepare/main.nf"
+    process 'SCEPTRE_PREPARE'
+    tag 'module'
+
+    test('Prepares the certified target-group units within the requested limit') {
+        when {
+            params {
+                outdir = "$outputDir"
+                container_image = System.getenv('SCEPTRE_CONTAINER_IMAGE')
+            }
+            process {
+                """
+                input[0] = tuple([id: 'fixture'], file('${System.getenv('SCEPTRE_MODULE_FIXTURES')}/qc'))
+                input[1] = file('${System.getenv('SCEPTRE_MODULE_FIXTURES')}/config.rds')
+                input[2] = file('${System.getenv('SCEPTRE_MODULE_FIXTURES')}/lock.rds')
+                input[3] = file('$baseDir/resources/empty_backing')
+                input[4] = file('$baseDir/bin')
+                input[5] = 'discovery'
+                input[6] = 271828
+                input[7] = 3
+                """
+            }
+        }
+        then {
+            assert process.success
+            assert process.out.execution.size() == 1
+            def execution = process.out.execution[0]
+            assert path("$execution/execution.rds").size() > 0
+            assert path("$execution/manifest.rds").size() > 0
+            // Requested counts are upper bounds: this fixture has two target groups.
+            assert path(process.out.units[0]).readLines() == ['unit-000001', 'unit-000002']
+            assert path(process.out.versions[0]).text.contains('installed_sha256:')
+        }
+    }
+
+    test('Rejects input that has not completed QC before publishing a plan') {
+        when {
+            params {
+                outdir = "$outputDir"
+                container_image = System.getenv('SCEPTRE_CONTAINER_IMAGE')
+            }
+            process {
+                """
+                input[0] = tuple([id: 'unprocessed'], file('${System.getenv('SCEPTRE_MODULE_FIXTURES')}/input'))
+                input[1] = file('${System.getenv('SCEPTRE_MODULE_FIXTURES')}/config.rds')
+                input[2] = file('${System.getenv('SCEPTRE_MODULE_FIXTURES')}/lock.rds')
+                input[3] = file('$baseDir/resources/empty_backing')
+                input[4] = file('$baseDir/bin')
+                input[5] = 'discovery'
+                input[6] = 271828
+                input[7] = 3
+                """
+            }
+        }
+        then {
+            assert process.failed
+            assert path("$metaDir/nextflow.log").text.contains('Distributed preparation requires current completed QC')
+        }
+    }
+}

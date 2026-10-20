@@ -1,0 +1,11 @@
+{
+  "schema": 1,
+  "repository": "https://github.com/Katsevich-Lab/sceptre",
+  "source_commit": "01bb39ccf8373ae8965a2679ee4813a63ea2d85d",
+  "qualification_commit": "9a4694450b5d456beedc11f3876ecb1cd84cb05c",
+  "archive": "sceptre_0.99.0.tar.gz",
+  "archive_kind": "R_CMD_build",
+  "archive_sha256": "606363fce32238354fc0d126d79f515973da7c8287ca43b14ce53ce2d00df4b7",
+  "license": "GPL-3",
+  "qualified_on": "2026-10-19"
+}

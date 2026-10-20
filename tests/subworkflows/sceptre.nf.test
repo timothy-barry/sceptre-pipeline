@@ -1,0 +1,125 @@
+def compareSavedWorkflow = { output, stop, analyses ->
+    def root = System.getenv('SCEPTRE_CI_ROOT')
+    def runRoot = System.getenv('SCEPTRE_CI_OUT')
+    def image = System.getenv('SCEPTRE_CONTAINER_IMAGE')
+    assert root && runRoot && image
+    def command = ['docker', 'run', '--rm', '-v', "${root}:${root}".toString(),
+        '-v', "${runRoot}:${runRoot}".toString(), '-w', root, image,
+        'Rscript', '--vanilla', 'tests/ci/compare-workflow.R', System.getenv('SCEPTRE_TEST_FIXTURE'),
+        output.toString(), '271828', stop.toString(), analyses.toString(), 'none']
+    def process = new ProcessBuilder(command).inheritIO().start()
+    assert process.waitFor() == 0
+    true
+}
+
+nextflow_workflow {
+    name 'Certified screen orchestration subworkflow'
+    script "subworkflows/local/sceptre/main.nf"
+    workflow 'SCEPTRE'
+    tag 'subworkflow'
+
+    test('Parameters boundary emits state without export or downstream tasks') {
+        when {
+            params {
+                outdir = "$outputDir"
+                container_image = System.getenv('SCEPTRE_CONTAINER_IMAGE')
+            }
+            workflow {
+                """
+                input[0] = Channel.value(tuple([id: 'fixture'], file('${System.getenv('SCEPTRE_TEST_FIXTURE')}/input')))
+                input[1] = Channel.value(file('${System.getenv('SCEPTRE_TEST_FIXTURE')}/config.rds'))
+                input[2] = Channel.value(file('${System.getenv('SCEPTRE_TEST_FIXTURE')}/lock.rds'))
+                input[3] = Channel.value(file('$baseDir/resources/empty_backing'))
+                input[4] = Channel.value(file('$baseDir/bin'))
+                input[5] = Channel.value(file('$baseDir/resources/no_previous_run.rds'))
+                input[6] = '{}'
+                input[7] = Channel.value([file('$baseDir/main.nf'), file('$baseDir/nextflow.config')])
+                input[8] = []
+                input[9] = 'parameters'
+                input[10] = 271828
+                input[11] = 'reference'
+                input[12] = 3
+                """
+            }
+        }
+        then {
+            assert workflow.success
+            assert workflow.out.state.size() == 1
+            assert workflow.out.state[0][0].id == 'fixture'
+            assert path("${workflow.out.state[0][1]}/manifest.rds").size() > 0
+            assert workflow.trace.succeeded().size() == 2
+            assert compareSavedWorkflow(outputDir, 'parameters', 'none')
+            assert path("$outputDir/exports").exists() == false
+        }
+    }
+
+    test('Empty selected families preserve the QC state and export') {
+        when {
+            params {
+                outdir = "$outputDir"
+                container_image = System.getenv('SCEPTRE_CONTAINER_IMAGE')
+            }
+            workflow {
+                """
+                input[0] = Channel.value(tuple([id: 'fixture'], file('${System.getenv('SCEPTRE_TEST_FIXTURE')}/input')))
+                input[1] = Channel.value(file('${System.getenv('SCEPTRE_TEST_FIXTURE')}/config.rds'))
+                input[2] = Channel.value(file('${System.getenv('SCEPTRE_TEST_FIXTURE')}/lock.rds'))
+                input[3] = Channel.value(file('$baseDir/resources/empty_backing'))
+                input[4] = Channel.value(file('$baseDir/bin'))
+                input[5] = Channel.value(file('$baseDir/resources/no_previous_run.rds'))
+                input[6] = '{}'
+                input[7] = Channel.value([file('$baseDir/main.nf'), file('$baseDir/nextflow.config')])
+                input[8] = []
+                input[9] = 'analysis'
+                input[10] = 271828
+                input[11] = 'reference'
+                input[12] = 3
+                """
+            }
+        }
+        then {
+            assert workflow.success
+            assert workflow.out.state.size() == 1
+            assert workflow.out.state[0][0].id == 'fixture'
+            assert path("${workflow.out.state[0][1]}/manifest.rds").size() > 0
+            assert workflow.trace.succeeded().size() == 5
+            assert compareSavedWorkflow(outputDir, 'analysis', 'none')
+            assert path("$outputDir/exports").exists() == true
+        }
+    }
+
+    test('Unordered family selection executes canonical power then discovery') {
+        when {
+            params {
+                outdir = "$outputDir"
+                container_image = System.getenv('SCEPTRE_CONTAINER_IMAGE')
+            }
+            workflow {
+                """
+                input[0] = Channel.value(tuple([id: 'fixture'], file('${System.getenv('SCEPTRE_TEST_FIXTURE')}/input')))
+                input[1] = Channel.value(file('${System.getenv('SCEPTRE_TEST_FIXTURE')}/config.rds'))
+                input[2] = Channel.value(file('${System.getenv('SCEPTRE_TEST_FIXTURE')}/lock.rds'))
+                input[3] = Channel.value(file('$baseDir/resources/empty_backing'))
+                input[4] = Channel.value(file('$baseDir/bin'))
+                input[5] = Channel.value(file('$baseDir/resources/no_previous_run.rds'))
+                input[6] = '{}'
+                input[7] = Channel.value([file('$baseDir/main.nf'), file('$baseDir/nextflow.config')])
+                input[8] = ['discovery','power']
+                input[9] = 'analysis'
+                input[10] = 271828
+                input[11] = 'reference'
+                input[12] = 3
+                """
+            }
+        }
+        then {
+            assert workflow.success
+            assert workflow.out.state.size() == 1
+            assert workflow.out.state[0][0].id == 'fixture'
+            assert path("${workflow.out.state[0][1]}/manifest.rds").size() > 0
+            assert workflow.trace.succeeded().size() == 7
+            assert compareSavedWorkflow(outputDir, 'analysis', 'power,discovery')
+            assert path("$outputDir/exports").exists() == true
+        }
+    }
+}

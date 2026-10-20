@@ -1,0 +1,371 @@
+{
+  "original_source": "8e3a7bda268c9f750913f894fa254f86896c1ef1",
+  "public_parent": "5cc91e51a7f66f3fef1fe25d57e1c2166b759424",
+  "qualification": "pending on publication commit; historical receipts keep original identities",
+  "files": [
+    {
+      "path": "bin/distributed.R",
+      "sha256": "051190c2c5b68f7c5c610b7192ca01aa1048bff6d948cea439ac8022704b804c"
+    },
+    {
+      "path": "bin/distributed_stage.R",
+      "sha256": "2fbe5620e5ae788209b29146df8836d3031a4db13729091357f59ac98caf69e0"
+    },
+    {
+      "path": "bin/export_state.R",
+      "sha256": "2b7548669ec23f1e7eacf9cd92666cea4ef5105508b0876d8d30e3799e030a61"
+    },
+    {
+      "path": "bin/lock_environment.R",
+      "sha256": "c2c1206ddd12afe022c3ef7b489b2b80c842144216f6bb3eb1318a68aa71abc5"
+    },
+    {
+      "path": "bin/pipeline.R",
+      "sha256": "7a1bd5058cd2da166c03b8ff3b7f699017454e09c69fcf53681e565b2b4ed1d8"
+    },
+    {
+      "path": "bin/prepare_input.R",
+      "sha256": "150dee16f7fdfda396a9b14b7a1cc268fa9070f00a871ce1d964498fbab44aac"
+    },
+    {
+      "path": "bin/scientific_report.R",
+      "sha256": "e3db1203defc71f6ea978f3df899e99b934232d1f3e55d9c232471bec872a6b1"
+    },
+    {
+      "path": "bin/stage.R",
+      "sha256": "9be18577f407717aa93d35546909db527524d3faeffc8f44c2183d59e66398c1"
+    },
+    {
+      "path": "bin/validate_state.R",
+      "sha256": "757de871a4251c7c98d384bb3a26de2aa63f5b2a2d3ea2c41771cdfc0b10e0d1"
+    },
+    {
+      "path": "bin/versions.R",
+      "sha256": "6c6b04911d0a5f45c1866273f707c5086a17790547a843d24af22720ed570a9d"
+    },
+    {
+      "path": "conf/base.config",
+      "sha256": "01a6e08b5a978037c0981a070ddb40685bd4d9da9884dd30e9ec00a76d8c7013"
+    },
+    {
+      "path": "conf/slurm.config",
+      "sha256": "e8e5f6b726f9072d7f55c0400af21ed5208c7aaaf508f46ce53e1d281652d056"
+    },
+    {
+      "path": "conf/test.config",
+      "sha256": "d5dee69e2671c529401af413d502555af21e5a79a1cf8519d61d3e2b648865da"
+    },
+    {
+      "path": "container/.gitignore",
+      "sha256": "dd3b3744fe0f53adeb7c3c540e540fff6307da968c280b5e5906855220b4d768"
+    },
+    {
+      "path": "container/Dockerfile",
+      "sha256": "a7919fc290f85c26cd462a7b82ed82e160216d26af6b7b1e71dd97cd0f32f933"
+    },
+    {
+      "path": "container/README.md",
+      "sha256": "f6593a9f6f57c89fb14a17eac7ca82bfbb0f62dfbe8f812531f2e41cb4380425"
+    },
+    {
+      "path": "container/VALIDATION.md",
+      "sha256": "c80379fb7cd22a97f3c73a2f3d3fa7b563e3d2859fd24eddf74d6eb7d1a0e819"
+    },
+    {
+      "path": "container/build.sh",
+      "sha256": "6eec4aa3a32d88e6a4b7ec32f5239bd01f980f6324144cf45b05a5ec0eb4ce79"
+    },
+    {
+      "path": "container/install-dependencies.R",
+      "sha256": "ba87d78b8fdc751824b20311328938dc727c53f3e0935c05b7624d3046d0d8ab"
+    },
+    {
+      "path": "container/prepare-context.py",
+      "sha256": "d019e0afdb71ea9c99afa0ecb6a6dfe8a7f1580f9c3843a13824eebda714d5a5"
+    },
+    {
+      "path": "demo/check-output.R",
+      "sha256": "7e0521b4844c6710e186e3d600ac82704d6dc973eebf8a32836daec96a99d3cb"
+    },
+    {
+      "path": "demo/demo.sh",
+      "sha256": "7e2621e5b3185e2aa2a8c1ac96ea715865e59702d5fe19bb1eef8466453a0bdd"
+    },
+    {
+      "path": "demo/make-input.R",
+      "sha256": "30e131c0dbbeadd4936127f2a2f261adc95095ff722a126db60e86753b317a54"
+    },
+    {
+      "path": "main.nf",
+      "sha256": "b4eeaeafae14779afbe64588fb5caf95b52d68dbdc98a5704817285e610216ba"
+    },
+    {
+      "path": "modules/local/sceptre_collect/main.nf",
+      "sha256": "1227e23a6b675b38edf2bf77c07ebd206409f10787e33b4ee101378fefb9b50f"
+    },
+    {
+      "path": "modules/local/sceptre_collect/meta.yml",
+      "sha256": "23b0aea0e1775a30390bb4dcc67bc1ae55dca5b4293ae8f9550bfc7425e56659"
+    },
+    {
+      "path": "modules/local/sceptre_export/main.nf",
+      "sha256": "6f07a737fe24b0903b75a81a11e06b133ff646e1666b45cf102ca7af559c40ca"
+    },
+    {
+      "path": "modules/local/sceptre_export/meta.yml",
+      "sha256": "550652ee8fcd65bf5b449efa08ffa428d2b205fb81a4864331725be559c0ef9e"
+    },
+    {
+      "path": "modules/local/sceptre_prepare/main.nf",
+      "sha256": "a3c9cbf4ca0b9059b7e018d16b6b45e8850a5b894e55cede86823323f539724f"
+    },
+    {
+      "path": "modules/local/sceptre_prepare/meta.yml",
+      "sha256": "812bc523d2325abb9ff2e27ff940f42da988f61b753235a963b64236c319bfa3"
+    },
+    {
+      "path": "modules/local/sceptre_stage/main.nf",
+      "sha256": "9507013bc1db82e206379f3f871400aa0b7407bc3ef54cb34654dbba391976f2"
+    },
+    {
+      "path": "modules/local/sceptre_stage/meta.yml",
+      "sha256": "a032f82c4b981228c601bbd04324e0f4af93831b5818eeb31071f78c4846ecbd"
+    },
+    {
+      "path": "modules/local/sceptre_validate/main.nf",
+      "sha256": "6f51a7b4901e011e763eff9bcbdd3af317eaf030d13583b4215b2e36793e40d9"
+    },
+    {
+      "path": "modules/local/sceptre_validate/meta.yml",
+      "sha256": "16409ab953409821b3736d8f23251cbe2e0509ee9bd07bf0db7ae6d2815c8c59"
+    },
+    {
+      "path": "modules/local/sceptre_worker/main.nf",
+      "sha256": "ad64ae1ee05851663b3a7d39810d36118f730f5b06f4d2683b50bd4da2f72a94"
+    },
+    {
+      "path": "modules/local/sceptre_worker/meta.yml",
+      "sha256": "c72c1886fbf2b447cc197bf0df6bbaeead1c405ac3ac3716d0cb844487fcd5ab"
+    },
+    {
+      "path": "nextflow.config",
+      "sha256": "b87c657c85e3bf2f30e69b04f56ebd9452fd4e85c0d2af855b3d1d15419bb4e3"
+    },
+    {
+      "path": "nextflow_schema.json",
+      "sha256": "a4dc875b9c3a55a3701ec8fd044d5e954a620613b198e0ba3826c6a74fe40fe0"
+    },
+    {
+      "path": "nf-test.config",
+      "sha256": "1f35fbb1ab53456edc7efaa714452b4d3f27eb31c124d85f50c19708f5b17e2d"
+    },
+    {
+      "path": "report/README.md",
+      "sha256": "a5d2ac4c37d96359b1e667cab4287100e9b4231777052a121805c4529a43a903"
+    },
+    {
+      "path": "report/check-memory.R",
+      "sha256": "6a7607344c8e841b90d558dbc9d2341f4bbd28854bacb166848773988ad600d2"
+    },
+    {
+      "path": "report/check.R",
+      "sha256": "17f57eebd0436ed0e0d0384c903e7ecc62d3d4fd79bdc0ddca0fcd53aa106895"
+    },
+    {
+      "path": "resources/empty_backing/README.txt",
+      "sha256": "955452facf79b5064c2e6ad5b7b98534a7ccae8fbedd225c9c5bcdb9f1aa0278"
+    },
+    {
+      "path": "resources/no_previous_run.rds",
+      "sha256": "36572a811f525d68782e96ebcf706e2eaf7b58c912256038d8a06f2146af8b81"
+    },
+    {
+      "path": "resources/placeholder_file.rds",
+      "sha256": "91822cc7e9ac5c929bb82f136a8cf09a3026d9409013744be5dcd2d838cf45ed"
+    },
+    {
+      "path": "resources/trans_placeholder.rds",
+      "sha256": "2619c4180ab6948f4009f638fef205b7b6eafaf590f32fc2cedcd75868a5c2c8"
+    },
+    {
+      "path": "subworkflows/local/sceptre/main.nf",
+      "sha256": "b555cbdf661b4d69ba68e21ec10d6537bc2c61038373b546854a72fec3d3568a"
+    },
+    {
+      "path": "subworkflows/local/sceptre/meta.yml",
+      "sha256": "4b268e0b84c908957dce67e77a1b77f0c926a1c30d0dd8d82d348c06082f4895"
+    },
+    {
+      "path": "subworkflows/local/sceptre_analysis/main.nf",
+      "sha256": "c3c01697dc71c38f64373280063559c103720638b9e8a6372d33398573b5845f"
+    },
+    {
+      "path": "subworkflows/local/sceptre_analysis/meta.yml",
+      "sha256": "9a2f5664f11b29d89b6160952adf7031c6f26ad30fb7b64856d70dbf78d86a25"
+    },
+    {
+      "path": "tests/array-smoke/README.md",
+      "sha256": "0eb7b5def7d842930705f537a005c9388b61c269e8c75d7a169f652669d34248"
+    },
+    {
+      "path": "tests/array-smoke/main.nf",
+      "sha256": "3fbaf34221edb2e750e6a85170671fdc69d4dc75efc56c0193798f99b4cca38a"
+    },
+    {
+      "path": "tests/array-smoke/nextflow.config",
+      "sha256": "5dc8a4800f4b67d76941f0a3fc5408c0458f5edee5e188462b335d773d108878"
+    },
+    {
+      "path": "tests/check-array-config.sh",
+      "sha256": "ff8d1aa9668d682324980e9eab6879971000c3af28cf9f218e40df418c64e81f"
+    },
+    {
+      "path": "tests/ci/check-missing-family.R",
+      "sha256": "4680a4da275dfba28838110efdfdda2cd2cbaf6605d5bf56fe7afa053f6b2d2e"
+    },
+    {
+      "path": "tests/ci/check-runtime-source.py",
+      "sha256": "29828332ddcd050d0d35c9d290dd88fbc9382d240bc2256d42029081d6e4bddb"
+    },
+    {
+      "path": "tests/ci/check-sif-identity.sh",
+      "sha256": "aa75cc7bd91791c5055ea5989b20a3b28926d1fc989f41132cbcb401db984d2d"
+    },
+    {
+      "path": "tests/ci/compare-workflow.R",
+      "sha256": "8339328a1ae7ff875cb4cd660b9b4e917641fe65384d74a73d34e506f55e11a3"
+    },
+    {
+      "path": "tests/ci/conf/retry-concurrent.config",
+      "sha256": "b196072ac05533679e9cd02d1033f0c0188bd11ce844bb2a02abbb3319aa5c95"
+    },
+    {
+      "path": "tests/ci/conf/serial.config",
+      "sha256": "671ee9d6e6f68f10f4e84a9874f46eac838eda69c3485738d302cdcc03b7f6a6"
+    },
+    {
+      "path": "tests/ci/make-matrix-inputs.R",
+      "sha256": "d5424ec123426595ec578b78094f22ad3f84198daccc03bcf382311c7f893435"
+    },
+    {
+      "path": "tests/ci/make-module-inputs.R",
+      "sha256": "d0623f1e1accd18cf680e8affed7deada3c946c6eec6aebbfe64defdf22148fd"
+    },
+    {
+      "path": "tests/ci/matrix.nf.test",
+      "sha256": "39f1abf25b4211c03f92a028f33a0aa6921fddb0b575adc14e2fa95558107800"
+    },
+    {
+      "path": "tests/ci/require-nf-test.py",
+      "sha256": "b34b84ffb7d240f9551f9a0c8b3ae5b5eed71ef63f1ed6e996d62b951a8b6eae"
+    },
+    {
+      "path": "tests/ci/run-nf-test.sh",
+      "sha256": "0aa39ca2ca5d8c642255cd784d41256d94f68be8bf009de23e9b85b2ab4d5d4e"
+    },
+    {
+      "path": "tests/ci/scheduling.nf.test",
+      "sha256": "7f07ed7212304cf7ef41b1da84831d91fd06c69fbbbd0eaebd781cd0f2a487e6"
+    },
+    {
+      "path": "tests/ci/unit-partition-matrix.R",
+      "sha256": "3357f559576f0a1743c29617a9a5b84b7347e31309ec31ae5242602811ef9b26"
+    },
+    {
+      "path": "tests/ci/update-badges.py",
+      "sha256": "0b13238fa7ab5f10e595721cc7d985a585be11e2658f5d008eee94783f4187c7"
+    },
+    {
+      "path": "tests/compare-nextflow.R",
+      "sha256": "d5a509000320a285aae752e71bc50ff36cfe12aff3ce33ecc7ef6ab512a6eb7c"
+    },
+    {
+      "path": "tests/conf/worker-failure.config",
+      "sha256": "625279fc89c03dcbe15d5abf148aaa1cbe9924ccf0cd880c5a03bcf79b0c03a3"
+    },
+    {
+      "path": "tests/direct-comparison.R",
+      "sha256": "9ee4849ff36cb31acba7e172bab72c451f8b8682916e26e944c2c8f227134bb8"
+    },
+    {
+      "path": "tests/distributed-comparison.R",
+      "sha256": "e9de637b9e73ecad02b6aa9f1a9df0d83230e89dcd16abafaf781ada617b94ca"
+    },
+    {
+      "path": "tests/fixture.R",
+      "sha256": "441ae9aa6e6279f4b32f38c5c8336a290da2e46a31a2bdf4fa6e12bc74bf9b08"
+    },
+    {
+      "path": "tests/main.nf.test",
+      "sha256": "06452ba00dd0f0005b7b557757c7ad3b2878204a2966e137ffb7a97e19cb82b9"
+    },
+    {
+      "path": "tests/make-input.R",
+      "sha256": "e5da447ff4514125454692086dc5aa9870df706f22871a58479d3c88f560b828"
+    },
+    {
+      "path": "tests/modules/collect-export-assert.R",
+      "sha256": "3e87d016edc6203ae2841278b81bb6b37c6db0a9d03c9ba665fbe7bc1eb4385e"
+    },
+    {
+      "path": "tests/modules/sceptre_collect.nf.test",
+      "sha256": "eda2c88541c450f1b4d18046411221819489467f15104822dd6c7ec9dba527f1"
+    },
+    {
+      "path": "tests/modules/sceptre_export.nf.test",
+      "sha256": "6e3673d3ef268b6d8cfe2a4bd1946da4e691fd1379161c30acbc2be24538499a"
+    },
+    {
+      "path": "tests/modules/sceptre_prepare.nf.test",
+      "sha256": "1542570736cdf732e67ef4aaa335b67e628eb6ef69f51d726c819b5fddc069a6"
+    },
+    {
+      "path": "tests/modules/sceptre_stage.nf.test",
+      "sha256": "54937d902607985146f70a60dbdbe62c4a9e9275899da514271756305ec2d05a"
+    },
+    {
+      "path": "tests/modules/sceptre_validate.nf.test",
+      "sha256": "41efe9e7a3dd4fa64bd3987de0796aed34c368715eaf235d339b61e42e82ce0a"
+    },
+    {
+      "path": "tests/modules/sceptre_worker.nf.test",
+      "sha256": "d51abed96ea67756a03cbe91da3867559b83d5076c29bfa4194de3c81946c028"
+    },
+    {
+      "path": "tests/modules/workflow-compare.R",
+      "sha256": "aea39686941dcf2ac705db0f9454386014f09338a927cf754c13855d5f02bd88"
+    },
+    {
+      "path": "tests/run-nextflow.sh",
+      "sha256": "664c474f45db90ec3e6f28f7dc7622daa189172b4aa2b531cf607c63854f7e84"
+    },
+    {
+      "path": "tests/runtime/COPYING",
+      "sha256": "3972dc9744f6499f0f9b2dbf76696f2ae7ad8af9b23dde66d6af86c9dfb36986"
+    },
+    {
+      "path": "tests/runtime/README.md",
+      "sha256": "94a582f7ca1a534d046768718224c59be4d0f4ede4a87ef573123f53159cf792"
+    },
+    {
+      "path": "tests/runtime/sceptre_0.99.0.tar.gz",
+      "sha256": "606363fce32238354fc0d126d79f515973da7c8287ca43b14ce53ce2d00df4b7"
+    },
+    {
+      "path": "tests/runtime/source.json",
+      "sha256": "6c0ff78453c3688b323946a4cf00d30bc8e6e38ab46789b2508e45d641d0e444"
+    },
+    {
+      "path": "tests/subworkflows/sceptre.nf.test",
+      "sha256": "e8bc53d28c4613cbc8272123f2ed011eae17389c1a35b9c4aef60ea569391ea9"
+    },
+    {
+      "path": "tests/subworkflows/sceptre_analysis.nf.test",
+      "sha256": "06f73fa048b6a2b727e0696f564847d86114778ea71f994c21fe5d3ce6a7ea1c"
+    },
+    {
+      "path": "hpc/site.config.example",
+      "sha256": "1316f824dbc273e6a78d53d723da10da1cb16c6de1e67620c764a4f63af79849"
+    }
+  ]
+}

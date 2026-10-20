@@ -1,0 +1,100 @@
+---
+title: "SCEPTRE pipeline"
+pagetitle: "SCEPTRE pipeline — single-cell screens, complete-family results"
+page-layout: full
+title-block-style: none
+toc: false
+sidebar: false
+---
+
+```{=html}
+<div class="landing">
+  <section class="hero" aria-labelledby="hero-title">
+    <div class="hero-copy">
+      <p class="eyebrow"><span class="eyebrow-dot"></span> SINGLE-CELL CRISPR SCREENS · NEXTFLOW DSL2</p>
+      <h1 id="hero-title">Single-cell screens.<br><em>Complete-family</em><br>results.</h1>
+      <p class="hero-description">Run calibration, power and discovery with SCEPTRE’s scientific methods and Nextflow’s orchestration. Parallel workers return raw proposals. One collector commits the complete family.</p>
+      <div class="hero-actions">
+        <a class="button button-primary" href="demo.html">Try the demo <span aria-hidden="true">↗</span></a>
+        <a class="button button-text" href="#workflow">Explore the workflow <span aria-hidden="true">↓</span></a>
+      </div>
+      <div class="version-line"><span>Schema 3</span><span>Nextflow @@NEXTFLOW_MIN@@+</span><span>Reference + distributed</span></div>
+    </div>
+    <figure class="hero-figure">
+      <div class="figure-heading"><span class="small-label">THE DISTRIBUTED PATH</span><span class="mono micro-label">one scientific family</span></div>
+      <svg class="pipeline-visual" viewBox="0 0 540 414" role="img" aria-labelledby="flow-title flow-desc">
+        <title id="flow-title">One certified plan, parallel work units, one complete family</title>
+        <desc id="flow-desc">A screen and quality control produce a global plan. Four whole-key work units run in parallel. Their raw proposals converge at a validating collector, which integrates and corrects the complete family once.</desc>
+        <defs><pattern id="dots" width="22" height="22" patternUnits="userSpaceOnUse"><circle cx="2" cy="2" r="1" fill="#d8e1d6"/></pattern></defs>
+        <rect width="540" height="414" fill="url(#dots)"/>
+        <g class="flow-wires" fill="none" stroke="#a9bcae" stroke-width="1.5">
+          <path d="M104 154H164M104 154V80H164M104 154V228H164M104 154V302H164"/>
+          <path d="M302 80H352V191M302 154H352M302 228H352M302 302H352V191H391"/>
+          <path d="M433 224V272"/>
+        </g>
+        <g><rect x="22" y="117" width="82" height="74" rx="12" fill="#fff" stroke="#bccbbc"/><g fill="#6ba981"><rect x="40" y="135" width="8" height="8" rx="2"/><rect x="53" y="135" width="8" height="8" rx="2"/><rect x="66" y="135" width="8" height="8" rx="2"/><rect x="79" y="135" width="8" height="8" rx="2"/><rect x="40" y="148" width="8" height="8" rx="2"/><rect x="53" y="148" width="8" height="8" rx="2"/><rect x="66" y="148" width="8" height="8" rx="2"/><rect x="79" y="148" width="8" height="8" rx="2"/></g><text x="63" y="178" text-anchor="middle" class="flow-small">QC state</text></g>
+        <g class="flow-unit"><rect x="164" y="58" width="138" height="44" rx="8"/><circle cx="183" cy="80" r="4"/><text x="196" y="84">work unit 01</text></g>
+        <g class="flow-unit"><rect x="164" y="132" width="138" height="44" rx="8"/><circle cx="183" cy="154" r="4"/><text x="196" y="158">work unit 02</text></g>
+        <g class="flow-unit"><rect x="164" y="206" width="138" height="44" rx="8"/><circle cx="183" cy="228" r="4"/><text x="196" y="232">work unit 03</text></g>
+        <g class="flow-unit"><rect x="164" y="280" width="138" height="44" rx="8"/><circle cx="183" cy="302" r="4"/><text x="196" y="306">work unit 04</text></g>
+        <rect x="391" y="158" width="84" height="66" rx="12" fill="#123b31"/><path d="m420 188 9 9 18-21" fill="none" stroke="#b7e6a5" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/><text x="433" y="214" text-anchor="middle" fill="#f4f7ef" class="flow-small">collect</text>
+        <rect x="378" y="272" width="110" height="68" rx="10" fill="#fff" stroke="#bccbbc"/><g stroke="#d3dfd0"><path d="M393 294H473M393 305H473M393 316H473"/><path d="M421 285V324M449 285V324"/></g><circle cx="464" cy="316" r="3" fill="#478b5c"/>
+        <text x="233" y="355" text-anchor="middle" class="flow-caption">RAW PROPOSALS</text><text x="433" y="363" text-anchor="middle" class="flow-caption">COMPLETE FAMILY</text>
+        <text x="270" y="399" text-anchor="middle" class="flow-small">Global plan. Exact coverage. One correction.</text>
+      </svg>
+      <figcaption><span class="figure-rule"></span>Scatter the work. Preserve the statistical contract.</figcaption>
+    </figure>
+  </section>
+
+  <div class="principles-strip" aria-label="Workflow principles">
+    <span><b>01</b> Package-owned science</span>
+    <span><b>02</b> Certified process handoffs</span>
+    <span><b>03</b> Whole-family collection</span>
+  </div>
+
+  <section class="workflow-section section-space" id="workflow" aria-labelledby="workflow-heading">
+    <div class="section-heading"><div><p class="eyebrow">FROM INPUT TO INFERENCE</p><h2 id="workflow-heading">A clear path through your screen.</h2></div><a class="inline-link" href="architecture.html">Read the architecture <span aria-hidden="true">↗</span></a></div>
+    <div class="workflow-steps">
+      <article><span class="step-number">01 / PREPARE</span><h3>Bring your screen</h3><p>Start with a schema-3 object, a trusted analysis configuration and a lock of the actual scientific runtime.</p><a href="usage.html#prepare-scientific-input">Inputs & configuration <span aria-hidden="true">→</span></a></article>
+      <article><span class="step-number">02 / QUALIFY</span><h3>Assign and check</h3><p>Use the public package API for guide assignment and QC. Freeze the eligible family and the full resampling plan.</p><a href="distributed-interface.html">The scientific boundary <span aria-hidden="true">→</span></a></article>
+      <article><span class="step-number">03 / EXECUTE</span><h3>Choose how to run</h3><p>Keep the reference whole-family call, or scatter certified work units. Slurm arrays batch distributed workers only.</p><a href="usage.html#slurm-worker-arrays">Slurm & worker arrays <span aria-hidden="true">→</span></a></article>
+      <article><span class="step-number">04 / COLLECT</span><h3>Return a complete family</h3><p>Validate every proposal, restore canonical order, then integrate and correct once. Export results with run provenance.</p><a href="outputs.html">Results & artifacts <span aria-hidden="true">→</span></a></article>
+    </div>
+  </section>
+
+  <section class="run-section section-space" aria-labelledby="run-heading">
+    <div class="run-copy"><p class="eyebrow">START SMALL. MAKE IT REPRODUCIBLE.</p><h2 id="run-heading">A complete example,<br>from one command.</h2><p>Generate synthetic counts, run the real Nextflow stages, and open a scientific results report. The demo builds the pinned runtime and keeps its inputs, results and provenance together.</p><p>For your own screen, prepare the input bundle and runtime lock using the <a href="usage.html">usage guide</a>. Reference execution is the default; distributed workers and arrays are opt-in.</p><a class="inline-link" href="demo.html">Run the scientific demo <span aria-hidden="true">↗</span></a><div class="runtime-note"><strong>Have a legacy run?</strong><span>Schema-1/2 objects need migration. Old partial results and work directories cannot be resumed.</span><a href="architecture.html#legacy-mapping">Migration guide →</a></div></div>
+    <div class="terminal"><div class="terminal-top"><span class="terminal-dots" aria-hidden="true"><i></i><i></i><i></i></span><span>synthetic screen · real scientific stages</span><span class="mono">bash</span></div>
+      <pre><code><span class="code-comment"># From the pipeline checkout</span>
+./demo/demo.sh "$PWD/sceptre-demo"
+
+<span class="code-comment"># Open the scientific results</span>
+<span class="code-output">sceptre-demo/results/exports/scientific-report/report.html</span>
+
+<span class="code-comment"># Inspect Nextflow's execution report</span>
+<span class="code-output">sceptre-demo/results/pipeline_info/report.html</span>
+
+<span class="code-comment"># Keep the exact source and runtime receipt</span>
+<span class="code-output">sceptre-demo/demo-receipt.json</span></code></pre>
+      <div class="terminal-bottom">Requires Docker, Nextflow @@NEXTFLOW_MIN@@+, Java 17+ and Python 3. First build downloads pinned public sources. <a href="usage.html#environments-and-executors">Runtime setup →</a></div>
+    </div>
+  </section>
+
+  <section class="docs-section section-space" aria-labelledby="docs-heading">
+    <div class="section-heading"><div><p class="eyebrow">THE DOCUMENTATION</p><h2 id="docs-heading">Go straight to the detail.</h2></div><p class="section-description">Reference pages are built from the repository’s canonical docs and parameter schema.</p></div>
+    <div class="doc-grid">
+      <a href="usage.html" class="doc-link"><span class="doc-label">01 / RUN</span><h3>Usage <span aria-hidden="true">↗</span></h3><p>Inputs, analyses, runtime locks, resume and execution profiles.</p></a>
+      <a href="parameters.html" class="doc-link"><span class="doc-label">02 / CONFIGURE</span><h3>Parameters <span aria-hidden="true">↗</span></h3><p>Every CLI flag, with types, constraints and defaults from source.</p></a>
+      <a href="outputs.html" class="doc-link"><span class="doc-label">03 / INTERPRET</span><h3>Outputs <span aria-hidden="true">↗</span></h3><p>Complete-family tables, the scientific report and execution provenance.</p></a>
+      <a href="containers.html" class="doc-link"><span class="doc-label">04 / REPRODUCE</span><h3>Containers <span aria-hidden="true">↗</span></h3><p>Exact source archives, pinned dependencies and runtime identity.</p></a>
+      <a href="ci.html" class="doc-link"><span class="doc-label">05 / MAINTAIN</span><h3>Continuous integration <span aria-hidden="true">↗</span></h3><p>nf-test, real scientific fixtures and hosted-run requirements.</p></a>
+      <a href="validation.html" class="doc-link"><span class="doc-label">06 / VERIFY</span><h3>Qualification <span aria-hidden="true">↗</span></h3><p>Exact artifacts, executed checks, independent review and limits.</p></a>
+    </div>
+  </section>
+
+  <section class="status-section section-space" aria-labelledby="status-heading">
+    <div><p class="eyebrow">ENGINEERING, WITH EVIDENCE</p><h2 id="status-heading">Know what has<br>actually been tested.</h2><p>Development documentation for the schema-3 compatibility implementation. This project follows nf-core engineering principles; it is not an accepted nf-core community pipeline.</p><a class="inline-link" href="nf-core.html">Our nf-core principles mapping <span aria-hidden="true">↗</span></a></div>
+    <dl class="status-list"><div><dt><span class="status-dot tested"></span>Scientific correctness</dt><dd>Bounded same-runtime comparisons on macOS ARM64 and Docker Linux ARM64.<a href="validation.html">Exact qualification record →</a></dd></div><div><dt><span class="status-dot tested"></span>Slurm job arrays</dt><dd>Bounded scheduler smoke tests cover batching, resume and a failed child. Full scientific AMD64/Apptainer qualification is separate.<a href="array-validation.html">Scheduler test scope →</a></dd></div><div><dt><span class="status-dot pending"></span>Hosted continuous integration</dt><dd>Workflow configuration is available for review. Configuration is distinct from a successful hosted run.<a href="ci.html">CI requirements & evidence →</a></dd></div></dl>
+  </section>
+</div>
+```

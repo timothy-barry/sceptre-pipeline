@@ -1,0 +1,39 @@
+name: sceptre_export
+description: Export current package plots and tables after a successful public stage, separately from scientific artifact completion.
+keywords: [sceptre, export, plots]
+tools:
+  - sceptre:
+      description: Statistical analysis of single-cell CRISPR screens
+      homepage: https://github.com/Katsevich-Lab/sceptre
+      licence: [GPL-3]
+input:
+  - - meta:
+        type: map
+        description: Stable screen id.
+    - state:
+        type: directory
+        description: Certified completed state to reopen with current package identity.
+  - config:
+      type: file
+      description: Manifest-bound scientific configuration RDS.
+      pattern: '*.rds'
+  - lock:
+      type: file
+      description: Exact installed-package and runtime identity RDS.
+      pattern: '*.rds'
+  - backing:
+      type: directory
+      description: Explicit process-local reopening source for optional backed counts.
+  - tools_dir:
+      type: directory
+      description: Staged pipeline R helpers included in cache identity.
+output:
+  - exports:
+      - meta:
+          type: map
+          description: Input metadata retained unchanged.
+      - exports:
+          type: directory
+          description: Package-generated current plots and tables; published under outdir/exports.
+authors: []
+maintainers: []

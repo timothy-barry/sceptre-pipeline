@@ -1,0 +1,19 @@
+// Copy to an external shared path and replace every YOUR_* placeholder.
+// This file is an institutional template, not a qualified resource policy.
+apptainer.runOptions = '--cleanenv'
+executor.queueSize = 2
+process {
+    queue = 'YOUR_CPU_PARTITION'
+    clusterOptions = '--account=YOUR_ACCOUNT --qos=YOUR_QOS'
+    withLabel: process_single {
+        cpus = 1
+        memory = 'YOUR_MEMORY_PER_TASK'
+        time = 'YOUR_WALLTIME'
+    }
+    withLabel: process_medium {
+        cpus = 1
+        memory = 'YOUR_MEMORY_PER_TASK'
+        time = 'YOUR_WALLTIME'
+        maxForks = 2
+    }
+}

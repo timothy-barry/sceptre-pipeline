@@ -1,0 +1,137 @@
+def compareAnalysis = { state ->
+    def root = System.getenv('SCEPTRE_CI_ROOT')
+    def runRoot = System.getenv('SCEPTRE_CI_OUT')
+    def image = System.getenv('SCEPTRE_CONTAINER_IMAGE')
+    assert root && runRoot && image
+    def command = ['docker', 'run', '--rm', '-v', "${root}:${root}".toString(),
+        '-v', "${runRoot}:${runRoot}".toString(), '-w', root, image,
+        'Rscript', '--vanilla', 'tests/modules/workflow-compare.R', System.getenv('SCEPTRE_MODULE_FIXTURES'), state.toString()]
+    def process = new ProcessBuilder(command).inheritIO().start()
+    assert process.waitFor() == 0
+    true
+}
+
+nextflow_workflow {
+    name 'Certified complete-family analysis subworkflow'
+    script "subworkflows/local/sceptre_analysis/main.nf"
+    workflow 'SCEPTRE_ANALYSIS'
+    tag 'subworkflow'
+
+    test('Reference analysis preserves discovery-only semantics and RNG') {
+        when {
+            params {
+                outdir = "$outputDir"
+                container_image = System.getenv('SCEPTRE_CONTAINER_IMAGE')
+            }
+            workflow {
+                """
+                input[0] = Channel.value(tuple([id: 'fixture'], file('${System.getenv('SCEPTRE_MODULE_FIXTURES')}/qc')))
+                input[1] = Channel.value(file('${System.getenv('SCEPTRE_MODULE_FIXTURES')}/config.rds'))
+                input[2] = Channel.value(file('${System.getenv('SCEPTRE_MODULE_FIXTURES')}/lock.rds'))
+                input[3] = Channel.value(file('$baseDir/resources/empty_backing'))
+                input[4] = Channel.value(file('$baseDir/bin'))
+                input[5] = 'discovery'
+                input[6] = 271828
+                input[7] = 'reference'
+                input[8] = 3
+                """
+            }
+        }
+        then {
+            assert workflow.success
+            assert workflow.out.state.size() == 1
+            assert workflow.out.state[0][0].id == 'fixture'
+            assert workflow.trace.succeeded().size() == 1
+            assert compareAnalysis(workflow.out.state[0][1])
+        }
+    }
+
+    test('Distributed analysis joins certified proposals into one exact family') {
+        when {
+            params {
+                outdir = "$outputDir"
+                container_image = System.getenv('SCEPTRE_CONTAINER_IMAGE')
+            }
+            workflow {
+                """
+                input[0] = Channel.value(tuple([id: 'fixture'], file('${System.getenv('SCEPTRE_MODULE_FIXTURES')}/qc')))
+                input[1] = Channel.value(file('${System.getenv('SCEPTRE_MODULE_FIXTURES')}/config.rds'))
+                input[2] = Channel.value(file('${System.getenv('SCEPTRE_MODULE_FIXTURES')}/lock.rds'))
+                input[3] = Channel.value(file('$baseDir/resources/empty_backing'))
+                input[4] = Channel.value(file('$baseDir/bin'))
+                input[5] = 'discovery'
+                input[6] = 271828
+                input[7] = 'distributed'
+                input[8] = 3
+                """
+            }
+        }
+        then {
+            assert workflow.success
+            assert workflow.out.state.size() == 1
+            assert workflow.out.state[0][0].id == 'fixture'
+            assert workflow.trace.succeeded().size() == 4
+            assert compareAnalysis(workflow.out.state[0][1])
+            def names = workflow.trace.succeeded().collect { it.name }
+            assert names.count { it.contains('SCEPTRE_PREPARE') } == 1
+            assert names.count { it.contains('SCEPTRE_WORKER') } == 2
+            assert names.count { it.contains('SCEPTRE_COLLECT') } == 1
+        }
+    }
+
+    test('Analysis rejects multiple screen states before scientific tasks') {
+        when {
+            params {
+                outdir = "$outputDir"
+                container_image = System.getenv('SCEPTRE_CONTAINER_IMAGE')
+            }
+            workflow {
+                """
+                input[0] = Channel.of(tuple([id: 'first'], file('${System.getenv('SCEPTRE_MODULE_FIXTURES')}/qc')), tuple([id: 'second'], file('${System.getenv('SCEPTRE_MODULE_FIXTURES')}/qc')))
+                input[1] = Channel.value(file('${System.getenv('SCEPTRE_MODULE_FIXTURES')}/config.rds'))
+                input[2] = Channel.value(file('${System.getenv('SCEPTRE_MODULE_FIXTURES')}/lock.rds'))
+                input[3] = Channel.value(file('$baseDir/resources/empty_backing'))
+                input[4] = Channel.value(file('$baseDir/bin'))
+                input[5] = 'discovery'
+                input[6] = 271828
+                input[7] = 'distributed'
+                input[8] = 3
+                """
+            }
+        }
+        then {
+            assert workflow.failed
+            assert path("$metaDir/nextflow.log").text.contains('An analysis invocation requires exactly one certified screen state.')
+            assert workflow.trace.succeeded().size() == 0
+            assert !path("$outputDir/discovery/state").exists()
+        }
+    }
+
+    test('Analysis rejects an empty screen channel before scientific tasks') {
+        when {
+            params {
+                outdir = "$outputDir"
+                container_image = System.getenv('SCEPTRE_CONTAINER_IMAGE')
+            }
+            workflow {
+                """
+                input[0] = Channel.empty()
+                input[1] = Channel.value(file('${System.getenv('SCEPTRE_MODULE_FIXTURES')}/config.rds'))
+                input[2] = Channel.value(file('${System.getenv('SCEPTRE_MODULE_FIXTURES')}/lock.rds'))
+                input[3] = Channel.value(file('$baseDir/resources/empty_backing'))
+                input[4] = Channel.value(file('$baseDir/bin'))
+                input[5] = 'discovery'
+                input[6] = 271828
+                input[7] = 'reference'
+                input[8] = 3
+                """
+            }
+        }
+        then {
+            assert workflow.failed
+            assert path("$metaDir/nextflow.log").text.contains('An analysis invocation requires exactly one certified screen state.')
+            assert workflow.trace.succeeded().size() == 0
+            assert !path("$outputDir/discovery/state").exists()
+        }
+    }
+}

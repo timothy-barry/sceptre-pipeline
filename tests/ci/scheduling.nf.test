@@ -1,0 +1,104 @@
+// Actual scheduler invariance: unchanged public inputs and one initial RNG seed.
+def compareScheduledWorkflow = { fixture, output, execution, expectedKeys ->
+    def root = System.getenv('SCEPTRE_CI_ROOT')
+    def runRoot = System.getenv('SCEPTRE_CI_OUT')
+    def image = System.getenv('SCEPTRE_CONTAINER_IMAGE')
+    assert root && runRoot && image
+    def command = ['docker', 'run', '--rm', '-v', "${root}:${root}".toString(),
+        '-v', "${runRoot}:${runRoot}".toString(), '-w', root, image,
+         'Rscript', '--vanilla', '-e',
+        'source("tests/ci/compare-workflow.R"); args <- commandArgs(TRUE); do.call(compare_saved_workflow, as.list(args[1:6])); execution <- readRDS(args[7]); expected <- as.integer(strsplit(args[8], ",", fixed = TRUE)[[1]]); stopifnot(identical(vapply(execution$units, function(unit) length(unit$keys), integer(1)), expected))',
+        fixture.toString(), output.toString(), '271828', 'analysis', 'discovery', 'none',
+        execution.toString(), expectedKeys]
+    def process = new ProcessBuilder(command).inheritIO().start()
+    assert process.waitFor() == 0
+    true
+}
+def schedulingTrace = { file ->
+    def lines = file.text.readLines().findAll { it.trim() }
+    def header = lines[0].split('\t', -1)
+    lines.drop(1).collect { line ->
+        def fields = line.split('\t', -1)
+        assert fields.size() == header.size()
+        [header, fields].transpose().collectEntries { [(it[0]): it[1]] }
+    }
+}
+
+nextflow_pipeline {
+    name 'Scientific scheduling invariance'
+    script "main.nf"
+    tag 'pipeline'
+    tag 'scheduling'
+
+    test('Two uneven units execute serially with exact public R results') {
+        config 'tests/ci/conf/serial.config'
+        when {
+            params {
+                input_bundle = "${System.getenv('SCEPTRE_MATRIX_FIXTURES')}/low_nt_permutation/input"
+                analysis_config = "${System.getenv('SCEPTRE_MATRIX_FIXTURES')}/low_nt_permutation/config.rds"
+                environment_lock = "${System.getenv('SCEPTRE_MATRIX_FIXTURES')}/low_nt_permutation/lock.rds"
+                outdir = "$outputDir"
+                container_image = System.getenv('SCEPTRE_CONTAINER_IMAGE')
+                analyses = 'discovery'
+                execution_mode = 'distributed'
+                n_work_units = 2
+            }
+        }
+        then {
+            assert workflow.success
+            def rows = schedulingTrace(path("$metaDir/trace.csv"))
+            def workers = rows.findAll { it.name.contains('SCEPTRE_WORKER') }
+            assert workers.size() == 2
+            assert workers.every { it.status == 'COMPLETED' && it.exit == '0' && it.attempt == '1' }
+            def ordered = workers.sort { it.start.toLong() }
+            assert ordered[0].complete.toLong() <= ordered[1].start.toLong()
+            def prepared = rows.findAll { it.name.contains('SCEPTRE_PREPARE') }
+            assert prepared.size() == 1
+            assert compareScheduledWorkflow("${System.getenv('SCEPTRE_MATRIX_FIXTURES')}/low_nt_permutation", outputDir,
+                "${prepared[0].workdir}/execution/execution.rds", '2,1')
+        }
+    }
+
+    test('Concurrent reordered workers retry discarded proposals with exact public R results') {
+        config 'tests/ci/conf/retry-concurrent.config'
+        when {
+            params {
+                input_bundle = "${System.getenv('SCEPTRE_MATRIX_FIXTURES')}/low_nt_permutation/input"
+                analysis_config = "${System.getenv('SCEPTRE_MATRIX_FIXTURES')}/low_nt_permutation/config.rds"
+                environment_lock = "${System.getenv('SCEPTRE_MATRIX_FIXTURES')}/low_nt_permutation/lock.rds"
+                outdir = "$outputDir"
+                container_image = System.getenv('SCEPTRE_CONTAINER_IMAGE')
+                analyses = 'discovery'
+                execution_mode = 'distributed'
+                n_work_units = 3
+            }
+        }
+        then {
+            assert workflow.success
+            def rows = schedulingTrace(path("$metaDir/trace.csv"))
+            def workers = rows.findAll { it.name.contains('SCEPTRE_WORKER') }
+            def failures = workers.findAll { it.status == 'FAILED' }
+            def completed = workers.findAll { it.status == 'COMPLETED' }
+            assert workers.size() == 4
+            assert failures.size() == 1 && completed.size() == 3
+            assert failures[0].exit == '42' && failures[0].attempt == '1'
+            assert failures[0].name.contains('unit-000001')
+            assert path("${failures[0].workdir}/proposal_unit-000001.rds").size() > 0
+            assert path("${failures[0].workdir}/.command.log").text.contains('SCHEDULING_RETRY_AFTER_PROPOSAL')
+            assert completed.count { it.name.contains('unit-000001') && it.attempt == '2' } == 1
+            assert completed.every { it.exit == '0' }
+            // Prove actual overlap, rather than merely configuring concurrency.
+            assert workers.any { a -> workers.any { b -> a.task_id != b.task_id &&
+                a.start.toLong() < b.complete.toLong() && b.start.toLong() < a.complete.toLong() } }
+            def firstAttempts = workers.findAll { it.attempt == '1' }.sort { it.complete.toLong() }
+            assert !firstAttempts[0].name.contains('unit-000001')
+            def collectors = rows.findAll { it.name.contains('SCEPTRE_COLLECT') }
+            assert collectors.size() == 1 && collectors[0].status == 'COMPLETED'
+            assert collectors[0].start.toLong() >= completed.collect { it.complete.toLong() }.max()
+            def prepared = rows.findAll { it.name.contains('SCEPTRE_PREPARE') }
+            assert prepared.size() == 1
+            assert compareScheduledWorkflow("${System.getenv('SCEPTRE_MATRIX_FIXTURES')}/low_nt_permutation", outputDir,
+                "${prepared[0].workdir}/execution/execution.rds", '1,1,1')
+        }
+    }
+}
