@@ -1,6 +1,7 @@
 name: Pipeline checks
 on:
   push:
+    branches: [main, dev]
   pull_request:
   workflow_dispatch:
 permissions:
@@ -92,6 +93,11 @@ jobs:
             "$SCEPTRE_CONTAINER_IMAGE" Rscript --vanilla tests/ci/check-installed-package.R \
             tests/runtime/sceptre_0.99.0.tar.gz "$RUNNER_TEMP/installed-package" \
             2>&1 | tee "$RUNNER_TEMP/installed-package.log"
+      - name: Bounded report consumer contracts
+        run: |
+          docker run --rm -v "$PWD:$PWD" -w "$PWD" \
+            "$SCEPTRE_CONTAINER_IMAGE" Rscript --vanilla report/check-bundle.R \
+            2>&1 | tee "$RUNNER_TEMP/report-bundle.log"
       - name: Admission, migration, assignments and diagnostic guards
         run: |
           tar -xOf tests/runtime/sceptre_0.99.0.tar.gz \
