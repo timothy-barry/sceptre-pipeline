@@ -2,7 +2,7 @@
 
 The whole-family reference remains available. A narrow package-owned executor
 boundary is implemented by public `prepare_execution()`, `execute_work_unit()`
-and `collect_execution()` in the qualified schema-3 package. The pipeline uses
+and `collect_execution()` in the qualified schema-7 package. The pipeline uses
 these APIs for opt-in distributed execution; reference remains the default.
 
 Preparation must freeze the global eligible family, failed-QC bookkeeping,
@@ -18,7 +18,7 @@ contract. CRT workers can contain different guides for the same target-response
 integration family: this is safe only because proposals contain raw guide rows.
 
 A worker proposal must certify its ordered unit IDs, exact input/context/method
-and runtime identity, raw rows and compatible compact fit updates. It must not
+and runtime identity, raw rows and compatible fit updates. It must not
 claim `complete_family` or contain finalized/integrated results.
 
 The package collector must require every declared unit exactly once, reject

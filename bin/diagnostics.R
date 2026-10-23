@@ -10,7 +10,7 @@ pipeline_recovery_hint <- function(message, stage = NULL) {
     if (matches("align|cell.*(order|identit)|barcode|column names.*match"))
         hints <- c(hints, "Verify exact cell IDs and order across response counts, guide counts, covariate rows and external assignments, plus feature/guide metadata IDs. Reorder from verified identifiers before import; renaming mismatched columns does not align cells. Preserve full-library covariates when subsetting features.")
     if (matches("backed|ondisc|count.store|backing"))
-        hints <- c(hints, "Inspect the supported storage/mode boundary in docs/usage.md and docs/scale-boundaries.md. Backed inputs require closed descriptors and identity-matched response.odm/grna.odm files staged with --backing_directory. Do not switch CRT to permutations as an automatic recovery; it changes the scientific method.")
+        hints <- c(hints, "Inspect the supported storage/mode boundary in docs/usage.md and docs/scale-boundaries.md. Backed inputs require native HDF5 seeds and identity-matched files staged with bin/stage_backing.R and --backing_directory. Do not switch CRT to permutations as an automatic recovery; it changes the scientific method.")
     if (matches("identity mismatch|configuration mismatch|checksum mismatch|different run|RNG handoff"))
         hints <- c(hints, "For an unchanged run, retain the original input/config/lock, run signature and Nextflow cache/work directories and use the exact session with -resume. Changed source, runtime, settings or seed requires a new input/lock as applicable and fresh --outdir; never replace a lock or checksum inside an old bundle.")
     paste(unique(hints), collapse = "\n")

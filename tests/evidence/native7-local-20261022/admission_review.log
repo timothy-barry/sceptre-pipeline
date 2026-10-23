@@ -1,0 +1,2 @@
+PASS mislabeled historical schema-6 payload rejects before public migration
+PASS native schema-7 transport and older-schema rejection without input mutation

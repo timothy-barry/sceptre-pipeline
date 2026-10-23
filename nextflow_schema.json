@@ -62,13 +62,13 @@
         "reference",
         "distributed"
       ],
-      "description": "Reference complete-family call or certified package work-unit execution"
+      "description": "Native schema-7 public direct workflow or package-owned distributed complete-family execution"
     },
     "n_work_units": {
       "type": "integer",
       "minimum": 1,
       "maximum": 1000000,
-      "description": "Requested whole-key work units per family, capped by eligible keys"
+      "description": "Maximum package-owned whole-key distributed work units"
     },
     "array_size": {
       "type": "integer",

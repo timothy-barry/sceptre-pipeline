@@ -48,16 +48,16 @@ for (stage in stages) {
     for (field in c("design_matrix", "discovery_pairs_with_info", "positive_control_pairs_with_info", "cell_removal_metrics"))
         same(methods::slot(actual$object@preparation, field), methods::slot(object@preparation, field),
             paste(stage, field))
-    same(names(actual$object@results@records), names(object@results@records), paste(stage, "exact result family names"))
+    same(names(Filter(Negate(is.null), actual$object@results)), names(Filter(Negate(is.null), object@results)), paste(stage, "exact result family names"))
     same(actual$manifest$rng_kind, expected_rng$kind, paste(stage, "RNG kind"))
     same(actual$manifest$rng_state, expected_rng$state, paste(stage, "RNG state"))
     if (stage != "parameters") same(sceptre::get_grna_assignments(actual$object),
         sceptre::get_grna_assignments(object), paste(stage, "assignments"))
-    for (family in names(object@results@records)) {
-        same(sceptre::get_result(actual$object, family), sceptre::get_result(object, family),
+    for (family in names(Filter(Negate(is.null), object@results))) {
+        same(sceptre::get_result(actual$object, paste0("run_", sub("^run_", "", family))), sceptre::get_result(object, paste0("run_", sub("^run_", "", family))),
             paste(stage, family, "complete table"))
-        same(actual$object@results@records[[family]]$provenance$plan,
-            object@results@records[[family]]$provenance$plan, paste(stage, family, "global plan"))
+        same(actual$object@results[[sub("^run_", "", family)]]$provenance$plan,
+            object@results[[sub("^run_", "", family)]]$provenance$plan, paste(stage, family, "global plan"))
     }
 }
 for (stage in setdiff(c("parameters", "assignment", "qc", "calibration", "power", "discovery"), stages))

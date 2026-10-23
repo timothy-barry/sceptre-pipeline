@@ -1,0 +1,161 @@
+Loading required namespace: sceptre
+Loading required namespace: HDF5Array
+$object
+An object of class sceptre_object.
+
+Attributes of the data:
+	• 160 cells
+	• 6 responses
+	• Low multiplicity-of-infection 
+	• 4 targeting gRNAs (distributed across 2 targets) 
+	• 4 non-targeting gRNAs 
+	• 6 covariates (batch, grna_n_nonzero, grna_n_umis, response_n_nonzero, response_n_umis, z)
+$manifest
+$manifest$kind
+[1] "sceptre-pipeline-state"
+
+$manifest$schema
+[1] 1
+
+$manifest$object_schema
+[1] 7
+
+$manifest$stage
+[1] "input"
+
+$manifest$completed
+character(0)
+
+$manifest$package
+$manifest$package$package
+[1] "sceptre"
+
+$manifest$package$object_schema
+[1] 7
+
+$manifest$package$version
+[1] "0.99.0"
+
+$manifest$package$installed_sha256
+[1] "c35ce0113c9eab866225fc0c1bc524e87e0afcefd49b2546da960396608647be"
+
+$manifest$package$dependencies
+               abind              askpass           assorthead 
+             "1.4.8"              "1.2.1"              "1.6.4" 
+            beachmat        beachmat.hdf5                   BH 
+            "2.28.0"             "1.10.0"           "1.90.0.1" 
+             Biobase         BiocGenerics             biocmake 
+            "2.72.0"             "0.58.0"              "1.4.0" 
+        BiocParallel                  cli            codetools 
+            "1.46.0"              "3.6.6"             "0.2.20" 
+            compiler              cowplot                cpp11 
+             "4.6.0"              "1.2.0"              "0.5.5" 
+              crayon           data.table         DelayedArray 
+             "1.5.3"             "1.18.4"             "0.38.2" 
+  DelayedMatrixStats               digest           dir.expiry 
+            "1.34.0"             "0.6.39"             "1.20.0" 
+               dplyr                dqrng         DropletUtils 
+             "1.2.1"              "0.4.1"             "1.32.1" 
+               edgeR               farver             filelock 
+            "4.10.7"              "2.1.2"              "1.0.3" 
+             formatR        futile.logger       futile.options 
+              "1.14"              "1.4.9"              "1.0.1" 
+            generics        GenomicRanges              ggplot2 
+             "0.1.4"             "1.64.0"              "4.0.3" 
+                glue             graphics            grDevices 
+             "1.8.1"              "4.6.0"              "4.6.0" 
+                grid               gtable              h5mread 
+             "4.6.0"              "0.3.6"              "1.4.1" 
+           HDF5Array              IRanges              isoband 
+            "1.40.0"             "2.46.0"              "0.3.0" 
+            jsonlite             labeling             lambda.r 
+             "2.0.0"              "0.4.3"              "1.2.4" 
+             lattice            lifecycle                limma 
+            "0.22.9"              "1.0.5"             "3.68.5" 
+              locfit             magrittr               Matrix 
+          "1.5.9.12"              "2.0.5"              "1.7.5" 
+      MatrixGenerics          matrixStats              methods 
+            "1.24.0"              "1.5.0"              "4.6.0" 
+             openssl             parallel           parallelly 
+             "2.4.0"              "4.6.0"             "1.47.0" 
+              pillar            pkgconfig                purrr 
+            "1.11.1"              "2.0.3"              "1.2.2" 
+         R.methodsS3                 R.oo              R.utils 
+             "1.8.2"             "1.27.1"             "2.13.0" 
+                  R6         RColorBrewer                 Rcpp 
+             "2.6.1"              "1.1.3"          "1.1.1.1.1" 
+               rhdf5         rhdf5filters             Rhdf5lib 
+            "2.56.0"             "1.24.0"              "2.0.0" 
+               rlang             S4Arrays            S4Vectors 
+             "1.2.0"             "1.12.0"             "0.50.3" 
+                  S7               scales              sceptre 
+             "0.2.2"              "1.4.0"             "0.99.0" 
+             scuttle              Seqinfo SingleCellExperiment 
+            "1.22.0"              "1.2.0"             "1.34.0" 
+               sitmo                 snow          SparseArray 
+             "2.0.2"              "0.4.4"             "1.12.2" 
+   sparseMatrixStats              statmod                stats 
+            "1.24.0"              "1.5.2"              "4.6.0" 
+              stats4 SummarizedExperiment                  sys 
+             "4.6.0"             "1.42.0"              "3.4.3" 
+              tibble           tidyselect                tools 
+             "3.3.1"              "1.2.1"              "4.6.0" 
+                utf8                utils                vctrs 
+             "1.2.6"              "4.6.0"              "0.7.3" 
+         viridisLite                withr              XVector 
+             "0.4.3"              "3.0.2"             "0.52.0" 
+
+$manifest$package$R
+[1] "4 6.0 aarch64-apple-darwin23"
+
+
+$manifest$config_sha256
+[1] "d600091f3280e1f0f6e1941b8219e74c4b1b8289e208c4de937d9f8c2bf88a59"
+
+$manifest$object_sha256
+[1] "84c84a605fcdc9cb1e8e33fd4b689cde31de9c1e3b02d909f2dedab25b092ccf"
+
+$manifest$backend
+[1] "native-hdf5"
+
+$manifest$backing_files
+$manifest$backing_files$response
+                        4fa7317a5d3aaee269e5fa7cf0860312cc904021fe824464e2e6d8ec208cd818.h5 
+"/private/tmp/schema7-native-relocation-20261022/original/counts-1097712690488/response.h5" 
+
+$manifest$backing_files$grna
+                    ad16f5868deb08b6284952b43e823de961d261c597e31e6caa127a5ea64e0233.h5 
+"/private/tmp/schema7-native-relocation-20261022/original/counts-1097712690488/grna.h5" 
+
+
+$manifest$parent_sha256
+NULL
+
+$manifest$scientific_scope
+$manifest$scientific_scope$discovery
+$manifest$scientific_scope$discovery$n_requested
+[1] 0
+
+$manifest$scientific_scope$discovery$sha256
+[1] "93403aed1d3a1d700375ee9f84b3e2c741a0edf1ede9b4bc5fd75a939d5e6bd7"
+
+
+$manifest$scientific_scope$power
+$manifest$scientific_scope$power$n_requested
+[1] 0
+
+$manifest$scientific_scope$power$sha256
+[1] "93403aed1d3a1d700375ee9f84b3e2c741a0edf1ede9b4bc5fd75a939d5e6bd7"
+
+
+
+$manifest$inference_scope
+$manifest$inference_scope$configured
+[1] FALSE
+
+
+$manifest$import_identity
+[1] "dataset-v1-e435982a30caad6bb9c0c391906c0e9b"
+
+
+PASS native HDF5 relocation with original paths absent; exact counts and corrupted backing rejection

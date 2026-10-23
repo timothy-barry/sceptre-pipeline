@@ -1,0 +1,24 @@
+Nextflow 26.10.3 is available - Please consider updating your version to it
+N E X T F L O W  ~  version 25.10.4
+Launching `main.nf` [stoic_avogadro] DSL2 - revision: cefe792796
+Selected profiles: test; scientific execution mode: distributed.
+The default task executor is local. Distributed mode partitions scientific work; scheduler selection comes from profiles/site configuration. Verify executor overrides before running on a cluster login node (docs/hpc.md, docs/recovery.md).
+WARN: Task runtime metrics are not reported when using macOS without a container engine
+[fd/d653e9] Submitted process > SCEPTRE:SCEPTRE_VALIDATE (screen:validate)
+[df/3b26d6] Submitted process > SCEPTRE:PARAMETERS (screen:parameters)
+[5f/89d555] Submitted process > SCEPTRE:ASSIGNMENT (screen:assignment)
+[5d/c570a1] Submitted process > SCEPTRE:QC (screen:qc)
+[92/d7db10] Submitted process > SCEPTRE:CALIBRATION:SCEPTRE_PREPARE (screen:calibration:prepare)
+[90/351c53] Submitted process > SCEPTRE:CALIBRATION:SCEPTRE_WORKER (screen:calibration:unit-000002)
+[f9/69f234] Submitted process > SCEPTRE:CALIBRATION:SCEPTRE_WORKER (screen:calibration:unit-000003)
+[0e/5ca9dc] Submitted process > SCEPTRE:CALIBRATION:SCEPTRE_WORKER (screen:calibration:unit-000001)
+[6b/eadade] Submitted process > SCEPTRE:CALIBRATION:SCEPTRE_COLLECT (screen:calibration:collect)
+[84/a3a5b4] Submitted process > SCEPTRE:POWER:SCEPTRE_PREPARE (screen:power:prepare)
+[5c/35e468] Submitted process > SCEPTRE:POWER:SCEPTRE_WORKER (screen:power:unit-000001)
+[2e/747198] Submitted process > SCEPTRE:POWER:SCEPTRE_COLLECT (screen:power:collect)
+[1d/b00e1a] Submitted process > SCEPTRE:DISCOVERY:SCEPTRE_PREPARE (screen:discovery:prepare)
+[a0/3182d3] Submitted process > SCEPTRE:DISCOVERY:SCEPTRE_WORKER (screen:discovery:unit-000002)
+[b1/8ab4ef] Submitted process > SCEPTRE:DISCOVERY:SCEPTRE_WORKER (screen:discovery:unit-000001)
+WARN: Task runtime metrics are not reported when using macOS without a container engine
+[f0/6f725b] Submitted process > SCEPTRE:DISCOVERY:SCEPTRE_COLLECT (screen:discovery:collect)
+[cc/ec73f5] Submitted process > SCEPTRE:SCEPTRE_EXPORT (screen:export)

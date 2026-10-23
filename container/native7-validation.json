@@ -1,0 +1,90 @@
+{
+  "status": "POST_BOOTSTRAP_BOUNDED_CONTAINER_COMPARISONS_PASS_NO_STACK_IMBALANCE",
+  "utc": "2026-10-23T01:59:26.277055+00:00",
+  "image": "sha256:b51c1cdaef908f6386b3313bd787f5d46dcc7b3f08c5fe28b271d2e5c85cd6c9",
+  "platform": "linux/arm64",
+  "docker_server": "29.4.3",
+  "R": "4.5.1",
+  "archive_sha256": "f41a8fb7e1bc10366e8efcc7a31644d4c8356bc4eca8adda9ca949c951de4fb4",
+  "source_commit": "1e4d5459ab229255694f9217d7cd4ed51a4bf1b8",
+  "object_schema": 7,
+  "results": {
+    "installed_archive_schema_identity": "PASS",
+    "direct_complete_family_cases": 9,
+    "direct_artifact_failure_guards": "PASS",
+    "distributed_cases": 11,
+    "distributed_native_HDF5": [
+      "permutations",
+      "CRT"
+    ],
+    "schema7_input_and_mislabeled_old_object_rejection": "PASS",
+    "native_HDF5_relocation_originals_absent_and_raw_prepare_cli": "PASS",
+    "missing_wrong_sidecar_and_corrupt_backing_rejection": "PASS"
+  },
+  "warning": {
+    "text": "Warning: stack imbalance in '<-', 2 then 4",
+    "other_observed": "Warning: stack imbalance in 'all', 6 then 8",
+    "isolation": "Package-only fresh namespace import using sceptre::import_data without attaching library(sceptre); no pipeline helper needed. Explicit prior library(sceptre) isolation did not emit warning.",
+    "scope": "Warning retained; no warning-free qualification or established underlying cause. Compared result equality passed.",
+    "eager_namespace_initialization": "Two fresh Rscript processes with top-level requireNamespace(sceptre, quietly=TRUE), then RAM/HDF5 public imports/getters/matrix realization passed without stack warnings. Separate suppressed library attachment also passed without stack warnings.",
+    "pipeline_mitigation": "bin/pipeline.R initializes only the declared sceptre namespace eagerly, without attaching the package. Fresh final direct/distributed matrices and RAM/HDF5 startup regression passed with zero stack-imbalance warnings. Package-only nested lazy import warning remains an upstream observation; package source/archive unchanged."
+  },
+  "limits": [
+    "Local Linux ARM64 Docker only; no image pushed.",
+    "This receipt does not establish Nextflow, AMD64, Apptainer, hosted CI, HPC or full-screen scale qualification.",
+    "Package namespace-load warning remains an upstream runtime issue requiring separate investigation."
+  ],
+  "artifacts_sha256": {
+    "container/.build/native7-20261022/build.log": "98521e558de4e4bf0e766e21f325fdf1129c0de099170968f2e9e0f414445d9e",
+    "container/.build/native7-20261022/image-inspect.json": "899fa59ee8cf8980e27a54c63634af5e69ce41cadafbac84157648f07fc7c902",
+    "container/.build/native7-20261022/runtime-identity.log": "54d8cd433203f4dac6977acf78010aa9b8c772e89d8a2ff2219a5f0cb80a5f4c",
+    "container/.build/native7-20261022/runtime-provenance.txt": "ad7d1e749cd28cbac4dd3ae3bc1fcd971c1a8f2a9353f8434a2c21524fdb7a3c",
+    "container/.build/native7-20261022/direct.log": "9ec5b8bdbbcff5a52ebc99034da6a673c19d3ddc1dd45898697335cc1cc62aaf",
+    "container/.build/native7-20261022/distributed.log": "db5ea81dc091c02856689ed1aee2d7861b2f153ba6621a772b51531f6da3b5ad",
+    "container/.build/native7-20261022/native-guards.log": "d2d97cbaa12049bc061677f1e1d24510bcda6323ae345b49acce8cb80fec07fb",
+    "container/.build/native7-20261022/isolate-warning.R": "1b08665beef6e955ee7fb27ed03bedc29a8e1d65b61210ea3c4ef66281fbdfeb",
+    "container/.build/native7-20261022/isolate-warning.log": "27de1dc4657751c9c65eca99e28e26402283557396f3598e328c8ca2feebb2ae",
+    "container/.build/native7-20261022/isolate-warning-no-attach.R": "50e1a365ac43fa00d6f9e66d85f921d9fc94efb1f18545d80a81b672d0478e62",
+    "container/.build/native7-20261022/isolate-warning-pipeline-first.R": "551d4b2b0ce4a776f98c53c26c07cd9a347fbecc695d0ca11ef83d535b6164c1",
+    "container/.build/native7-20261022/isolate-warning-load-order.log": "16d9299d9c6a0c4c2f26a712bd1173c4372724539264271847c336ed3a8d33fd",
+    "container/.build/native7-20261022/direct/direct-comparison.rds": "917c918bc11d10fddc5493aca7825396fc161701d8d72f44c1be5db10f68f66c",
+    "container/.build/native7-20261022/distributed/distributed-comparison.rds": "a251a0ec44d3d7a504af28ac7132e1cc78d1547b2b8bd9d35d104c25ff2c4fc6",
+    "container/.build/native7-20261022/isolate-warning-warm-namespace.R": "67e33f493d170feefd1694c03fdb1ea3da3034d87d7aa4d4f87a1cc1b0a12b57",
+    "container/.build/native7-20261022/isolate-warning-warm-namespace.log": "a35850656953b386a78a33dd12f34ab4e6c979fd081212eddf593f540aceb9a6",
+    "container/.build/native7-20261022/post-bootstrap-direct.log": "31c59c820199576f23563ec7b77910a5844ebe7187e0bbd56b2a50e83a0d52d3",
+    "container/.build/native7-20261022/post-bootstrap-distributed.log": "3d94f59021feb6168ec3a753ed17618f643b240f6efaae1ec5c5dba7e1fa730b",
+    "container/.build/native7-20261022/post-bootstrap-startup.log": "1822a1796088ba1937e3ac99c8990224c1492c4736b4d1f825011716f4b529f0",
+    "container/.build/native7-20261022/post-bootstrap-source-sha256.json": "78feda6a71437f14acb0399966e082a277bb06867c115f69e51381e32b675c56",
+    "container/.build/native7-20261022/post-bootstrap-direct/direct-comparison.rds": "fa40852bda6222fe100bd19d79ce0a099b41513a4df32e8198c399a06aae4913",
+    "container/.build/native7-20261022/post-bootstrap-distributed/distributed-comparison.rds": "a251a0ec44d3d7a504af28ac7132e1cc78d1547b2b8bd9d35d104c25ff2c4fc6"
+  },
+  "pre_bootstrap_results": {
+    "installed_archive_schema_identity": "PASS",
+    "direct_complete_family_cases": 9,
+    "direct_artifact_failure_guards": "PASS",
+    "distributed_cases": 11,
+    "distributed_native_HDF5": [
+      "permutations",
+      "CRT"
+    ],
+    "schema7_input_and_mislabeled_old_object_rejection": "PASS",
+    "native_HDF5_relocation_originals_absent_and_raw_prepare_cli": "PASS",
+    "missing_wrong_sidecar_and_corrupt_backing_rejection": "PASS"
+  },
+  "post_bootstrap_results": {
+    "direct_complete_family_cases": 9,
+    "direct_artifact_failure_guards": "PASS",
+    "distributed_cases": 11,
+    "distributed_native_HDF5": [
+      "permutations",
+      "CRT"
+    ],
+    "fresh_namespace_only_startup_exact_RAM_HDF5_counts": "PASS",
+    "process_exit_codes": [
+      0,
+      0,
+      0
+    ],
+    "stack_imbalance_warnings": 0
+  }
+}

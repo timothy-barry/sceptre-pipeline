@@ -1,14 +1,13 @@
 # SCEPTRE pipeline
 
 [![Integration branch checks](https://github.com/timothy-barry/sceptre-pipeline/actions/workflows/ci.yml/badge.svg?branch=codex%2Fovernight-publication-pipeline)](https://github.com/timothy-barry/sceptre-pipeline/actions/workflows/ci.yml?query=branch%3Acodex%2Fovernight-publication-pipeline)
-[![nf-test file coverage](docs/badges/nf-test-coverage.svg)](docs/coverage.md#measured-nf-test-file-coverage)
 [![Pipeline version](docs/badges/version.svg)](nextflow.config)
 
-The checks badge tracks this integration review branch.
+The checks badge tracks the historical integration branch; it does not certify
+this schema-7 migration.
 
-Nextflow DSL2 execution of the schema-3 SCEPTRE workflow, with certified process
-handoffs and complete-family statistical results. This is a compatibility
-implementation in development; see [qualification](docs/validation.md) for the
+Nextflow DSL2 execution of the native schema-7 SCEPTRE workflow, with certified process
+handoffs and complete-family statistical results. This implementation targets the selected native schema-7 package archive; see [qualification](docs/validation.md) for the
 exact tested package and limits.
 
 The scientific package owns assignments, QC, fit reuse, resampling, integration,
@@ -55,7 +54,7 @@ Rscript tests/direct-comparison.R /tmp/sceptre-direct-new
 bash tests/run-nextflow.sh /tmp/sceptre-nextflow-new
 ```
 
-Nextflow 25.10.4+, Java 17+, R 4.1+, the pipeline dependency `jsonlite`, and pinned `nf-schema@2.6.1` are required.
+Nextflow 25.10.4+, Java 17+, R 4.5+, the pipeline dependency `jsonlite`, and pinned `nf-schema@2.6.1` are required.
 The plugin needs network access on first installation; `NXF_OFFLINE=true` can be
 used after it is installed. The runtime lock records the actual R version,
 package implementation and dependency versions.

@@ -95,30 +95,33 @@ jobs:
             2>&1 | tee "$RUNNER_TEMP/installed-package.log"
       - name: Bounded report consumer contracts
         run: |
-          docker run --rm -v "$PWD:$PWD" -w "$PWD" \
-            "$SCEPTRE_CONTAINER_IMAGE" Rscript --vanilla report/check-bundle.R \
+          docker run --rm -v "$PWD:$PWD" -v "$RUNNER_TEMP:$RUNNER_TEMP" -w "$PWD" \
+            "$SCEPTRE_CONTAINER_IMAGE" Rscript --vanilla report/check.R "$RUNNER_TEMP/report-bundle" \
             2>&1 | tee "$RUNNER_TEMP/report-bundle.log"
       - name: Actual validation signature file and cache guards
         run: |
           docker run --rm -v "$PWD:$PWD" -v "$RUNNER_TEMP:$RUNNER_TEMP" -w "$PWD" \
             "$SCEPTRE_CONTAINER_IMAGE" Rscript --vanilla tests/ci/check-regular-file-signatures.R \
             "$RUNNER_TEMP/regular-file-signatures" 2>&1 | tee "$RUNNER_TEMP/regular-file-signatures.log"
-      - name: Admission, migration, assignments and diagnostic guards
+      - name: Fresh native namespace startup
         run: |
-          tar -xOf tests/runtime/sceptre_0.99.0.tar.gz \
-            sceptre/tests/testthat/fixtures/saved-objects/sceptre-schema3-list-plans-2a0938e.rds \
-            > "$RUNNER_TEMP/historical-schema3.rds"
           docker run --rm -v "$PWD:$PWD" -v "$RUNNER_TEMP:$RUNNER_TEMP" -w "$PWD" \
-            -e SCEPTRE_REQUIRE_EXPERIMENTAL_GUARD=true -e SCEPTRE_REQUIRE_WILCOXON_GUARD=true \
+            "$SCEPTRE_CONTAINER_IMAGE" Rscript --vanilla tests/runtime/check-startup.R \
+            "$RUNNER_TEMP/native-startup" 2>&1 | tee "$RUNNER_TEMP/native-startup.log"
+          python3 -c 'import pathlib,sys; assert "stack imbalance" not in pathlib.Path(sys.argv[1]).read_text().lower()' "$RUNNER_TEMP/native-startup.log"
+      - name: Native schema admission, assignments and diagnostic guards
+        run: |
+          docker run --rm -v "$PWD:$PWD" -v "$RUNNER_TEMP:$RUNNER_TEMP" -w "$PWD" \
             "$SCEPTRE_CONTAINER_IMAGE" Rscript --vanilla tests/check-experimental-method.R \
             "$RUNNER_TEMP/method-admission" 2>&1 | tee "$RUNNER_TEMP/method-admission.log"
           docker run --rm -v "$PWD:$PWD" -v "$RUNNER_TEMP:$RUNNER_TEMP" -w "$PWD" \
-            "$SCEPTRE_CONTAINER_IMAGE" Rscript --vanilla tests/check-schema3-migration.R \
-            "$RUNNER_TEMP/historical-schema3.rds" "$RUNNER_TEMP/schema3" \
-            2>&1 | tee "$RUNNER_TEMP/schema3.log"
+            "$SCEPTRE_CONTAINER_IMAGE" Rscript --vanilla tests/check-schema7-admission.R \
+            "$RUNNER_TEMP/schema7" \
+            2>&1 | tee "$RUNNER_TEMP/schema7.log"
           docker run --rm -v "$PWD:$PWD" -v "$RUNNER_TEMP:$RUNNER_TEMP" -w "$PWD" \
-            "$SCEPTRE_CONTAINER_IMAGE" Rscript --vanilla tests/external-assignments.R \
-            "$RUNNER_TEMP/external-assignments" 2>&1 | tee "$RUNNER_TEMP/external-assignments.log"
+            "$SCEPTRE_CONTAINER_IMAGE" Rscript --vanilla tests/native-backing-relocation.R \
+            "$RUNNER_TEMP/native-backing-relocation" \
+            2>&1 | tee "$RUNNER_TEMP/native-backing-relocation.log"
           docker run --rm -v "$PWD:$PWD" -w "$PWD" "$SCEPTRE_CONTAINER_IMAGE" \
             Rscript --vanilla tests/check-diagnostics.R 2>&1 | tee "$RUNNER_TEMP/diagnostics.log"
           python3 tests/check-failure-oracle.py 2>&1 | tee "$RUNNER_TEMP/failure-oracle.log"
@@ -130,11 +133,12 @@ jobs:
         run: |
           mkdir -p "$RUNNER_TEMP/direct" "$RUNNER_TEMP/distributed"
           docker run --rm -v "$PWD:$PWD" -v "$RUNNER_TEMP:$RUNNER_TEMP" -w "$PWD" \
-            -e REQUIRE_ONDISC=true "$SCEPTRE_CONTAINER_IMAGE" \
+            -e REQUIRE_NATIVE_HDF5=true "$SCEPTRE_CONTAINER_IMAGE" \
             Rscript tests/direct-comparison.R "$RUNNER_TEMP/direct" 2>&1 | tee "$RUNNER_TEMP/direct.log"
           docker run --rm -v "$PWD:$PWD" -v "$RUNNER_TEMP:$RUNNER_TEMP" -w "$PWD" \
-            -e REQUIRE_ONDISC=true "$SCEPTRE_CONTAINER_IMAGE" \
+            -e REQUIRE_NATIVE_HDF5=true "$SCEPTRE_CONTAINER_IMAGE" \
             Rscript tests/distributed-comparison.R "$RUNNER_TEMP/distributed" 2>&1 | tee "$RUNNER_TEMP/distributed.log"
+          python3 -c 'import pathlib,sys; assert all("stack imbalance" not in pathlib.Path(p).read_text().lower() for p in sys.argv[1:])' "$RUNNER_TEMP/direct.log" "$RUNNER_TEMP/distributed.log"
       - name: Exact one, multiple, uneven and excess unit-partition matrix
         run: |
           mkdir -p "$RUNNER_TEMP/unit-matrix"
@@ -146,9 +150,6 @@ jobs:
           docker run --rm -v "$PWD:$PWD" -v "$RUNNER_TEMP:$RUNNER_TEMP" -w "$PWD" \
             "$SCEPTRE_CONTAINER_IMAGE" Rscript report/check.R "$RUNNER_TEMP/report-validation" \
             2>&1 | tee "$RUNNER_TEMP/report-validation.log"
-          docker run --rm -v "$PWD:$PWD" -v "$RUNNER_TEMP:$RUNNER_TEMP" -w "$PWD" \
-            "$SCEPTRE_CONTAINER_IMAGE" Rscript --vanilla report/check-memory.R "$RUNNER_TEMP/report-memory" 100000 render \
-            2>&1 | tee "$RUNNER_TEMP/report-memory.log"
       - name: Complete synthetic demo and report bundle
         env:
           SCEPTRE_DEMO_PROFILE: test,docker
@@ -181,7 +182,6 @@ jobs:
             ${{ runner.temp }}/sif-guard/*.log
             ${{ runner.temp }}/context/source.json
             ${{ runner.temp }}/context/source.sha256
-            ${{ runner.temp }}/context/optional.sha256
             ${{ runner.temp }}/context-receipt.json
             ${{ runner.temp }}/container-build.log
             ${{ runner.temp }}/image-id
@@ -199,9 +199,6 @@ jobs:
             ${{ runner.temp }}/unit-matrix/unit-partition-matrix.rds
             ${{ runner.temp }}/report-validation/*report/report-status.json
             ${{ runner.temp }}/report-validation/*report/report.html
-            ${{ runner.temp }}/report-memory/metrics.csv
-            ${{ runner.temp }}/report-memory/report.html
-            ${{ runner.temp }}/report-memory/render-allocations.txt
             ${{ runner.temp }}/demo/demo-receipt.json
             ${{ runner.temp }}/demo/results/exports/scientific-report
             ${{ runner.temp }}/demo/results/pipeline_info

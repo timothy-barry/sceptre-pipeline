@@ -18,7 +18,7 @@ sidebar: false
         <a class="button button-primary" href="demo.html">Try the demo <span aria-hidden="true">↗</span></a>
         <a class="button button-text" href="#workflow">Explore the workflow <span aria-hidden="true">↓</span></a>
       </div>
-      <div class="version-line"><span>Schema 3</span><span>Nextflow @@NEXTFLOW_MIN@@+</span><span>Reference + distributed</span></div>
+      <div class="version-line"><span>Native SCE</span><span>Nextflow @@NEXTFLOW_MIN@@+</span><span>Reference + distributed</span></div>
     </div>
     <figure class="hero-figure">
       <div class="figure-heading"><span class="small-label">THE DISTRIBUTED PATH</span><span class="mono micro-label">one scientific family</span></div>
@@ -55,7 +55,7 @@ sidebar: false
   <section class="workflow-section section-space" id="workflow" aria-labelledby="workflow-heading">
     <div class="section-heading"><div><p class="eyebrow">FROM INPUT TO INFERENCE</p><h2 id="workflow-heading">A clear path through your screen.</h2></div><a class="inline-link" href="architecture.html">Read the architecture <span aria-hidden="true">↗</span></a></div>
     <div class="workflow-steps">
-      <article><span class="step-number">01 / PREPARE</span><h3>Bring your screen</h3><p>Start with a schema-3 object, a trusted analysis configuration and a lock of the actual scientific runtime.</p><a href="usage.html#prepare-scientific-input">Inputs & configuration <span aria-hidden="true">→</span></a></article>
+      <article><span class="step-number">01 / PREPARE</span><h3>Bring your screen</h3><p>Start with a native SCE sceptre_object, a trusted analysis configuration and a lock of the actual scientific runtime.</p><a href="usage.html#prepare-scientific-input">Inputs & configuration <span aria-hidden="true">→</span></a></article>
       <article><span class="step-number">02 / QUALIFY</span><h3>Assign and check</h3><p>Use the public package API for guide assignment and QC. Freeze the eligible family and the full resampling plan.</p><a href="distributed-interface.html">The scientific boundary <span aria-hidden="true">→</span></a></article>
       <article><span class="step-number">03 / EXECUTE</span><h3>Choose how to run</h3><p>Keep the reference whole-family call, or scatter certified work units. Slurm arrays batch distributed workers only.</p><a href="usage.html#slurm-worker-arrays">Slurm & worker arrays <span aria-hidden="true">→</span></a></article>
       <article><span class="step-number">04 / COLLECT</span><h3>Return a complete family</h3><p>Validate every proposal, restore canonical order, then integrate and correct once. Export results with run provenance.</p><a href="outputs.html">Results & artifacts <span aria-hidden="true">→</span></a></article>
@@ -93,7 +93,7 @@ sidebar: false
   </section>
 
   <section class="status-section section-space" aria-labelledby="status-heading">
-    <div><p class="eyebrow">ENGINEERING, WITH EVIDENCE</p><h2 id="status-heading">Know what has<br>actually been tested.</h2><p>Development documentation for the schema-3 compatibility implementation. This project follows nf-core engineering principles; it is not an accepted nf-core community pipeline.</p><a class="inline-link" href="nf-core.html">Our nf-core principles mapping <span aria-hidden="true">↗</span></a></div>
+    <div><p class="eyebrow">ENGINEERING, WITH EVIDENCE</p><h2 id="status-heading">Know what has<br>actually been tested.</h2><p>Development documentation for the native SCE implementation. This project follows nf-core engineering principles; it is not an accepted nf-core community pipeline.</p><a class="inline-link" href="nf-core.html">Our nf-core principles mapping <span aria-hidden="true">↗</span></a></div>
     <dl class="status-list"><div><dt><span class="status-dot tested"></span>Scientific correctness</dt><dd>Bounded same-runtime comparisons on macOS ARM64 and Docker Linux ARM64.<a href="validation.html">Exact qualification record →</a></dd></div><div><dt><span class="status-dot tested"></span>Slurm job arrays</dt><dd>Bounded scheduler smoke tests cover batching, resume and a failed child. Full scientific AMD64/Apptainer qualification is separate.<a href="array-validation.html">Scheduler test scope →</a></dd></div><div><dt><span class="status-dot pending"></span>Hosted continuous integration</dt><dd>Workflow configuration is available for review. Configuration is distinct from a successful hosted run.<a href="ci.html">CI requirements & evidence →</a></dd></div></dl>
   </section>
 </div>

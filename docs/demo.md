@@ -8,12 +8,12 @@ From a clean checkout in a supported environment:
 
 Install Docker (daemon running), Python 3, and a pipeline-compatible Nextflow
 with Java first (the default profile requests up to 8 GB for scientific tasks); see the [usage and runtime guide](usage.md).
-The command builds the pinned container using the committed qualified SCEPTRE
+The command builds the pinned container using the bundled frozen SCEPTRE
 archive receipt in `tests/runtime/source.json`, creates synthetic counts,
 configuration and the environment lock **inside that image**, and runs real
 assignment, QC, calibration, positive-control and discovery analyses through
-Nextflow. No manually prepared RDS is required. The first build downloads pinned
-public dependencies and may take several minutes. A new output directory is
+Nextflow. No manually prepared RDS is required. The first build downloads public
+dependencies from the configured CRAN snapshot and Bioconductor release and may take several minutes. A new output directory is
 required; existing data are never overwritten.
 
 To reuse an already built exact image without rebuilding:
@@ -26,8 +26,8 @@ For this small fixture on a resource-limited machine or CI runner, use
 `SCEPTRE_DEMO_PROFILE=test,docker` to select the existing small-resource profile;
 it changes execution resources, not scientific settings.
 
-A mutable image tag is rejected; reused images must carry the same qualified
-package commit/archive receipt. Local image IDs cannot be pulled on another
+A mutable image tag is rejected; reused images must carry the same frozen
+package archive receipt. Local image IDs cannot be pulled on another
 machine; build locally or transfer a qualified image explicitly. The default
 build uses the same source-manifest interface as CI, without requiring an
 unpublished package Git revision to exist remotely. Architecture-specific image

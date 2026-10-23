@@ -1,0 +1,43 @@
+Nextflow 26.10.3 is available - Please consider updating your version to it
+N E X T F L O W  ~  version 25.10.4
+Launching `/Users/ekatsevi/Documents/Codex/2026-10-22/new-realtime-voice-chat-6/sceptre-pipeline/main.nf` [shrivelled_austin] DSL2 - revision: cefe792796
+Selected profiles: test; scientific execution mode: reference.
+The default task executor is local. Distributed mode partitions scientific work; scheduler selection comes from profiles/site configuration. Verify executor overrides before running on a cluster login node (docs/hpc.md, docs/recovery.md).
+WARN: Task runtime metrics are not reported when using macOS without a container engine
+[e4/2c0d22] Submitted process > SCEPTRE:SCEPTRE_VALIDATE (screen:validate)
+[e6/11571e] Submitted process > SCEPTRE:PARAMETERS (screen:parameters)
+[ec/b71fc7] Submitted process > SCEPTRE:ASSIGNMENT (screen:assignment)
+[39/0f7cba] Submitted process > SCEPTRE:QC (screen:qc)
+[5d/7df9be] Submitted process > SCEPTRE:CALIBRATION:SCEPTRE_STAGE (screen:calibration)
+[96/0a44fb] Submitted process > SCEPTRE:POWER:SCEPTRE_STAGE (screen:power)
+[de/c90507] Submitted process > SCEPTRE:DISCOVERY:SCEPTRE_STAGE (screen:discovery)
+[47/626e83] Submitted process > SCEPTRE:SCEPTRE_EXPORT (screen:export)
+Note: If you are on a Mac laptop or desktop, consider setting `parallel = TRUE` to improve speed. Otherwise, keep `parallel = FALSE`.
+Constructing negative control pairs.
+ ✓
+Note: If you are on a Mac laptop or desktop, consider setting `parallel = TRUE` to improve speed. Otherwise, keep `parallel = FALSE`.
+Note: If you are on a Mac laptop or desktop, consider setting `parallel = TRUE` to improve speed. Otherwise, keep `parallel = FALSE`.
+PASS real nf-test workflow semantics: parameters, assignment, qc, calibration, power, discovery; exact families/tables/plans/fits/design/pairQC/metrics/assignments/RNG and absent excluded stages
+PASS actual Nextflow vs same-runtime uninterrupted public R: exact complete tables/global plans/budgets/assignments/QC/fits/RNG
+Nextflow 26.10.3 is available - Please consider updating your version to it
+N E X T F L O W  ~  version 25.10.4
+Launching `/Users/ekatsevi/Documents/Codex/2026-10-22/new-realtime-voice-chat-6/sceptre-pipeline/main.nf` [romantic_lalande] DSL2 - revision: cefe792796
+Selected profiles: test; scientific execution mode: reference.
+The default task executor is local. Distributed mode partitions scientific work; scheduler selection comes from profiles/site configuration. Verify executor overrides before running on a cluster login node (docs/hpc.md, docs/recovery.md).
+WARN: Task runtime metrics are not reported when using macOS without a container engine
+[d8/c5fa50] Submitted process > SCEPTRE:SCEPTRE_VALIDATE (screen:validate)
+[e6/11571e] Cached process > SCEPTRE:PARAMETERS (screen:parameters)
+[ec/b71fc7] Cached process > SCEPTRE:ASSIGNMENT (screen:assignment)
+[39/0f7cba] Cached process > SCEPTRE:QC (screen:qc)
+[5d/7df9be] Cached process > SCEPTRE:CALIBRATION:SCEPTRE_STAGE (screen:calibration)
+[96/0a44fb] Cached process > SCEPTRE:POWER:SCEPTRE_STAGE (screen:power)
+[de/c90507] Cached process > SCEPTRE:DISCOVERY:SCEPTRE_STAGE (screen:discovery)
+[47/626e83] Cached process > SCEPTRE:SCEPTRE_EXPORT (screen:export)
+PASS resume: runtime validation reran, all scientific tasks and export cached
+PASS nested configuration change rejected; unchanged nested configuration resumed with cached science
+PASS unsupported dynamic configuration include rejected before tasks
+PASS missing and cyclic includes fail during native config parsing before tasks
+PASS unknown/legacy parameter rejected
+PASS fresh-run collision and changed-seed resume rejected before scientific tasks
+PASS changed array batching cannot reuse prior publication paths
+PASS altered .nf source resume rejected; original source identical resume passed

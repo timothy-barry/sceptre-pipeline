@@ -1,0 +1,81 @@
+[
+    {
+        "Id": "sha256:b51c1cdaef908f6386b3313bd787f5d46dcc7b3f08c5fe28b271d2e5c85cd6c9",
+        "RepoTags": [
+            "sceptre-pipeline:native7-f41a8fb7"
+        ],
+        "RepoDigests": [
+            "sceptre-pipeline@sha256:b51c1cdaef908f6386b3313bd787f5d46dcc7b3f08c5fe28b271d2e5c85cd6c9"
+        ],
+        "Comment": "buildkit.dockerfile.v0",
+        "Created": "2026-10-23T01:51:03.283369709Z",
+        "Config": {
+            "Env": [
+                "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+                "R_VERSION=4.5.1",
+                "R_HOME=/usr/local/lib/R",
+                "TZ=Etc/UTC",
+                "CRAN=https://p3m.dev/cran/__linux__/noble/2025-10-30",
+                "LANG=en_US.UTF-8",
+                "OMP_NUM_THREADS=1",
+                "OPENBLAS_NUM_THREADS=1",
+                "MAKEFLAGS=-j2",
+                "SCEPTRE_CRAN_SNAPSHOT=https://packagemanager.posit.co/cran/2025-11-15",
+                "SCEPTRE_BIOCONDUCTOR_VERSION=3.22"
+            ],
+            "Cmd": [
+                "Rscript",
+                "--version"
+            ],
+            "WorkingDir": "/work",
+            "Labels": {
+                "org.opencontainers.image.authors": "Carl Boettiger <cboettig@ropensci.org>",
+                "org.opencontainers.image.base.name": "docker.io/library/ubuntu:noble",
+                "org.opencontainers.image.description": "Frozen SCEPTRE archive; identity in /opt/sceptre/source.json",
+                "org.opencontainers.image.licenses": "GPL-2.0-or-later",
+                "org.opencontainers.image.ref.name": "ubuntu",
+                "org.opencontainers.image.revision": "1a2eeb4c21bf78f97c0004ca83d2328b6fbf0800",
+                "org.opencontainers.image.source": "https://github.com/rocker-org/rocker-versioned2",
+                "org.opencontainers.image.title": "SCEPTRE schema-7 pipeline runtime",
+                "org.opencontainers.image.vendor": "Rocker Project",
+                "org.opencontainers.image.version": "R-4.5.1"
+            },
+            "ArgsEscaped": true
+        },
+        "Architecture": "arm64",
+        "Os": "linux",
+        "Size": 588449297,
+        "RootFS": {
+            "Type": "layers",
+            "Layers": [
+                "sha256:ab34259f9ca5d315bec1b17d9f1ca272e84dedd964a8988695daf0ec3e0bbc2e",
+                "sha256:0671c314d3e106ab4d9b9ac6719b42cf21f293269820edaf93533c45de38ba2e",
+                "sha256:f205c5d34219ce05171e0ff6dd286ea21d72379fb0f66fc22a8fb66829a0dd4e",
+                "sha256:ffd04132a60e403b409643ff7af29731472eef2c4ceee1485f2f37e896e482d4",
+                "sha256:36eab2c12097924b9f8c7199bff059f77a93ba9a8e926a3a42df25cea045a574",
+                "sha256:e291c7a8ff13ecdc89d849ccb8e5b886958ed5feae67ffb14497b1a4e44c18dc",
+                "sha256:4adc488ed9e4d896f610e152b3c25c2fa2e3a3d3a3ae9d645668e92ffda9318f",
+                "sha256:75d15891952cf1233a07156198a0719f9a62d3270a31429ad0c50fa68773627b",
+                "sha256:f803c92cfab51034846099bcb5fef35069fb3ab9fc9fe1c45aac89c726e26ca8",
+                "sha256:cc460e6cf0b0e838aa5ebbeadee074196e7595dca198183323929298dd2d232a",
+                "sha256:cc0c246a812f24b2411c0bbd6d59fdf591c15a68b9a3ca25cd973d5a60ea7d1d"
+            ]
+        },
+        "Metadata": {
+            "LastTagTime": "2026-10-23T01:51:15.707994131Z"
+        },
+        "Descriptor": {
+            "mediaType": "application/vnd.oci.image.index.v1+json",
+            "digest": "sha256:b51c1cdaef908f6386b3313bd787f5d46dcc7b3f08c5fe28b271d2e5c85cd6c9",
+            "size": 856
+        },
+        "Identity": {
+            "Build": [
+                {
+                    "Ref": "inpofkwkmol96xyia9xjuozy3",
+                    "CreatedAt": "2026-10-23T01:51:18.625097508Z"
+                }
+            ]
+        }
+    }
+]

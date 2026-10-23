@@ -1,6 +1,6 @@
 name: sceptre
 description: Validate and execute complete-family public SCEPTRE stages with explicit preparation dependencies.
-keywords: [sceptre, complete-family, schema3]
+keywords: [sceptre, complete-family, native-sce]
 components:
   - sceptre_validate
   - sceptre_stage

@@ -3,14 +3,20 @@ args <- commandArgs(TRUE)
 script <- sub("^--file=", "", grep("^--file=", commandArgs(), value = TRUE)[1L])
 helper_dir <- dirname(normalizePath(script))
 source(file.path(helper_dir, "pipeline.R"))
+source(file.path(dirname(normalizePath(script)), 'distributed.R'))
 if (length(args) != 7L) fail("Usage: validate_state.R CONFIG INPUT LOCK BACKING OPTIONS_JSON PREVIOUS_SIGNATURE SOURCE_DIRECTORY")
 config <- readRDS(args[1]); lock <- readRDS(args[3])
 validate_config(config); validate_identity(lock)
-read_bundle(args[2], config, lock, args[4]) |> invisible()
+state <- read_bundle(args[2], config, lock, args[4])
 helpers <- sort(list.files(helper_dir, full.names = TRUE))
 helpers <- helpers[!dir.exists(helpers)]
 helper_hashes <- vapply(helpers, hash_file, character(1)); names(helper_hashes) <- basename(helpers)
 options <- jsonlite::fromJSON(args[5])
+if (!is.character(options$execution_mode) || length(options$execution_mode) != 1L ||
+    !options$execution_mode %in% c('reference', 'distributed'))
+    fail('execution_mode must be reference or distributed.')
+validate_requested_pipeline_method(state$object, config,
+    if (options$execution_mode == 'reference') 'direct' else 'distributed')
 if (identical(options$execution_mode, 'distributed') &&
     !all(c('prepare_execution','execute_work_unit','collect_execution') %in% getNamespaceExports('sceptre')))
     fail('Distributed mode requires the qualified package work-unit API; use --execution_mode reference for this package.')

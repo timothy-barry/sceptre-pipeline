@@ -1,0 +1,4 @@
+Loading required namespace: sceptre
+Loading required namespace: HDF5Array
+PASS raw input CLI relocation with originals absent; missing/mismatched sidecars reject
+PASS native HDF5 relocation with original paths absent; exact counts and corrupted backing rejection

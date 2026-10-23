@@ -2,10 +2,10 @@
 
 ## Prepare scientific input
 
-Import the screen with the current schema-3 package. Existing schema-1/2 objects
-must first be migrated with the qualified package and their scientific state
-checked. Old Nextflow work directories and partial result files cannot be
-resumed. Input files and backing count files are immutable during a run.
+Import the screen with the pinned native schema-7 package. The pipeline rejects
+older object schemas; create a fresh schema-7 input and new runtime lock.
+Old work directories, schema-3 bundles and partial result files cannot be resumed.
+Input files and backing count files are immutable during a run.
 
 Create a trusted RDS configuration containing named argument lists:
 
@@ -33,18 +33,9 @@ it does not overlay settings on a previous specification. Omit the entire
 An unconfigured object requires that section. Config files are executable R
 serialization from trusted local authors, not an untrusted interchange format.
 
-For an object prepared with `sceptre::set_grna_assignments()`, omit both the
-`analysis` and `assignment` sections to preserve its configured external calls.
-The assignment stage verifies current data/design/membership/provenance identity
-through the package getter; saved completion flags alone are insufficient.
-Stale or design-invalidated external calls fail before QC. Supplying an explicit
-`assignment = list(...)` requests ordinary package reassignment instead. Changing
-the analysis configuration invalidates existing assignments, so configure and
-reapply external calls in R before creating the bundle if they should be retained.
 Raw response/guide counts and full-library covariates remain in the immutable
-object. SingleCellExperiment import and results export are documented in the
-package's `single-cell-interoperability` vignette; optional SCE is needed only
-in the importing/exporting processes, not in pipeline execution processes.
+object. SingleCellExperiment is the native screen representation and is required
+in every scientific runtime. Use the package public import and result APIs.
 
 Assignment arguments are validated by method by the package. Irrelevant method
 arguments should be removed rather than relying on legacy pipeline filtering.
@@ -78,27 +69,32 @@ a seed or resampling budget is a scientific run change.
 
 ## Count storage
 
-Sparse in-memory objects need no count-file arguments. For backed objects,
-construct the input bundle with the public package writer (the pipeline helper
-uses it automatically) and pass `--backing_directory /absolute/path/counts`.
-This directory must contain files named `response.odm` and `grna.odm`. Rename/copy
-the original backing files once if necessary; never reimport them independently
-and assume their import identity matches. Both files are staged to every process,
-and the package reader verifies identity and reopens process-local handles.
-If the saved input's original backing paths have moved, supply the new directory
-as the fifth argument to `prepare_input.R`; it opens the closed saved object through
-the public reader with explicit verified paths. Active serialized handles reject.
-The output RDS contains closed descriptors. Keep the original count files and
-use the public reader with explicit new paths when reopening/relocating outputs.
+In-memory sparse counts use the native SingleCellExperiment representation.
+For native HDF5 counts, stage immutable backing files under content-addressed
+`SHA256.h5` filenames before creating the bundle:
 
-Backed counts support permutation resampling through the public API.
-`set_analysis_parameters()` rejects CRT for ondisc-backed counts before either
-reference or distributed execution. Certified distributed preparation and
-execution-manifest validation also reject backed CRT. Backed CRT is therefore
-unsupported in both public pipeline modes; the existence of internal CRT code
-is not support or qualification of a bypass. Use the
-[qualification record](validation.md) for the exact tested storage/mode/runtime
-combination. Do not change resampling methods merely to bypass a backend guard.
+```bash
+Rscript bin/stage_backing.R imported_object.rds /absolute/new/backing
+Rscript bin/prepare_input.R imported_object.rds analysis_config.rds input_bundle environment_lock.rds /absolute/new/backing
+```
+
+`stage_backing.R` writes immutable count copies and `backing_manifest.rds`, which
+binds source seed paths, content-addressed filenames and the imported screen
+identity. Keep the sidecar with the files when preparing a relocated raw object;
+preparation works after the original paths are gone.
+
+Supply `--backing_directory /absolute/new/backing` to Nextflow. The manifest binds
+the original seed paths to staged content hashes. Once correctly staged, original
+source files need not remain present. Omitting the optional backing argument to
+`prepare_input.R` uses original backing files during input preparation. Use public
+`write_sceptre_object()` / `read_sceptre_object()` for serialization and relocation.
+The pipeline validates its expected native HDF5 files and content identities;
+old `.odm` storage is unsupported. Open handles must not cross process boundaries.
+
+Count storage does not authorize a method change. The package's public method
+admission remains authoritative for each storage/resampling combination; the
+pipeline rejects unsupported combinations before workers are submitted.
+See [validation](validation.md) for actual tested combinations.
 
 In-memory high MOI resolves to complement controls, even if `nt_cells` is
 requested. Inspect the resolved manifest/settings rather than inferring the

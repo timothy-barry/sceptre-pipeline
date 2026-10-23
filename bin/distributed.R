@@ -1,4 +1,4 @@
-# Scheduling adapter around the package-owned certified protocol-1 executor.
+# Scheduling around the package-owned executor.
 # Nothing here selects scientific subfamilies or finalizes worker rows.
 analysis_name <- function(stage) switch(stage, calibration = 'run_calibration_check',
     power = 'run_power_check', discovery = 'run_discovery_analysis', fail('Unknown analysis stage: ', stage))
@@ -72,7 +72,7 @@ collect_distributed <- function(config, input, plan_dir, proposal_files, output,
     state <- load_execution_input(config, input, lock, backing, stage, seed)
     prepared <- read_execution(plan_dir, input, config, stage, seed, lock)
     # Package collector validates identities, exact row/unit coverage, raw metadata,
-    # compact fit compatibility and canonical integration/correction/commit.
+    # fit compatibility and canonical integration/correction/commit.
     object <- sceptre::collect_execution(state$object, prepared$execution, lapply(proposal_files, readRDS))
     m <- state$manifest
     m$execution <- list(mode = 'distributed', protocol = prepared$execution$protocol,

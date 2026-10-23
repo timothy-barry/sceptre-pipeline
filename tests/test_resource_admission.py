@@ -22,12 +22,12 @@ class AdmissionTests(unittest.TestCase):
         self.assertEqual(result["status"], "pilot_only")
         self.assertIsNone(result["component_payload_bytes"]["permutation_draw_integer_payload"])
 
-    def test_backed_crt_is_not_silently_substituted(self):
-        x = self.fixture(); x["backend"] = "ondisc"
-        self.assertEqual(module.admission(x)["status"], "rejected")
+    def test_native_hdf5_crt_is_admitted_for_pilot(self):
+        x = self.fixture(); x["backend"] = "native-hdf5"
+        self.assertEqual(module.admission(x)["status"], "pilot_only")
         self.assertEqual(x["resampling"], "crt")
         x["execution_mode"] = "reference"
-        self.assertEqual(module.admission(x)["status"], "rejected")
+        self.assertEqual(module.admission(x)["status"], "pilot_only")
 
     def test_native_budget_and_sparse_limits(self):
         for key, value in (("B3", 2147483647), ("response_entries", 2147483648)):

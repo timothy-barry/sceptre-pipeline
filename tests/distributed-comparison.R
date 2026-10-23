@@ -1,6 +1,6 @@
 #!/usr/bin/env Rscript
 # Run from repo root with an isolated qualified package in R_LIBS.
-# REQUIRE_ONDISC=true also requires the optional supported backed qualification.
+# Native HDF5 qualification is mandatory.
 source("tests/fixture.R")
 source("bin/pipeline.R")
 source("bin/distributed.R")
@@ -31,7 +31,7 @@ no_execution_resources <- function(x) {
     # are deliberately excluded, as in the value comparisons above.
     stopifnot(!typeof(x) %in% c("externalptr", "environment", "closure"),
         !methods::is(x, "ResultRecord"), !methods::is(x, "sceptre_object"),
-        !methods::is(x, "BackedCountStore"))
+        !methods::is(x, "SingleCellExperiment"))
     if (isS4(x)) for (name in methods::slotNames(x)) no_execution_resources(methods::slot(x, name))
     else if (is.list(x)) for (value in x) no_execution_resources(value)
     invisible(TRUE)
@@ -79,9 +79,9 @@ run_case <- function(name, fixture, backing = NULL) {
         reference[[stage]] <- owned(list(rng = rng(), fits = direct@fits,
             assignments = if (stage != "parameters") sceptre::get_grna_assignments(direct) else NULL,
             cells = direct@preparation@analysis_cells,
-            tables = lapply(names(direct@results@records), function(analysis) sceptre::get_result(direct, analysis)),
-            records = direct@results@records))
-        names(reference[[stage]]$tables) <- names(direct@results@records)
+            tables = lapply(names(Filter(Negate(is.null), direct@results)), function(analysis) sceptre::get_result(direct, paste0("run_", sub("^run_", "", analysis)))),
+            records = Filter(Negate(is.null), direct@results)))
+        names(reference[[stage]]$tables) <- names(Filter(Negate(is.null), direct@results))
     }
     for (stage in c("parameters", "assignment", "qc")) {
         target <- file.path(root, stage)
@@ -95,12 +95,12 @@ run_case <- function(name, fixture, backing = NULL) {
         prepare_distributed(config, input, plan_dir, stage, seed, 3L, backing, lock)
         execution <- readRDS(file.path(plan_dir, "execution.rds"))
         no_execution_resources(execution)
-        stopifnot(identical(execution$protocol, 1L), length(execution$units) >= 1L,
+        stopifnot(identical(execution$protocol, 2L), length(execution$units) >= 1L,
             length(execution$units) <= 3L, is.character(execution$identity),
             nzchar(execution$identity), is.list(execution$runtime), is.list(execution$methods))
         analysis <- analysis_name(stage)
         assert_empirical_budget(execution$plan, stage, config)
-        same(execution$plan, reference[[stage]]$records[[analysis]]$provenance$plan,
+        same(execution$plan, reference[[stage]]$records[[sub("^run_", "", analysis)]]$provenance$plan,
             paste(name, stage, "full global plan and realized budget"))
         unit_ids <- vapply(execution$units, function(unit) unit$id, character(1))
         row_ids <- unlist(lapply(execution$units, function(unit) unit$row_ids), use.names = FALSE)
@@ -193,8 +193,8 @@ run_case <- function(name, fixture, backing = NULL) {
             run_cli_collector(cli, TRUE)
             cli_state <- read_bundle(file.path(cli, "collected"), config, lock, backing)
             function_state <- read_bundle(target, config, lock, backing)
-            same(sceptre::get_result(cli_state$object, analysis),
-                sceptre::get_result(function_state$object, analysis), "actual collector CLI final result")
+            same(sceptre::get_result(cli_state$object, paste0("run_", sub("^run_", "", analysis))),
+                sceptre::get_result(function_state$object, paste0("run_", sub("^run_", "", analysis))), "actual collector CLI final result")
             same(cli_state$object@fits, function_state$object@fits, "actual collector CLI fits")
             same(cli_state$manifest$rng_state, function_state$manifest$rng_state,
                 "actual collector CLI RNG state")
@@ -202,14 +202,14 @@ run_case <- function(name, fixture, backing = NULL) {
         }
         completed <- read_bundle(target, config, lock, backing)
         actual <- completed$object
-        stopifnot(identical(actual@results@records[[analysis]]$scope, "complete_family"))
+        stopifnot(!is.null(actual@results[[sub("^run_", "", analysis)]]$provenance$plan))
         same(sceptre::get_grna_assignments(actual), reference[[stage]]$assignments,
             paste(name, stage, "assignments"))
         same(actual@preparation@analysis_cells, reference[[stage]]$cells,
             paste(name, stage, "ordered cells"))
-        same(actual@fits, reference[[stage]]$fits, paste(name, stage, "compact compatible fits"))
+        same(actual@fits, reference[[stage]]$fits, paste(name, stage, "fits"))
         for (family in names(reference[[stage]]$tables)) {
-            same(sceptre::get_result(actual, family), reference[[stage]]$tables[[family]],
+            same(sceptre::get_result(actual, paste0("run_", sub("^run_", "", family))), reference[[stage]]$tables[[family]],
                 paste(name, stage, family, "complete corrected table"))
         }
         same(completed$manifest$rng_kind, reference[[stage]]$rng$kind,
@@ -217,7 +217,7 @@ run_case <- function(name, fixture, backing = NULL) {
         same(completed$manifest$rng_state, reference[[stage]]$rng$state,
             paste(name, stage, "single-session RNG state"))
         family_report[[stage]] <- list(units = length(unit_ids), eligible_rows = length(row_ids),
-            final_rows = nrow(sceptre::get_result(actual, analysis)), passed = TRUE)
+            final_rows = nrow(sceptre::get_result(actual, paste0("run_", sub("^run_", "", analysis)))), passed = TRUE)
         input <- target
     }
     message("PASS distributed ", name)
@@ -230,33 +230,18 @@ for (name in names(pipeline_fixture_cases())) {
     saveRDS(report, file.path(output_root, "distributed-comparison.rds"))
 }
 
-# The optional backed path must use permutations; native CRT ondisc is unsupported.
-capability <- tryCatch({
-    probe <- get0("require_ondisc_capabilities", envir = asNamespace("sceptre"), inherits = FALSE)
-    if (is.function(probe)) probe() else {
-        if (!requireNamespace("ondisc", quietly = TRUE)) stop("ondisc unavailable")
-        if (!exists("create_odm_from_r_matrix_internal", envir = asNamespace("ondisc"), inherits = FALSE))
-            stop("ondisc matrix-import API unavailable")
-    }
-    NULL
-}, error = identity)
-if (inherits(capability, "error")) {
-    report$optional_backend <- list(skipped = TRUE, reason = conditionMessage(capability))
-    if (Sys.getenv("REQUIRE_ONDISC") == "true") stop(capability)
-    message("SKIP optional distributed backed qualification: ", conditionMessage(capability))
-} else {
-    for (case in c("low_nt_permutation", "high_permutation")) {
-        backing <- file.path(output_root, paste0(case, "-backing"))
-        dir.create(backing)
-        fixture <- do.call(pipeline_fixture, c(pipeline_fixture_cases()[[case]],
-            list(backed = TRUE, directory = backing)))
-        before <- vapply(file.path(backing, c("response.odm", "grna.odm")), hash_file, character(1))
-        name <- paste0(case, "_backed")
-        report$cases[[name]] <- run_case(name, fixture, backing)
-        same(vapply(names(before), hash_file, character(1)), before, paste(name, "immutable backing"))
-    }
-    report$optional_backend <- list(skipped = FALSE, passed = TRUE,
-        version = as.character(utils::packageVersion("ondisc")))
+# Native HDF5 uses the same schema and public distributed execution APIs.
+for (case in c("low_nt_permutation", "low_nt_crt")) {
+    backing <- file.path(output_root, paste0(case, "-backing"))
+    dir.create(backing)
+    fixture <- do.call(pipeline_fixture, c(pipeline_fixture_cases()[[case]],
+        list(backed = TRUE, directory = backing)))
+    files <- list.files(backing, full.names = TRUE, recursive = TRUE)
+    before <- vapply(files, hash_file, character(1))
+    name <- paste0(case, "_hdf5")
+    report$cases[[name]] <- run_case(name, fixture, backing)
+    same(vapply(names(before), hash_file, character(1)), before, paste(name, "immutable backing"))
 }
+report$native_hdf5 <- list(passed = TRUE, skipped = FALSE)
 saveRDS(report, file.path(output_root, "distributed-comparison.rds"))
 message("All distributed comparisons passed: ", normalizePath(output_root))

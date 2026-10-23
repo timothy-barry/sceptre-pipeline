@@ -1,35 +1,64 @@
-# Container validation log
+# Runtime qualification
 
-2026-10-19: local engine inspection confirmed Docker Desktop 4.74.0 (227015), Docker client/engine 29.4.3, `desktop-linux`, Linux ARM64. The pinned Rocker 4.5.1 index contains both Linux AMD64 and ARM64 images. Baseline source context was generated from SCEPTRE commit `cef47da5ec9b8ae4f2ad8eb5d1b6e20978e04932`; git archive SHA256 `d7c36bc3d472606326ae922e1a3e478a2e1f9bbf267e71fb3183976f129f4d41`.
+The selected native schema-7 archive has SHA256
+`f41a8fb7e1bc10366e8efcc7a31644d4c8356bc4eca8adda9ca949c951de4fb4`, source commit
+`1e4d5459ab229255694f9217d7cd4ed51a4bf1b8`. Source receipt and archive-schema
+admission pass. Context generation preserves exact source bytes.
 
-Context generation and shell/Python syntax checks passed. Build/test outcomes and final hardened package identity must be appended after completion; this paragraph does not certify a completed image or science test.
+A fresh Docker Desktop 29.4.3 Linux/ARM64 build succeeded from those exact bytes.
+Immutable local image reference:
+`sha256:b51c1cdaef908f6386b3313bd787f5d46dcc7b3f08c5fe28b271d2e5c85cd6c9`.
+The build enforced schema 7, required native HDF5 dependencies and the archive
+checksum. Installed runtime/source assertions passed. Same-image comparisons passed: all nine in-memory direct cases plus artifact
+failure guards; all eleven distributed cases, including native HDF5 permutation
+and CRT; schema-7 admission and mislabeled historical-object rejection; native
+HDF5 relocation with original files absent, raw-input CLI relocation, and missing/
+wrong sidecar and corrupt-file rejection. All suite processes exited zero.
 
-Baseline build completed successfully. Immutable local image reference: `sha256:9464f916c3b8173af33ba51b2c9295292c88d43e00216b1e46d368aceb4681ee` (`sceptre-pipeline:cef47da5`, Linux ARM64). `docker run` by that exact reference confirmed R 4.5.1, SCEPTRE 0.99.0 and ondisc 1.3.1. The first attempt identified missing zlib headers; the completed recipe compiled checksum-pinned zlib 1.3.2 before Rhdf5lib and ondisc. Docker `build --check` completed with no warnings.
+Build log, image inspection and installed runtime/source/package provenance are
+retained in `container/.build/native7-20261022/`. This is a local immutable image
+reference, not a published pullable registry artifact. No image was pushed.
+AMD64, Apptainer, hosted CI, HPC and full-screen scale remain separate targets.
 
-Actual `REQUIRE_ONDISC=true Rscript tests/direct-comparison.R` inside this image exited 0: all seven in-memory complete-family comparisons passed, artifact rejection/failure checks passed, and low- and high-MOI backed permutation save/reopen/relocation comparisons passed. No backend skip occurred. This is a same-runtime pipeline-stage-versus-direct-public-R comparison; it does not yet certify the actual Nextflow scheduler or a later hardened package revision. Ignored local evidence: `container/baseline.build.log`, `container/baseline-test.build.log`, and `container/.build/baseline-direct/direct-comparison.rds`.
+Fresh qualification must record the immutable image ID, CPU architecture,
+installed dependency versions, exact archive SHA, direct/distributed numerical
+comparisons, native HDF5 save/reopen/relocation, Nextflow resume and rejection of
+incomplete work. Preserve actual logs and receipts for each target runtime.
 
-The actual Nextflow Docker reference workflow subsequently passed in this exact image:
-all full result tables and realized plans matched a fresh direct public workflow
-in the same image. Resume reran runtime validation and cached six scientific tasks
-plus exports; unknown legacy parameters rejected. Evidence:
-`/private/tmp/pipeline-docker-baseline-reference-v2.log` and its `results/pipeline_info/trace.tsv`.
-This qualifies the baseline Docker reference path; final hardened/distributed
-package qualification remains separate.
+The runtime is **not warning-free**. Fresh public namespace import via
+`sceptre::import_data()` without first attaching `library(sceptre)` reproduces
+`Warning: stack imbalance in '<-', 2 then 4` in a package-only script.
+The distributed suite also emitted a stack imbalance warning in `all`.
+A separate minimal script with explicit prior `library(sceptre)` completed RAM
+and native HDF5 import/getter/matrix realization without the warning. These
+observations isolate a package loading path; they do not establish its cause or
+justify suppressing the warning. Numerical comparisons passed despite it.
 
-PROVISIONAL checkpoint `f9f8142bd404c6da1dc39eca2c993f78cb6e5eb1` also built successfully as local image `sha256:436aab5cd7d2dcf25515f69033df33d720f20cec45be3d7dd96074e360802c7f`; source archive SHA256 `5ac7968d85869b40ca4f5d05a3cc79f58f272118b54910404ea8b6c9f8a25dce`. Both `direct-comparison.R` and `distributed-comparison.R` exited 0 with `REQUIRE_ONDISC=true`: nine memory cases including empirical calibration budgets 300/400, plus both backed permutation cases. This checkpoint is superseded and is not final qualification. Logs: `container/provisional-{direct,distributed}.build.log`; results under `container/.build/provisional-f9f8142-{direct,distributed}/`.
+`container/native7-validation.json` binds the image, results, warnings and raw
+artifact hashes. This bounded container receipt does not establish warning-free
+package acceptance, Nextflow, AMD64, Apptainer, hosted CI, HPC or full-screen scale.
 
-The exact-archive context option was tested with an incorrect expected SHA256: it rejected the archive with exit 2 before creating the requested context directory. This protects the `R CMD build` archive handoff; `archive_kind`, exact SHA256 and committed revision are recorded in the manifest.
+Two additional fresh Rscript processes explicitly called top-level
+`requireNamespace("sceptre", quietly=TRUE)` before RAM/native HDF5 public import,
+getter and matrix realization; both passed without stack warnings. Explicit
+suppressed library attachment also passed without warnings. This establishes
+eager namespace initialization as a bounded loading-path mitigation; it does
+not establish the underlying package issue's cause.
 
-Candidate `8cbecfb88afdfbb3b45a991f63def7bcef8c8848` built from the owner's **exact R CMD build archive**, SHA256 `529ceb34c0acd8be8455ef16613a006a8e30029c1a05b5b46e97277452c0edde`, as immutable local image `sha256:acd40ede502f79ddfd31591415f473e53c87705a7e7fede2fca781e013eca4eb`. An in-container manifest assertion confirmed archive kind, source commit and exact archive SHA; runtime is R 4.5.1 / SCEPTRE 0.99.0 / ondisc 1.3.1. Docker recipe checks again passed with no warnings. Distributed comparisons exited 0: all nine memory cases and both backed permutation cases passed with the backend required. Direct comparisons also exited 0: all nine memory cases, artifact failure checks and both backed save/reopen/relocation cases passed with the backend required. This is candidate evidence only: a package metadata revision is forthcoming, so final source identity qualification remains open. Logs: `container/final-candidate{,-direct,-distributed,-lint}.build.log`; results under `container/.build/candidate-8cbecfb-{direct,distributed}/`.
+After adding eager namespace initialization at the pipeline helper entry point,
+fresh same-image direct (nine cases plus failure guards), distributed (eleven
+cases including HDF5 permutations/CRT), and namespace-only RAM/HDF5 startup
+regression processes all exited zero with **zero stack-imbalance warnings**.
+The startup regression verifies that the package namespace loads without attaching
+`package:sceptre`; it compares full RAM/HDF5 response and guide count matrices.
+The package archive remains unchanged. Earlier warning logs and the package-only
+lazy-import reproduction remain retained separately. CI checks the final startup
+and direct/distributed logs for recurrence.
 
-## Final exact-archive qualification
 
-Final package source commit: `169c16e4ba00c687c1f03fe37e9d79a11d01cd8f`. Owner-qualified `R CMD build` archive SHA256: `fb6c3ad20da63c2d2595e08b54a8916e8eed9002e50fa62e877867718afa11b4`. The later evidence-only package HEAD `a3433c71fd339932e4c2d366e5413e13ad8299c9` is not the source identity used in this image.
-
-Built immutable local image: `sha256:9d150dbba87ba7d4944b55399859ac1ce7244ec9c8ac5dd18d4afeb5ddaa1623` (`sceptre-pipeline:qualified-169c16e`). In-container assertions verified `archive_kind=R_CMD_build`, the exact source commit and exact archive SHA. Runtime: Linux ARM64, R 4.5.1, SCEPTRE 0.99.0, ondisc 1.3.1, testthat 3.2.3. Docker `build --check` completed with no warnings.
-
-Both current suites exited **0** with `REQUIRE_ONDISC=true`: `tests/direct-comparison.R` passed nine memory cases, artifact failure checks, both backed save/reopen/relocation cases, and both `prepare_input.R` CLI regressions for stale descriptor paths and rejection of raw active handles; `tests/distributed-comparison.R` passed nine memory cases and both backed permutation cases. Both suites execute direct and pipeline code in this same immutable runtime. No backend case was skipped.
-
-Independent source equivalence: all 126 committed files under `R/`, `src/`, `man/`, `inst/`, `data/`, plus `NAMESPACE`, match the exact archive byte for byte. All committed DESCRIPTION fields match after DCF whitespace normalization; only standard R CMD build fields `Author`, `Maintainer`, `NeedsCompilation`, and `Packaged` were added. The source/evidence commit comparison shows no changes to DESCRIPTION, R, src, NAMESPACE or man. Proof: ignored `container/.build/169c16e4ba00c687c1f03fe37e9d79a11d01cd8f/source-equivalence.json`.
-
-Final local evidence: `container/qualified{,-direct,-distributed,-lint}.build.log`, image/provenance files under `container/.build/169c16e4ba00c687c1f03fe37e9d79a11d01cd8f/`, and result reports `container/.build/qualified-169c16e-{direct,distributed}/`. Actual Nextflow Docker scheduling is separately qualified by the parent integration run; these results do not establish AMD64, cluster, cloud or Apptainer qualification. No image was pushed.
+Actual Docker-backed Nextflow reference/distributed integration and final-bootstrap
+native HDF5 CRT all-family execution also passed, including exact public-R
+comparisons, resume and failed-worker/configuration/source guards. The separately
+sealed pipeline receipt is
+`tests/evidence/native7-container-20261022/validation.json`; it records final source
+hashes and copied scheduler logs. See `docs/validation.md` for the combined scope.

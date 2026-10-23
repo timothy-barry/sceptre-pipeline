@@ -1,5 +1,9 @@
 > Publication scope: historical validation below refers to the explicitly named original source/runtime. Detailed local evidence and raster previews are not distributed in this review branch. This publication commit has its own pending qualification; see the publication scope document.
 
+> Historical evidence below retains its original artifact scope. It does not
+> qualify the native schema-7 migration; see [current qualification](validation.md).
+
+
 # Slurm array qualification
 
 Qualified on 2026-10-19 using the existing Kerberos-authenticated Betty session.

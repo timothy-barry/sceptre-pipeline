@@ -17,7 +17,7 @@ jsonlite::write_json(list(archive_sha256 = archive_sha, source = runtime,
     package_path = find.package("sceptre"), native_path = dll,
     native_sha256 = digest::digest(file = dll, algo = "sha256"),
     R = R.version.string, platform = R.version$platform,
-    ondisc_version = as.character(packageVersion("ondisc"))),
+    HDF5Array_version = as.character(packageVersion("HDF5Array"))),
     file.path(out, "runtime.json"), pretty = TRUE, auto_unbox = TRUE)
 writeLines(capture.output(sessionInfo()), file.path(out, "session.txt"))
 r <- testthat::test_dir(tests, package = "sceptre", load_package = "installed",

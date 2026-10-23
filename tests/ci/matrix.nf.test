@@ -162,7 +162,7 @@ nextflow_pipeline {
             assert compareSavedWorkflow("${System.getenv('SCEPTRE_MATRIX_FIXTURES')}/low_nt_permutation_backed", outputDir, 'analysis', 'calibration,power,discovery', "${System.getenv('SCEPTRE_MATRIX_FIXTURES')}/low_nt_permutation_backed/backing")
         }
     }
-    test('Unsupported backed CRT rejects before any completed family') {
+    test('Native HDF5 CRT workers match direct saved-state semantics') {
         when {
             params {
                 input_bundle = "${System.getenv('SCEPTRE_MATRIX_FIXTURES')}/low_nt_crt_backed/input"
@@ -175,13 +175,9 @@ nextflow_pipeline {
             }
         }
         then {
-            assert workflow.failed
-            def log = path("$metaDir/nextflow.log").text.toLowerCase()
-            assert log.contains("must be set to 'permutations' when using an ondisc-backed sceptre_object")
-            assert workflow.trace.failed().any { it.name.contains(':PARAMETERS') }
-            ['calibration', 'power', 'discovery'].each { stage ->
-                assert !path("$outputDir/$stage/state/manifest.rds").exists()
-            }
+            assert workflow.success
+            assert workflow.trace.failed().size() == 0
+            assert compareSavedWorkflow("${System.getenv('SCEPTRE_MATRIX_FIXTURES')}/low_nt_crt_backed", outputDir, 'analysis', 'calibration,power,discovery', "${System.getenv('SCEPTRE_MATRIX_FIXTURES')}/low_nt_crt_backed/backing")
         }
     }
     test('Wrong runtime lock fails before parameters execute') {

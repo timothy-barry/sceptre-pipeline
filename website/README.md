@@ -1,7 +1,7 @@
 # Pipeline documentation site
 
 This local-only Quarto site takes the navigation and schema-generated parameter
-reference approach from `feat/docs-site`, adapted to the schema-3 pipeline.
+reference approach from `feat/docs-site`, adapted to the native SCE pipeline.
 Legacy input flags, trans-mode claims and the old license label are not reused.
 The site is inspired by nf-core's documentation structure and engineering
 principles; it does not use nf-core branding or assert community acceptance.

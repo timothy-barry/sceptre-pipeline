@@ -12,7 +12,7 @@ input:
         description: Stable pipeline screen id; scientific scope belongs to the package execution certificate.
     - state:
         type: directory
-        description: Certified predecessor state with a closed serialized schema-3 object.
+        description: Certified predecessor state with a native serialized schema-7 object.
   - config:
       type: file
       description: Manifest-bound scientific configuration RDS.

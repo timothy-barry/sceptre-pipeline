@@ -1,11 +1,12 @@
 # Bounded report consumer contract
 
 Status: the pipeline consumer is implemented and small contract tests pass.
-The package object/store adapter, actual disk-backed qualification and final
-runtime acceptance remain pending. This document does not qualify a scale or a
+The exact W05 public view/context binding and export-stage forwarding are now
+source-integrated. Actual installed disk-backed qualification and final runtime
+acceptance remain pending. This document does not qualify a scale or a
 scientific method.
 
-`bin/report_bundle.R` consumes three independent operations. The source object
+`bin/report_bundle.R` consumes four independent operations. The source object
 is never serialized or frozen in the report. W01 owns correction, result-store
 readers and the streaming CSV exporter; W05 owns object/family handles, native
 payload/provenance and portable save/reopen. The report owns presentation only.
@@ -30,13 +31,20 @@ payload/provenance and portable save/reopen. The report owns presentation only.
   CSV plus bounded preview is not a complete native result. Missing/incomplete
   native exports fail reporting rather than silently losing fields.
 
-The package API proposed by W01 is `result_store_summary()`,
-`result_store_preview()`, `result_store_iterator()`, `export_result_store()` and
-explicit-budget `materialize_result_store()`. The object-to-store getter and
-portable native writer are being agreed with W05. The report source callbacks
-will map these APIs; they do not implement storage or correction themselves.
-The explicit disk backend may require checked Python/SQLite versions. Default
-small in-memory package use does not acquire a mandatory Python dependency.
+The public object route binds W05 result-view APIs at 2e9779be and
+`get_report_context(object, analyses, assignment_rows=100L, max_bytes=256*1024)`
+at d4bed1c7. Only manifest-selected discovery/power names request exact legacy
+QC scans; calibration metadata comes from its saved result view. Summaries and
+prefixes have explicit row/column/byte bounds. Complete CSV/native exports are
+separate and all borrowed views close on success or failure. The producer never
+calls the eager `write_outputs_to_directory()` or full `get_result()`.
+`export_state.R` forwards original config/manifest file paths for byte copying
+after the certified native schema-7 state loader.
+W06/W10 loader, capability and runtime integration remain separate owners/gates.
+The direct store route binds W01 `result_store_summary`, `result_store_preview`,
+`export_result_store` and `export_result_store_bundle` without another correction
+engine. Explicit disk use may require checked Python/SQLite versions; default
+small in-memory use does not acquire a mandatory Python dependency.
 
 `capture_report_source()` performs only fixed-prefix capture and bounded
 metadata traversal. `write_report_source()` separately invokes the complete
@@ -64,12 +72,51 @@ the preview retained through native export/relocation, every generated relative
 asset link, and induced-renderer recovery. Actual 10xH store/RSS/time/export
 correction checks and final pipeline runtime tests have separate receipts.
 
-The chosen W01 SQLite store rejects unsupported list/matrix/custom-S3 result
-columns before publication; accepted flattened `z_null_*` columns remain part
-of the complete scalar export. The consumer contract's list-column fixture
-proves native completeness enforcement for a source format that supports such
-payloads; it does not qualify those types in the SQLite backend. Its adapter
-must project at most 32 named preview columns before reading rows, even when a
-result has many flattened null-score columns. Complete CSVs retain all columns
-by default. W01's planned portable native operation is
+The initial W01 disk prototype rejected list/matrix/custom-S3 result columns.
+Final scalable acceptance must cover the actual W12 schema, including scalar
+`p_value_source` and nested/list `spa_diagnostics`, Bonferroni per-guide IDs,
+QC/p-values/source/original diagnostic lists, and actual output-3 null fields.
+The complete native route must preserve those fields and their types, nested
+attributes and order, with bounded storage/reads and portable provenance. A
+scalar SQL projection can perform correction while the native route retains
+the original payload. Unknown unadvertised classes may fail explicitly before
+publication; silently dropping supported scientific fields is not permitted.
+See W12's `tools/accelerations/result-schema.md` (8d0daf1e) and
+`test-saddlepoint-integration.R` for the source/test schema contract. This is
+not yet actual package/store integration qualification.
+
+The adapter projects at most 32 named scalar columns before reading rows.
+Without an explicit `scalar_columns` declaration it reads only known scalar
+fields, never an early native/list diagnostic merely because it appears in
+the schema. Complete CSVs retain every scalar field/row by default, with native
+omissions disclosed. W01's planned portable operation is
 `export_result_store_bundle()` with `open_result_store()` relocation.
+
+## Actual-store qualification commands (not yet executed)
+
+Use an exact candidate library and already produced W01 stores with at least a
+10-fold H difference; do not generate another correction engine or prototype
+sweep. Run each store in a fresh R process through the shared lease wrapper,
+using platform `time` tooling for whole-process RSS:
+
+```bash
+R_LIBS=/exact/candidate/library Rscript --vanilla report/measure-store.R STORE_ROOT NEW_OUTPUT
+R_LIBS=/exact/candidate/library Rscript --vanilla report/check-store-reference.R STORE_ROOT REFERENCE_RDS MAX_ADMITTED_BYTES RECEIPT_JSON
+```
+
+The first records capture/render allocations/time and small frozen-view size
+separately from complete CSV/native export I/O, independently streams CSV bytes
+once for a count and SHA256, compares every native source/copied iterator
+chunk, checks RNG and base-R rerender. Allocation totals are not peak RSS;
+external process RSS includes store opening, export and verification. The
+second deliberately loads an explicitly admitted full R-native reference in a
+separate process and compares every column value/type/attribute/order, including
+full corrected p-values and native payload. Such reference loading is a
+qualification cost, never part of report production or its bounded-memory claim.
+Actual package API/storage/schema integration and receipts are still required.
+
+The full native reference comparison uses strict numeric/NA/attribute identity
+(`num.eq = FALSE`, `single.NA = FALSE`, `attrib.as.set = FALSE`), including signed
+zero and native nested fields. CSV is a scalar textual projection with native
+omissions disclosed; exact native types/attributes are checked in the complete
+native bundle, not inferred from CSV row counts or its byte hash.

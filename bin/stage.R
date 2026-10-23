@@ -2,6 +2,7 @@
 args <- commandArgs(TRUE)
 script <- sub("^--file=", "", grep("^--file=", commandArgs(), value = TRUE)[1L])
 source(file.path(dirname(normalizePath(script)), "pipeline.R"))
+source(file.path(dirname(normalizePath(script)), 'distributed.R'))
 source(file.path(dirname(normalizePath(script)), "diagnostics.R"))
 tryCatch({
     if (length(args) != 7L) fail("Usage: stage.R CONFIG INPUT OUTPUT STAGE SEED LOCK BACKING")

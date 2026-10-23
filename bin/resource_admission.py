@@ -27,8 +27,8 @@ def admission(spec):
         raise ValueError("max_treated_cells exceeds cells")
     if spec.get("execution_mode") not in ("distributed", "reference"):
         raise ValueError("execution_mode must be distributed or reference")
-    if spec.get("backend") not in ("memory", "ondisc"):
-        raise ValueError("backend must be memory or ondisc")
+    if spec.get("backend") not in ("memory", "native-hdf5"):
+        raise ValueError("backend must be memory or native-hdf5")
     if spec.get("resampling") not in ("crt", "permutations"):
         raise ValueError("resampling must be crt or permutations")
     for name in ("family_identity", "full_library_covariates_identity"):
@@ -43,8 +43,6 @@ def admission(spec):
         reasons.append("Resolved total resampling budget exceeds native signed integer support")
     if spec["backend"] == "memory" and max(spec["response_entries"], spec["guide_entries"]) > INT_MAX:
         reasons.append("One ordinary Matrix store cannot represent this entry count")
-    if spec["backend"] == "ondisc" and spec["resampling"] == "crt":
-        reasons.append("Public backed CRT setup is unsupported; preserve the declared method and choose an explicitly reviewed implementation path")
     bounds = {
         "design_double_payload": 8 * C * K,
         "pair_two_integer_payload": 8 * H,

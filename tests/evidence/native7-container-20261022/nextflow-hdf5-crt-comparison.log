@@ -1,0 +1,7 @@
+Loading required namespace: HDF5Array
+Note: If you are on a Mac laptop or desktop, consider setting `parallel = TRUE` to improve speed. Otherwise, keep `parallel = FALSE`.
+Constructing negative control pairs.
+ ✓
+Note: If you are on a Mac laptop or desktop, consider setting `parallel = TRUE` to improve speed. Otherwise, keep `parallel = FALSE`.
+Note: If you are on a Mac laptop or desktop, consider setting `parallel = TRUE` to improve speed. Otherwise, keep `parallel = FALSE`.
+PASS real nf-test workflow semantics: parameters, assignment, qc, calibration, power, discovery; exact families/tables/plans/fits/design/pairQC/metrics/assignments/RNG and absent excluded stages

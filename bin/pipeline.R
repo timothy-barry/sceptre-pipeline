@@ -1,68 +1,148 @@
-# Pipeline-owned contracts. Read schema-3 components; never mutate package slots.
+# Native schema-7 pipeline transport and stage contracts.
 fail <- function(...) stop(..., call. = FALSE)
+# Initialize the declared package namespace before native matrix operations.
+# This avoids the verified nested first-import load warning in the R 4.5 image.
+if (!requireNamespace("sceptre", quietly = TRUE)) fail("Install the selected sceptre package before running the pipeline.")
 hash_file <- function(path) digest::digest(file = path, algo = "sha256")
 hash_value <- function(x) digest::digest(x, algo = "sha256")
 scientific_scope <- function(object) {
     describe <- function(pairs) list(n_requested = nrow(pairs), sha256 = hash_value(pairs))
-    list(discovery = describe(object@spec@discovery_pairs),
-         power = describe(object@spec@positive_control_pairs))
+    list(discovery = describe(object@preparation@discovery_pairs),
+         power = describe(object@preparation@positive_control_pairs))
+}
+pipeline_screen <- function(object) sceptre::get_screen_experiment(object)
+pipeline_meta <- function(object) S4Vectors::metadata(pipeline_screen(object))$sceptre
+pipeline_low_moi <- function(object) pipeline_meta(object)$low_moi
+pipeline_import_identity <- function(object) pipeline_meta(object)$identity
+pipeline_count_matrices <- function(object) {
+    sce <- pipeline_screen(object)
+    list(response = SummarizedExperiment::assay(sce, "counts", withDimnames = FALSE),
+         grna = SummarizedExperiment::assay(SingleCellExperiment::altExp(sce, "gRNA", withDimnames = FALSE), "counts", withDimnames = FALSE))
+}
+pipeline_count_paths <- function(object) lapply(pipeline_count_matrices(object), function(matrix) {
+    paths <- unique(unlist(DelayedArray::seedApply(matrix, function(seed) {
+        if (isS4(seed) && "filepath" %in% methods::slotNames(seed)) as.character(methods::slot(seed, "filepath")) else character()
+    }), use.names = FALSE))
+    if (length(paths)) paths else character()
+})
+pipeline_backing_map <- function(object) lapply(pipeline_count_paths(object), function(paths) {
+    if (!length(paths)) return(character())
+    stats::setNames(paths, vapply(paths, function(path) paste0(hash_file(path), ".h5"), character(1)))
+})
+pipeline_staged_backing_map <- function(object, backing) {
+    path <- file.path(backing, "backing_manifest.rds")
+    if (!file.exists(path)) fail("Native backing transport requires backing_manifest.rds; create it with stage_backing.R before relocating the source files.")
+    manifest <- readRDS(path)
+    if (!is.list(manifest) || !identical(manifest$kind, "sceptre-pipeline-native-backing") ||
+        !identical(manifest$schema, 1L) || !identical(manifest$object_schema, 7L) ||
+        !identical(manifest$import_identity, pipeline_import_identity(object)) ||
+        !is.list(manifest$files) || !identical(names(manifest$files), c("response", "grna")) ||
+        !identical(lapply(manifest$files, unname), pipeline_count_paths(object)))
+        fail("Native backing transport manifest does not match the saved schema-7 object.")
+    if (!any(lengths(manifest$files))) fail("A backing directory requires native HDF5 counts.")
+    manifest$files
+}
+pipeline_is_backed <- function(object) any(lengths(pipeline_backing_map(object)) > 0L)
+pipeline_save_object <- function(object, file) sceptre::write_sceptre_object(object, file)
+pipeline_read_object <- function(file, files, backing = NULL) {
+    saved <- readRDS(file)
+    pipeline_assert_native_schema(saved)
+    if (is.null(backing)) return(sceptre::read_sceptre_object(file))
+    matrices <- pipeline_count_matrices(saved)
+    # Preserve saved delayed views and seed traversal order. Staged transport
+    # names bind each distinct source path, including same-basename files, by immutable content.
+    for (modality in names(matrices)) {
+        paths <- files[[modality]]
+        if (!length(paths)) next
+        if (!is.character(paths) || is.null(names(paths)) ||
+            anyNA(paths) || anyNA(names(paths)) || any(!grepl("^[a-f0-9]{64}[.]h5$", names(paths))))
+            fail("Malformed native HDF5 transport mapping.")
+        replacements <- file.path(backing, names(paths))
+        if (!all(file.exists(replacements))) fail("Missing staged native HDF5 backing files for ", modality, ".")
+        matrices[[modality]] <- DelayedArray::modify_seeds(matrices[[modality]], function(seed) {
+            if (isS4(seed) && "filepath" %in% methods::slotNames(seed)) {
+                if (!(methods::is(seed, "H5SparseMatrixSeed") || methods::is(seed, "HDF5ArraySeed"))) fail("Unsupported HDF5 seed for relocation.")
+                index <- match(as.character(methods::slot(seed, "filepath")), paths)
+                if (is.na(index)) fail("HDF5 seed is absent from the transport mapping.")
+                methods::slot(seed, "filepath") <- normalizePath(replacements[[index]], mustWork = TRUE)
+            }
+            seed
+        })
+    }
+    sceptre::read_sceptre_object(file, matrices$response, matrices$grna)
+}
+# Pristine imported screens have no inference choices yet. This state grants
+# transport permission only; every execution mode still needs positive admission.
+pipeline_parameters_pending <- function(object) {
+    !length(object@preparation@stages) && !any(vapply(object@results, Negate(is.null), logical(1))) &&
+        !length(object@spec@run_permutations) &&
+        !length(object@spec@resampling_approximation) &&
+        !length(object@spec@grna_integration_strategy) &&
+        !length(object@spec@formula_object)
+}
+validate_requested_pipeline_method <- function(object, config, mode) {
+    candidate <- object
+    if (!is.null(config$analysis)) {
+        candidate <- do.call(sceptre::set_analysis_parameters,
+            c(list(sceptre_object = object), config$analysis))
+    } else if (pipeline_parameters_pending(object)) {
+        fail("Supply config$analysis for an unconfigured input object.")
+    }
+    validate_pipeline_method(candidate, mode)
+    invisible(NULL)
+}
+pipeline_inference_scope <- function(object) {
+    if (pipeline_parameters_pending(object)) return(list(configured = FALSE))
+    # The selected package owns numerical-method admission and distributed
+    # certificates. Bind configured choices without inventing a second policy.
+    list(protocol = "sceptre-pipeline-schema7-inference/v1", configured = TRUE,
+        permutations = object@spec@run_permutations,
+        approximation = object@spec@resampling_approximation,
+        integration = object@spec@grna_integration_strategy)
+}
+installed_runtime_files <- function(root) {
+    files <- sort(list.files(root, recursive = TRUE, full.names = TRUE))
+    files <- files[!dir.exists(files)]
+    relative <- substring(files, nchar(root) + 2L)
+    files[!grepl("(^|/)__pycache__(/|$)|[.]py[co]$", relative)]
 }
 package_identity <- function() {
     root <- system.file(package = "sceptre")
-    if (!nzchar(root)) fail("Install the qualified schema-3 sceptre package first.")
-    files <- sort(list.files(root, recursive = TRUE, full.names = TRUE))
-    files <- files[!dir.exists(files)]
+    if (!nzchar(root)) fail("Install the pinned sceptre package first.")
+    files <- installed_runtime_files(root)
     hashes <- vapply(files, hash_file, character(1))
     names(hashes) <- substring(files, nchar(root) + 2L)
     deps <- tools::package_dependencies("sceptre", db = utils::installed.packages(), recursive = TRUE)[[1L]]
     versions <- vapply(sort(unique(c("sceptre", "jsonlite", deps))), function(p) {
         if (requireNamespace(p, quietly = TRUE)) as.character(utils::packageVersion(p)) else "unavailable"
     }, character(1))
-    backend_root <- find.package("ondisc", quiet = TRUE)
-    backend <- if (!length(backend_root)) NULL else {
-        backend_files <- sort(list.files(backend_root, recursive = TRUE, full.names = TRUE))
-        backend_files <- backend_files[!dir.exists(backend_files)]
-        backend_hashes <- vapply(backend_files, hash_file, character(1))
-        names(backend_hashes) <- substring(backend_files, nchar(backend_root) + 2L)
-        list(version = as.character(utils::packageVersion("ondisc")),
-             installed_sha256 = hash_value(backend_hashes))
-    }
-    list(package = "sceptre", optional_backend = backend, version = as.character(utils::packageVersion("sceptre")),
+    identity <- list(package = "sceptre", object_schema = 7L,
+         version = as.character(utils::packageVersion("sceptre")),
          installed_sha256 = hash_value(hashes), dependencies = versions,
          R = paste(R.version$major, R.version$minor, R.version$platform))
+    identity
 }
 validate_identity <- function(expected) {
     if (!identical(expected, package_identity()))
         fail("Runtime/package identity mismatch. Rebuild the environment lock and start a new run; do not resume across package changes.")
 }
-# Experimental direct-R fitters need separate pipeline runtime qualification.
-# Older qualified packages expose no selector and retain the reference method.
-validate_pipeline_method <- function(object) {
-    api <- getNamespaceExports("sceptre")
-    if ("get_perturbation_fit_method" %in% api &&
-        !identical(sceptre::get_perturbation_fit_method(object), "glm.fit"))
-        fail("Experimental fast_logistic is supported only by direct R execution; switch to glm.fit before creating or reading pipeline input.")
-    if ("get_result_methods" %in% api &&
-        any(sceptre::get_result_methods(object) == "wilcoxon_unadjusted"))
-        fail("Experimental Wilcoxon is unsupported in pipeline bundles; use run_wilcoxon() directly with a separate prepared object.")
+validate_pipeline_method <- function(object, mode = NULL) {
+    if (!is.null(mode) && !mode %in% c("direct", "distributed")) fail("Unsupported execution mode.")
+    if (identical(mode, "distributed") && !all(c("prepare_execution", "execute_work_unit", "collect_execution") %in% getNamespaceExports("sceptre")))
+        fail("The selected package does not export distributed execution.")
     invisible(object)
 }
-validate_object <- function(object) {
-    if (!methods::is(object, "sceptre_object") ||
-        !identical(object@schema_version, 3L))
-        fail("Expected a current schema-3 sceptre_object; migrate/reimport with the qualified package before running.")
-    # Public same-choice selection normalizes historical schema-3 layout while
-    # retaining reference scientific identities. Older qualified packages have
-    # no selector and keep their existing boundary. Normalize only the missing
-    # historical representation, never repair a malformed current object here.
-    # Other schemas remain rejected.
-    api <- getNamespaceExports("sceptre")
-    if (all(c("get_perturbation_fit_method", "set_perturbation_fit_method") %in% api) &&
-        is.null(attr(object@spec, "perturbation_fit_method", exact = TRUE)))
-        object <- sceptre::set_perturbation_fit_method(object,
-            sceptre::get_perturbation_fit_method(object))
+pipeline_assert_native_schema <- function(object) {
+    if (!methods::is(object, "sceptre_object") || !identical(object@schema_version, 7L) ||
+        !methods::is(object@data, "SingleCellExperiment"))
+        fail("Expected a native schema-7 SingleCellExperiment sceptre_object. Reimport older input with the selected package before starting a new run.")
+    invisible(object)
+}
+validate_object <- function(object, mode = NULL) {
+    pipeline_assert_native_schema(object)
     methods::validObject(object)
-    validate_pipeline_method(object)
+    if (pipeline_parameters_pending(object) && !is.null(mode)) fail("Configure analysis parameters before execution.")
+    validate_pipeline_method(object, mode)
     invisible(object)
 }
 validate_config <- function(config) {
@@ -94,30 +174,31 @@ create_input <- function(object, dir, config, identity = package_identity(), bac
     object <- validate_object(object); validate_config(config); validate_identity(identity)
     if (dir.exists(dir)) fail("Output directory already exists: ", dir)
     dir.create(dir, recursive = TRUE)
-    backed <- methods::is(object@data@response_matrix, "BackedCountStore")
-    if (backed) sceptre::write_ondisc_backed_sceptre_object(object, dir) else saveRDS(object, file.path(dir, "sceptre_object.rds"))
-    manifest <- list(kind = "sceptre-pipeline-state", schema = 1L, object_schema = 3L,
+    backed <- pipeline_is_backed(object)
+    pipeline_save_object(object, file.path(dir, "sceptre_object.rds"))
+    manifest <- list(kind = "sceptre-pipeline-state", schema = 1L, object_schema = object@schema_version,
         stage = "input", completed = character(), package = identity,
         config_sha256 = hash_value(config), object_sha256 = hash_file(file.path(dir, "sceptre_object.rds")),
-        backend = if (backed) "ondisc" else "memory", parent_sha256 = NULL,
+        backend = if (backed) "native-hdf5" else "memory",
+        backing_files = pipeline_backing_map(object), parent_sha256 = NULL,
         scientific_scope = scientific_scope(object),
-        import_identity = object@data@identity)
+        inference_scope = pipeline_inference_scope(object),
+        import_identity = pipeline_import_identity(object))
     saveRDS(manifest, file.path(dir, "manifest.rds"))
     invisible(manifest)
 }
 read_bundle <- function(dir, config, identity, backing = NULL) {
     m <- readRDS(file.path(dir, "manifest.rds"))
     if (!is.list(m) || !identical(m$kind, "sceptre-pipeline-state") || !identical(m$schema, 1L) ||
-        !identical(m$object_schema, 3L)) fail("Unsupported artifact kind/schema; legacy pipeline work directories cannot be resumed.")
+        !identical(m$object_schema, 7L)) fail("Unsupported artifact kind/schema; legacy pipeline work directories cannot be resumed.")
     if (!identical(m$package, identity)) fail("Artifact package identity mismatch.")
     if (!identical(m$config_sha256, hash_value(config))) fail("Artifact configuration mismatch; start from a new input bundle.")
     if (!identical(m$object_sha256, hash_file(file.path(dir, "sceptre_object.rds")))) fail("Artifact object checksum mismatch.")
-    if (identical(m$backend, "ondisc")) {
-        if (is.null(backing)) fail("Backed artifact requires an explicitly staged backing directory.")
-        object <- sceptre::read_ondisc_backed_sceptre_object(file.path(dir, "sceptre_object.rds"),
-            file.path(backing, "response.odm"), file.path(backing, "grna.odm"))
-    } else if (identical(m$backend, "memory")) object <- readRDS(file.path(dir, "sceptre_object.rds")) else fail("Unknown count backend.")
+    if (!m$backend %in% c("native-hdf5", "memory")) fail("Unknown native count backend.")
+    object <- pipeline_read_object(file.path(dir, "sceptre_object.rds"), m$backing_files,
+        if (identical(m$backend, "native-hdf5")) backing else NULL)
     object <- validate_object(object)
+    if (!identical(m$object_schema, object@schema_version)) fail("Artifact object schema mismatch.")
     allowed <- c("parameters", "assignment", "qc", "calibration", "power", "discovery")
     if (!is.character(m$completed) || anyDuplicated(m$completed) || any(!m$completed %in% allowed) ||
         !identical(m$stage, if (length(m$completed)) tail(m$completed, 1L) else "input"))
@@ -135,7 +216,9 @@ read_bundle <- function(dir, config, identity, backing = NULL) {
         }
     }
     if (!identical(m$scientific_scope, scientific_scope(object))) fail("Artifact scientific scope mismatch.")
-    if (!identical(m$import_identity, object@data@identity)) fail("Artifact import identity mismatch.")
+    if (!identical(m$inference_scope, pipeline_inference_scope(object)))
+        fail("Artifact numerical method/runtime scope mismatch; start a new run.")
+    if (!identical(m$import_identity, pipeline_import_identity(object))) fail("Artifact import identity mismatch.")
     list(object = object, manifest = m)
 }
 run_stage <- function(config, input, output, stage, seed, backing = NULL, identity = package_identity()) {
@@ -143,6 +226,8 @@ run_stage <- function(config, input, output, stage, seed, backing = NULL, identi
     if (length(seed) != 1L || is.na(seed) || seed < 0 || seed > .Machine$integer.max || seed != as.integer(seed)) fail("seed must be an integer between 0 and 2147483647.")
     state <- read_bundle(input, config, identity, backing)
     m <- state$manifest; object <- state$object
+    if (stage %in% c("calibration", "power", "discovery"))
+        validate_pipeline_method(object, "direct")
     if (!length(m$completed)) {
         set.seed(as.integer(seed))
     } else {
@@ -190,7 +275,7 @@ write_completed_bundle <- function(object, m, input, output, stage, seed, identi
     tmp <- tempfile(".stage-", tmpdir = dirname(output))
     dir.create(tmp)
     on.exit(unlink(tmp, recursive = TRUE), add = TRUE)
-    if (m$backend == "ondisc") sceptre::write_ondisc_backed_sceptre_object(object, tmp) else saveRDS(object, file.path(tmp, "sceptre_object.rds"))
+    pipeline_save_object(object, file.path(tmp, "sceptre_object.rds"))
     if (stage %in% c("calibration", "power", "discovery")) {
         family <- switch(stage, calibration = "run_calibration_check", power = "run_power_check", discovery = "run_discovery_analysis")
         saveRDS(sceptre::get_result(object, family), file.path(tmp, paste0("results_", stage, ".rds")))
@@ -201,8 +286,10 @@ write_completed_bundle <- function(object, m, input, output, stage, seed, identi
     m$rng_kind <- RNGkind()
     m$rng_state <- get(".Random.seed", envir = .GlobalEnv)
     m$object_sha256 <- hash_file(file.path(tmp, "sceptre_object.rds"))
+    m$backing_files <- pipeline_backing_map(object)
     m$scientific_scope <- scientific_scope(object)
-    m$resolved <- list(low_moi = object@data@low_moi, permutations = object@spec@run_permutations,
+    m$inference_scope <- pipeline_inference_scope(object)
+    m$resolved <- list(low_moi = pipeline_low_moi(object), permutations = object@spec@run_permutations,
                        complement = object@spec@control_group_complement,
                        integration = object@spec@grna_integration_strategy)
     saveRDS(m, file.path(tmp, "manifest.rds"))

@@ -17,7 +17,7 @@ def compareSavedWorkflow = { fixture, output, stop, analyses, backing = 'none' -
 // Generate with Rscript tests/make-input.R "$SCEPTRE_TEST_FIXTURE" first.
 // This suite executes native R work; it never uses -stub-run.
 nextflow_pipeline {
-    name 'Schema-3 complete-family SCEPTRE workflow'
+    name 'Native schema-7 complete-family SCEPTRE workflow'
     script "main.nf"
     tag 'pipeline'
 

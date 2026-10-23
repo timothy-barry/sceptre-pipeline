@@ -1,0 +1,6 @@
+{
+  "sceptre_commit": "1e4d5459ab229255694f9217d7cd4ed51a4bf1b8",
+  "source_resolution": "frozen_archive_receipt",
+  "sceptre_archive_sha256": "f41a8fb7e1bc10366e8efcc7a31644d4c8356bc4eca8adda9ca949c951de4fb4"
+}
+PASS exact bundled source; corrupt identity, moving ref, escaped path and checksum-consistent older schema rejected

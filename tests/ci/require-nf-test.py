@@ -22,7 +22,7 @@ required = (
     'One-unit permutations preserve complete tables, fits and RNG',
     'Excess-unit empirical CRT preserves whole-family budgets and RNG',
     'Backed permutation workers match direct saved-state semantics',
-    'Unsupported backed CRT rejects before any completed family',
+    'Native HDF5 CRT workers match direct saved-state semantics',
     'Wrong runtime lock fails before parameters execute',
     'Corrupt input object fails checksum before parameters execute',
     'Nonpositive work-unit request fails schema before tasks',

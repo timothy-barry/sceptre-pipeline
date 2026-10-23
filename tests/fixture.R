@@ -6,8 +6,7 @@ pipeline_fixture <- function(moi = "low", control = "nt_cells",
                              approximation = "skew_normal", calibration_pairs = 4L) {
     stopifnot(moi %in% c("low", "high"))
     set.seed(20261019)
-    # ondisc 1.3.5 requires at least one default 1000-entry write chunk.
-    n <- if (backed) 1280L else 160L
+    n <- 160L
     guides <- c("a1", "a2", "b1", "b2", "nt1", "nt2", "nt3", "nt4")
     cells <- paste0("cell_", seq_len(n))
     assignment <- rep(seq_along(guides), length.out = n)
@@ -31,10 +30,20 @@ pipeline_fixture <- function(moi = "low", control = "nt_cells",
         response_matrix = Matrix::Matrix(y, sparse = TRUE),
         grna_matrix = Matrix::Matrix(g, sparse = TRUE),
         grna_target_data_frame = metadata, moi = moi,
-        use_ondisc = backed, directory_to_write = directory,
+        use_hdf5 = backed, directory_to_write = directory,
         extra_covariates = data.frame(
             batch = factor(rep(c("a", "b", "b", "a", "b"), length.out = n)),
             z = sin(seq_len(n)), row.names = cells))
+    if (backed) {
+        matrices <- list(sceptre::get_response_matrix(object), sceptre::get_grna_matrix(object))
+        files <- unique(unlist(lapply(matrices, function(matrix) DelayedArray::seedApply(matrix,
+            function(seed) if (isS4(seed) && "filepath" %in% methods::slotNames(seed))
+                as.character(methods::slot(seed, "filepath")) else character())), use.names = FALSE))
+        for (file in files) {
+            staged <- file.path(directory, paste0(digest::digest(file = file, algo = "sha256"), ".h5"))
+            if (!file.exists(staged)) stopifnot(file.copy(file, staged))
+        }
+    }
     config <- list(
         analysis = list(
             discovery_pairs = data.frame(grna_target = c("B", "A", "A", "B", "A"),

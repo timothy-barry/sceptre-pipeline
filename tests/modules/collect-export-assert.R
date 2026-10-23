@@ -2,6 +2,7 @@
 # Compare actual native module artifacts to certified public results.
 source('bin/pipeline.R')
 source('bin/scientific_report.R')
+source('report/check-reference.R')
 args <- commandArgs(TRUE)
 stopifnot(length(args) == 3L)
 mode <- args[1]; fixtures <- args[2]; output <- args[3]
@@ -21,7 +22,7 @@ if (mode == 'collect') {
     reference <- state('reference-discovery')
     before <- state('qc')
     stopifnot(identical(actual$manifest$completed, c(before$manifest$completed, 'discovery')),
-        identical(names(actual$object@results@records), 'run_discovery_analysis'),
+        identical(names(Filter(Negate(is.null), actual$object@results)), 'discovery_analysis'),
         identical(actual$manifest$parent_sha256, hash_file(file.path(fixtures, 'qc', 'manifest.rds'))),
         identical(actual$manifest$execution$mode, 'distributed'),
         identical(actual$manifest$execution$units, readLines(file.path(fixtures, 'execution', 'unit_ids.txt'))))
@@ -39,17 +40,12 @@ if (mode == 'collect') {
         file.info(file.path(report_dir, 'report.html'))$size > 0,
         identical(readRDS(file.path(report_dir, 'manifest.rds')), original$manifest),
         identical(readRDS(file.path(report_dir, 'requested-config.rds')), config),
-        identical(report$qc$retained_cells, length(original$object@preparation@analysis_cells)))
+        report$qc$retained_cells == length(original$object@preparation@analysis_cells))
     for (family in c('calibration', 'power', 'discovery')) {
         csv <- file.path(report_dir, 'tables', paste0(family, '.csv'))
         if (family == 'discovery' && selected == 'discovery') {
-            expected <- sceptre::get_result(original$object, 'run_discovery_analysis', historical = TRUE)
-            stopifnot(identical(report$analyses[[family]]$status, 'completed'))
-            same_result(report$analyses[[family]]$table, expected)
-            expected_csv <- tempfile(fileext = '.csv')
-            utils::write.csv(report_scalar_table(expected), expected_csv, row.names = FALSE)
-            stopifnot(identical(readLines(csv), readLines(expected_csv)))
-            unlink(expected_csv)
+            expected <- sceptre::get_result(original$object, 'run_discovery_analysis')
+            check_report_reference(report_dir, family, expected)
         } else {
             stopifnot(identical(report$analyses[[family]]$status, 'omitted'), !file.exists(csv),
                 is.null(report$analyses[[family]]$table))

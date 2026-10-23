@@ -44,6 +44,6 @@ jsonlite::write_json(list(dataset = 'DC-TAP K562 high MOI GSE303901',
     full_family_size = 279L, targets = targets, original_count_classes = c(class(y),class(x)),
     combined_count_R_bytes = as.numeric(object.size(x) + object.size(y)),
     count_md5 = as.list(tools::md5sum(file.path(raw, c('grna_matrix_aligned.rds','response_matrix.rds','grna_target_data_frame.csv')))),
-    import_identity = object@data@identity, covariates = names(extra),
+    import_identity = S4Vectors::metadata(sceptre::get_screen_experiment(object))$sceptre$identity, covariates = names(extra),
     assignment = config$assignment, formula = deparse(formula), analysis = config$analysis[c('side','control_group','resampling_mechanism','resampling_approximation','multiple_testing_method','multiple_testing_alpha')]),
     file.path(out, 'dataset.json'), auto_unbox = TRUE, pretty = TRUE)

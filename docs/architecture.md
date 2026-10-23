@@ -24,7 +24,7 @@ input bundle -> runtime validation -> parameters -> assignment -> QC
 ```
 
 Each optional analysis can start from QC. Sequential selected families permit
-compatible compact fits to be reused by the package; no draw resource is saved.
+compatible fits to be reused by the package; no draw resource is saved.
 For all-versus-all scope, call exported `construct_trans_pairs()` when preparing
 `config$analysis$discovery_pairs`; then run ordinary QC and discovery. This has
 full-family correction and may require substantially more memory than the legacy
@@ -71,7 +71,7 @@ pipeline tests must run inside the same image for container qualification.
 
 Existing PR #7 was inspected before implementation. Its goal of publishing a
 complete discovery object is retained. Its direct flat-slot retention/merging is
-incompatible with schema 3, and its personal image/cloud profile is not adopted.
+incompatible with schema 7, and its personal image/cloud profile is not adopted.
 Use externally supplied executor settings and explicitly qualified images.
 
 ## Distributed dataflow

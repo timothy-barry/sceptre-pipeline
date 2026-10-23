@@ -2,7 +2,7 @@
 
 Each completed stage is published under `OUTDIR/STAGE/`:
 
-- `state/sceptre_object.rds`: usable schema-3 object; backed handles are closed.
+- `state/sceptre_object.rds`: usable schema-7 object; backed handles are closed.
 - `state/manifest.rds`: versioned pipeline certificate and resolved run settings.
 - `state/analysis_summary.txt`: package-rendered object summary.
 - `state/versions.txt` and `versions.yml`: exact package implementation identity.

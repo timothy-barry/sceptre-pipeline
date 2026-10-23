@@ -52,50 +52,13 @@ assert_manifest_rng <- function(dir, expected, label) {
 assert_final_reference <- function(actual, reference, label) {
     assert_same(sceptre::get_grna_assignments(actual), sceptre::get_grna_assignments(reference),
         paste(label, "single-session assignments"))
-    for (analysis in names(actual@results@records)) {
-        assert_same(sceptre::get_result(actual, analysis), sceptre::get_result(reference, analysis),
+    for (analysis in names(Filter(Negate(is.null), actual@results))) {
+        assert_same(sceptre::get_result(actual, paste0("run_", sub("^run_", "", analysis))), sceptre::get_result(reference, paste0("run_", sub("^run_", "", analysis))),
             paste(label, "single-session", analysis))
-        assert_same(actual@results@records[[analysis]]$provenance$plan,
-            reference@results@records[[analysis]]$provenance$plan,
+        assert_same(actual@results[[sub("^run_", "", analysis)]]$provenance$plan,
+            reference@results[[sub("^run_", "", analysis)]]$provenance$plan,
             paste(label, "single-session plan", analysis))
     }
-}
-
-# Actual input CLI must reopen a safely saved source after its descriptor paths
-# disappear. The intentionally invalid raw-active RDS is only a negative fixture.
-assert_prepare_input_cli <- function(source, config, relocated, expected_identity,
-                                     expected_rows, invalid_active, directory) {
-    dir.create(directory)
-    saveRDS(config, file.path(directory, "config.rds"))
-    saveRDS(package_identity(), file.path(directory, "lock.rds"))
-    script <- normalizePath("bin/prepare_input.R")
-    invoke <- function(object_path, output, label) {
-        arguments <- c(script, normalizePath(object_path),
-            normalizePath(file.path(directory, "config.rds")), output,
-            normalizePath(file.path(directory, "lock.rds")), normalizePath(relocated))
-        system2(file.path(R.home("bin"), "Rscript"),
-            args = vapply(arguments, shQuote, character(1)),
-            stdout = file.path(directory, paste0(label, ".stdout.log")),
-            stderr = file.path(directory, paste0(label, ".stderr.log")))
-    }
-    output <- file.path(directory, "prepared")
-    status <- invoke(source, output, "reopen")
-    if (status != 0L) stop("prepare_input CLI reopen failed; inspect ", directory)
-    stored <- readRDS(file.path(output, "sceptre_object.rds"))
-    stopifnot(is.null(stored@data@response_matrix@handle),
-        is.null(stored@data@grna_matrix@handle))
-    actual <- sceptre::read_ondisc_backed_sceptre_object(file.path(output, "sceptre_object.rds"),
-        file.path(relocated, "response.odm"), file.path(relocated, "grna.odm"))
-    assert_same(actual@data@identity, expected_identity, "input CLI relocated import identity")
-    store <- sceptre::get_response_matrix(actual)
-    assert_same(lapply(seq_len(nrow(store)), function(i) as.numeric(store[i, ])),
-        expected_rows, "input CLI relocated counts")
-    invalid_output <- file.path(directory, "rejected-raw-active")
-    status <- invoke(invalid_active, invalid_output, "raw-active")
-    stopifnot(status != 0L, !file.exists(invalid_output))
-    diagnostic <- paste(readLines(file.path(directory, "raw-active.stderr.log")), collapse = "\n")
-    stopifnot(grepl("process handle", diagnostic, fixed = TRUE))
-    invisible(TRUE)
 }
 
 args <- commandArgs(trailingOnly = TRUE)
@@ -125,12 +88,12 @@ for (name in names(pipeline_fixture_cases())) {
         if (stage == "qc") qc_rng <- direct_rng
         assert_manifest_rng(target, direct_rng, paste(name, stage))
         actual <- readRDS(file.path(target, "sceptre_object.rds"))
-        stopifnot(identical(actual@schema_version, 3L))
+        stopifnot(identical(actual@schema_version, 7L))
         assert_same(actual@spec@run_permutations,
             fixture$mechanism == "permutations", paste(name, stage, "mechanism"))
         assert_same(actual@spec@control_group_complement,
             fixture$control == "complement", paste(name, stage, "controls"))
-        assert_same(actual@data@low_moi, fixture$moi == "low", paste(name, stage, "MOI"))
+        stopifnot(methods::is(sceptre::get_screen_experiment(actual), "SingleCellExperiment"))
         assert_same(actual@spec, direct@spec, paste(name, stage, "settings"))
         if (stage %in% c("assignment", "qc", "calibration", "power", "discovery")) {
             assert_same(actual@spec@grna_assignment_method, fixture$config$assignment$method,
@@ -145,15 +108,15 @@ for (name in names(pipeline_fixture_cases())) {
                 paste(name, stage, "aligned design"))
             stopifnot(any(!actual@preparation@discovery_pairs_with_info$pass_qc))
         }
-        for (analysis in names(actual@results@records)) {
-            record <- actual@results@records[[analysis]]
+        for (analysis in names(Filter(Negate(is.null), actual@results))) {
+            record <- actual@results[[sub("^run_", "", analysis)]]
             if (is.null(record)) next
-            stopifnot(identical(record$scope, "complete_family"))
-            assert_same(sceptre::get_result(actual, analysis),
-                sceptre::get_result(direct, analysis), paste(name, stage, analysis, "full table"))
+            stopifnot(is.list(record), is.data.frame(record$table), !is.null(record$provenance$plan))
+            assert_same(sceptre::get_result(actual, paste0("run_", sub("^run_", "", analysis))),
+                sceptre::get_result(direct, paste0("run_", sub("^run_", "", analysis))), paste(name, stage, analysis, "full table"))
             assert_empirical_budget(record$provenance$plan,
-                if (analysis == "run_calibration_check") "calibration" else "analysis", config)
-            assert_same(record$provenance$plan, direct@results@records[[analysis]]$provenance$plan,
+                if (analysis == "calibration_check") "calibration" else "analysis", config)
+            assert_same(record$provenance$plan, direct@results[[sub("^run_", "", analysis)]]$provenance$plan,
                 paste(name, stage, analysis, "realized budget and scope"))
         }
         input <- target
@@ -178,11 +141,11 @@ for (name in names(pipeline_fixture_cases())) {
         assert_manifest_rng(target, standalone_rng, paste(name, stage, "standalone"))
         actual <- readRDS(file.path(target, "sceptre_object.rds"))
         analysis <- paste0("run_", if (stage == "power") "power_check" else "discovery_analysis")
-        assert_empirical_budget(actual@results@records[[analysis]]$provenance$plan, stage, config)
-        assert_same(actual@results@records[[analysis]]$provenance$plan,
-            driver_final@results@records[[analysis]]$provenance$plan,
+        assert_empirical_budget(actual@results[[sub("^run_", "", analysis)]]$provenance$plan, stage, config)
+        assert_same(actual@results[[sub("^run_", "", analysis)]]$provenance$plan,
+            driver_final@results[[sub("^run_", "", analysis)]]$provenance$plan,
             paste(name, stage, "standalone complete budget plan"))
-        assert_same(sceptre::get_result(actual, analysis), sceptre::get_result(standalone, analysis),
+        assert_same(sceptre::get_result(actual, paste0("run_", sub("^run_", "", analysis))), sceptre::get_result(standalone, paste0("run_", sub("^run_", "", analysis))),
             paste(name, stage, "without calibration"))
     }
     final_table <- sceptre::get_result(actual, "run_discovery_analysis")
@@ -193,7 +156,7 @@ for (name in names(pipeline_fixture_cases())) {
         failed_qc_rows = sum(!final_table$pass_qc),
         mechanism = fixture$mechanism, control = fixture$control,
         integration = fixture$integration,
-        discovery_plan = actual@results@records$run_discovery_analysis$provenance$plan)
+        discovery_plan = actual@results$discovery_analysis$provenance$plan)
     saveRDS(report, file.path(out, "direct-comparison.rds"))
     message("PASS ", name)
 }
@@ -283,112 +246,7 @@ for (stage in c("parameters", "assignment", "qc")) {
 failed_output <- file.path(failure_dir, "failed-family-output")
 expect_failure(run_stage(bad, previous, failed_output, "calibration", seed),
     "calibration_group_size|non-targeting", failed_output)
-stopifnot(is.null(readRDS(file.path(previous, "sceptre_object.rds"))@results@records$run_calibration_check))
+stopifnot(is.null(readRDS(file.path(previous, "sceptre_object.rds"))@results$calibration_check))
 report$failure_checks <- "incomplete, unknown config, changed config/runtime, checksum/schema corruption, real family failure without publication"
 saveRDS(report, file.path(out, "direct-comparison.rds"))
 message("PASS artifact failure checks")
-
-# Optional backend qualification is explicit. Set REQUIRE_ONDISC=true in the
-# supported-backend job so a missing/incompatible ondisc install fails that job.
-capability <- tryCatch({
-    probe <- get0("require_ondisc_capabilities", envir = asNamespace("sceptre"), inherits = FALSE)
-    if (is.function(probe)) probe() else {
-        if (!requireNamespace("ondisc", quietly = TRUE)) stop("ondisc is not installed")
-        if (!exists("create_odm_from_r_matrix_internal", envir = asNamespace("ondisc"), inherits = FALSE))
-            stop("ondisc lacks the supported matrix-import API")
-    }
-    NULL
-}, error = identity)
-if (inherits(capability, "error")) {
-    report$ondisc <- list(passed = FALSE, skipped = TRUE,
-        reason = conditionMessage(capability))
-    if (identical(Sys.getenv("REQUIRE_ONDISC"), "true")) stop(capability)
-    message("SKIP optional ondisc: ", conditionMessage(capability))
-} else {
-    for (case in c("low_nt_permutation", "high_permutation")) {
-        backed_dir <- file.path(out, paste0(case, "_ondisc"))
-        dir.create(backed_dir)
-        backing <- file.path(backed_dir, "original")
-        dir.create(backing)
-        f <- do.call(pipeline_fixture, c(pipeline_fixture_cases()[[case]],
-            list(backed = TRUE, directory = backing)))
-        # Backed CRT is explicitly unsupported by the package.
-        unsupported <- f$config
-        unsupported$analysis$resampling_mechanism <- "crt"
-        unsupported_input <- file.path(backed_dir, "unsupported-crt-import")
-        create_input(f$object, unsupported_input, unsupported)
-        unsupported_output <- file.path(backed_dir, "unsupported-crt-output")
-        expect_failure(run_stage(unsupported, unsupported_input, unsupported_output,
-            "parameters", seed, backing = backing), "resampling_mechanism.*permutations", unsupported_output)
-        input <- file.path(backed_dir, "import")
-        create_input(f$object, input, f$config)
-        stored <- readRDS(file.path(input, "sceptre_object.rds"))
-        stopifnot(is.null(stored@data@response_matrix@handle),
-            is.null(stored@data@grna_matrix@handle))
-        relocated <- file.path(backed_dir, "relocated")
-        dir.create(relocated)
-        stopifnot(all(file.copy(file.path(backing, c("response.odm", "grna.odm")), relocated)))
-        original_hash <- vapply(file.path(relocated, c("response.odm", "grna.odm")), hash_file, character(1))
-        direct <- sceptre::read_ondisc_backed_sceptre_object(
-            file.path(input, "sceptre_object.rds"),
-            file.path(relocated, "response.odm"), file.path(relocated, "grna.odm"))
-        read_rows <- function(object) {
-            store <- sceptre::get_response_matrix(object)
-            lapply(seq_len(nrow(store)), function(i) as.numeric(store[i, ]))
-        }
-        assert_same(read_rows(direct), read_rows(f$object), paste(case, "relocated counts"))
-        direct_input <- direct
-        set.seed(seed)
-        direct_rng <- rng_snapshot()
-        for (stage in c("parameters", "assignment", "qc", "calibration", "power", "discovery")) {
-            target <- file.path(backed_dir, stage)
-            run_stage(f$config, input, target, stage, seed, backing = relocated)
-            rng_restore(direct_rng)
-            direct <- direct_stage(direct, f$config, stage, seed)
-            direct_rng <- rng_snapshot()
-            assert_manifest_rng(target, direct_rng, paste(case, stage, "backed"))
-            stored <- readRDS(file.path(target, "sceptre_object.rds"))
-            stopifnot(is.null(stored@data@response_matrix@handle),
-                is.null(stored@data@grna_matrix@handle))
-            actual <- sceptre::read_ondisc_backed_sceptre_object(
-                file.path(target, "sceptre_object.rds"),
-                file.path(relocated, "response.odm"), file.path(relocated, "grna.odm"))
-            assert_same(actual@preparation@analysis_cells, direct@preparation@analysis_cells,
-                paste(case, stage, "backed alignment"))
-            for (analysis in names(actual@results@records)) {
-                assert_same(sceptre::get_result(actual, analysis), sceptre::get_result(direct, analysis),
-                    paste(case, stage, "backed", analysis))
-            }
-            input <- target
-        }
-        single_session <- direct_input
-        set.seed(seed)
-        for (stage in c("parameters", "assignment", "qc", "calibration", "power", "discovery")) {
-            single_session <- direct_stage(single_session, f$config, stage, seed)
-        }
-        assert_final_reference(actual, single_session, paste(case, "backed"))
-        assert_same(rng_snapshot(), direct_rng, paste(case, "backed final RNG"))
-        assert_same(vapply(names(original_hash), hash_file, character(1)), original_hash,
-            paste(case, "backing files unchanged"))
-        # Retain immutable expected values, then release the sole references to
-        # the original fixture handles before making their descriptor paths stale.
-        expected_identity <- f$object@data@identity
-        expected_rows <- read_rows(f$object)
-        invalid_active <- file.path(backed_dir, "intentionally-invalid-raw-active.rds")
-        saveRDS(f$object, invalid_active)
-        f$object <- NULL
-        invisible(gc())
-        stopifnot(file.rename(backing, paste0(backing, "-preserved")), !dir.exists(backing))
-        assert_prepare_input_cli(file.path(backed_dir, "import", "sceptre_object.rds"),
-            f$config, relocated, expected_identity, expected_rows, invalid_active,
-            file.path(backed_dir, "prepare-input-cli"))
-        assert_same(vapply(names(original_hash), hash_file, character(1)), original_hash,
-            paste(case, "input CLI backing files unchanged"))
-        message("PASS ", case, " input CLI stale-path reopen and raw-active rejection")
-        message("PASS ", case, " save/reopen/relocation")
-    }
-    report$ondisc <- list(passed = TRUE, skipped = FALSE,
-        version = as.character(utils::packageVersion("ondisc")),
-        cases = c("low_nt_permutation", "high_permutation"))
-}
-saveRDS(report, file.path(out, "direct-comparison.rds"))

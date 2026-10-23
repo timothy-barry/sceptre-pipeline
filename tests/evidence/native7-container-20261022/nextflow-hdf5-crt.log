@@ -1,0 +1,22 @@
+Nextflow 26.10.3 is available - Please consider updating your version to it
+N E X T F L O W  ~  version 25.10.4
+Launching `main.nf` [fervent_lumiere] DSL2 - revision: cefe792796
+Selected profiles: test,docker; scientific execution mode: distributed.
+The default task executor is local. Distributed mode partitions scientific work; scheduler selection comes from profiles/site configuration. Verify executor overrides before running on a cluster login node (docs/hpc.md, docs/recovery.md).
+[21/95da89] Submitted process > SCEPTRE:SCEPTRE_VALIDATE (screen:validate)
+[29/fa3085] Submitted process > SCEPTRE:PARAMETERS (screen:parameters)
+[c8/2e8886] Submitted process > SCEPTRE:ASSIGNMENT (screen:assignment)
+[88/4b94c2] Submitted process > SCEPTRE:QC (screen:qc)
+[d0/78aabb] Submitted process > SCEPTRE:CALIBRATION:SCEPTRE_PREPARE (screen:calibration:prepare)
+[06/259600] Submitted process > SCEPTRE:CALIBRATION:SCEPTRE_WORKER (screen:calibration:unit-000002)
+[c6/eb009d] Submitted process > SCEPTRE:CALIBRATION:SCEPTRE_WORKER (screen:calibration:unit-000001)
+[f0/9d1292] Submitted process > SCEPTRE:CALIBRATION:SCEPTRE_WORKER (screen:calibration:unit-000003)
+[5d/28fce7] Submitted process > SCEPTRE:CALIBRATION:SCEPTRE_COLLECT (screen:calibration:collect)
+[3d/3b5987] Submitted process > SCEPTRE:POWER:SCEPTRE_PREPARE (screen:power:prepare)
+[ba/26c42f] Submitted process > SCEPTRE:POWER:SCEPTRE_WORKER (screen:power:unit-000001)
+[78/99e306] Submitted process > SCEPTRE:POWER:SCEPTRE_COLLECT (screen:power:collect)
+[b5/da0beb] Submitted process > SCEPTRE:DISCOVERY:SCEPTRE_PREPARE (screen:discovery:prepare)
+[78/879daa] Submitted process > SCEPTRE:DISCOVERY:SCEPTRE_WORKER (screen:discovery:unit-000001)
+[e7/928020] Submitted process > SCEPTRE:DISCOVERY:SCEPTRE_WORKER (screen:discovery:unit-000002)
+[2a/4da0d6] Submitted process > SCEPTRE:DISCOVERY:SCEPTRE_COLLECT (screen:discovery:collect)
+[51/60583e] Submitted process > SCEPTRE:SCEPTRE_EXPORT (screen:export)

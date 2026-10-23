@@ -12,7 +12,7 @@ input:
         description: Stable screen id, independent of scientific scope.
     - state:
         type: directory
-        description: Certified predecessor bundle with closed serialized object.
+        description: Certified predecessor bundle with native serialized object.
   - config:
       type: file
       description: Exact scientific configuration RDS bound into the manifest.
@@ -40,7 +40,7 @@ output:
           description: Input metadata retained unchanged.
       - state:
           type: directory
-          description: Atomically completed schema-1 bundle containing a schema-3 object and provenance.
+          description: Atomically completed schema-1 bundle containing a schema-7 object and provenance.
   - versions:
       - versions.yml:
           type: file

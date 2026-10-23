@@ -28,7 +28,7 @@ saveRDS(timings, file.path(output, 'timings.rds'))
 jsonlite::write_json(timings, file.path(output, 'timings.json'), auto_unbox = TRUE, pretty = TRUE)
 write.csv(as.data.frame(sceptre::get_result(object, 'run_discovery_analysis')),
     file.path(output, 'result.csv'), row.names = FALSE)
-plan <- object@results@records$run_discovery_analysis$provenance$plan
+plan <- object@results$discovery_analysis$provenance$plan
 jsonlite::write_json(list(B1 = plan@B1, B2 = plan@B2, B3 = plan@B3,
     total_resamples = as.double(plan@B1) + plan@B2 + plan@B3,
     requested = nrow(plan@pairs), eligible = sum(plan@pairs$pass_qc),

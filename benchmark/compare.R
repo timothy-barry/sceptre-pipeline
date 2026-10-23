@@ -22,14 +22,14 @@ for (stage in c('parameters','assignment','qc','discovery')) {
     actual <- readRDS(file.path(pipeline,stage,'state','sceptre_object.rds'))
     m <- readRDS(file.path(pipeline,stage,'state','manifest.rds'))
     hashes <- list(spec = check(actual@spec, reference$object@spec, paste(stage,'spec')),
-        data_identity = check(actual@data@identity,reference$object@data@identity,paste(stage,'data identity')),
+        data_identity = check(S4Vectors::metadata(sceptre::get_screen_experiment(actual))$sceptre$identity,S4Vectors::metadata(sceptre::get_screen_experiment(reference$object))$sceptre$identity,paste(stage,'data identity')),
         preparation = check(actual@preparation,reference$object@preparation,paste(stage,'preparation')),
         fits = check(actual@fits, reference$object@fits,paste(stage,'complete FitCache')),
         RNGkind = check(m$rng_kind,reference$rng_kind,paste(stage,'RNG kind')),
         RNGstate = check(m$rng_state,reference$rng_state,paste(stage,'continuous RNG state')))
     if (stage == 'discovery') {
         hashes$table <- check(sceptre::get_result(actual,'run_discovery_analysis'),sceptre::get_result(reference$object,'run_discovery_analysis'),'full discovery table')
-        hashes$record <- check(actual@results@records, reference$object@results@records,'all complete result records, frozen plans and identities')
+        hashes$record <- check(actual@results, reference$object@results,'all complete result records, frozen plans and identities')
     }
     records[[stage]] <- hashes
 }

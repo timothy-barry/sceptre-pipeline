@@ -1,0 +1,18 @@
+{
+  "bin/distributed_stage.R": "37eaffc63ce16134154bb02d6b0b9664fa110bd0bcd3cfde1944e56638edcc98",
+  "bin/export_state.R": "386f24e0052692160c7cd122526eca7e4a0765e2d5429007a09933b13ec1b0c7",
+  "bin/scientific_report.R": "0522bc0866df7a30e1fc76884d74ea04dfd665bafa93259cb340b304d66c6ead",
+  "bin/stage_backing.R": "c923221d2c0267f6f76f55c8a138a13dd4f4a12d106e783d8f0cc02d88954044",
+  "bin/lock_environment.R": "c2c1206ddd12afe022c3ef7b489b2b80c842144216f6bb3eb1318a68aa71abc5",
+  "bin/versions.R": "6c6b04911d0a5f45c1866273f707c5086a17790547a843d24af22720ed570a9d",
+  "bin/stage.R": "164dd0e65ff9c7903de8d687d491d305711a59fac6d38abc92cae6d7103bb8a7",
+  "bin/distributed.R": "d5cbf289e779de769c0c2ccf0912afdeb09577e47645739e9665afe8c0656253",
+  "bin/prepare_input.R": "b0fd8cd30a73c84d6cae05dc8ce20809c5e559bac6614774cf159184839c50c8",
+  "bin/diagnostics.R": "5e210725f9213c8c44e74d08a7d2ac1b11956fa68e696e6c11a3dc73991eabd8",
+  "bin/validate_state.R": "12fc7693b33f8aa50e0690387e1e8460ba12557847178f37944395610dae451b",
+  "bin/pipeline.R": "8be5e0ddb5b98b82a2acb36bb10b67492e6196ceba9861a15888b75b0c41a27f",
+  "tests/fixture.R": "78e3ca87fe084b13a054690d44674660d15b178fb80dd679f3dd383673870c4d",
+  "tests/direct-comparison.R": "1239bd64162ed0dcd30f8c38397951d91f6b6480a27ab7cbb09f64d7b7b99e97",
+  "tests/distributed-comparison.R": "49bb48d146d8dbb62e69d96fce349f63d2087a2d445bfaff60fc16a703b361b2",
+  "tests/runtime/check-startup.R": "30802640ec3ec044d836de085efe6f21597e6dfdd5d9bcb413c36715501d49df"
+}

@@ -6,7 +6,7 @@ reference <- readRDS(file.path(run,'direct','discovery.rds'))
 object <- reference$object
 # No count matrices: retain original scientific certificates and compact caches.
 saveRDS(list(spec=object@spec, fits=object@fits, results=object@results,
-    import_identity=object@data@identity, ordered_cells=object@preparation@analysis_cells,
+    import_identity=S4Vectors::metadata(sceptre::get_screen_experiment(object))$sceptre$identity, ordered_cells=object@preparation@analysis_cells,
     design_sha256=digest::digest(object@preparation@design_matrix,algo='sha256'),
     rng_kind=reference$rng_kind,rng_state=reference$rng_state),file.path(out,'direct-scientific-payload.rds'))
 lock <- readRDS(file.path(run,'fixture','lock.rds'))

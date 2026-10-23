@@ -1,11 +1,25 @@
 repo <- Sys.getenv("CRAN_SNAPSHOT")
-stopifnot(nzchar(repo))
+bioc <- Sys.getenv("BIOCONDUCTOR_VERSION")
+stopifnot(nzchar(repo), identical(bioc, "3.22"), getRversion() >= "4.5")
 options(repos = c(CRAN = repo), Ncpus = 2L, timeout = 1200L)
-packages <- c("digest", "cowplot", "crayon", "data.table", "dplyr", "ggplot2",
-              "Rcpp", "RcppEigen", "BH", "scales", "purrr", "parallelly", "withr", "jsonlite",
-              "testthat", "R.utils", "sessioninfo")
-if (identical(Sys.getenv("WITH_ONDISC"), "true")) packages <- c(packages, "readr")
-install.packages(packages)
+install.packages("BiocManager")
+BiocManager::install(version = bioc, ask = FALSE, update = FALSE)
+# Read the frozen archive rather than duplicating its dependency declarations.
+description <- read.dcf("/opt/sceptre/package/sceptre/DESCRIPTION")
+fields <- intersect(c("Depends", "Imports", "LinkingTo", "Suggests"), colnames(description))
+specifications <- trimws(unlist(strsplit(paste(description[1, fields], collapse = ","), ",")))
+packages <- unique(sub("[[:space:]]*\\(.*$", "", specifications))
+packages <- setdiff(packages, c("R", "methods", "stats"))
+packages <- unique(c(packages, "jsonlite"))
+BiocManager::install(packages, ask = FALSE, update = FALSE)
 missing <- setdiff(packages, rownames(installed.packages()))
 if (length(missing)) stop("Dependency installation failed: ", paste(missing, collapse = ", "))
+# Enforce every declared minimum; R CMD INSTALL also checks package dependencies.
+for (specification in specifications[grepl("\\(>=", specifications)]) {
+  package <- sub("[[:space:]]*\\(.*$", "", specification)
+  minimum <- sub(".*\\(>=[[:space:]]*([^)]*)\\).*", "\\1", specification)
+  actual <- if (package == "R") getRversion() else packageVersion(package)
+  if (actual < package_version(trimws(minimum))) stop("Unsatisfied minimum: ", specification)
+}
 writeLines(repo, "/opt/sceptre/cran-snapshot.txt")
+writeLines(bioc, "/opt/sceptre/bioconductor-version.txt")

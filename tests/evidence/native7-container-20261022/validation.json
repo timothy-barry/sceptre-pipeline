@@ -1,0 +1,97 @@
+{
+  "schema": 1,
+  "status": "PASSED_BOUNDED_NATIVE7_CONTAINER_PIPELINE",
+  "date": "2026-10-22",
+  "package_source": {
+    "schema": 1,
+    "repository": "https://github.com/Katsevich-Lab/sceptre",
+    "source_commit": "1e4d5459ab229255694f9217d7cd4ed51a4bf1b8",
+    "source_identity": "source_commit_and_archive_sha256",
+    "archive": "sceptre_0.99.0.tar.gz",
+    "archive_kind": "R_CMD_build",
+    "archive_sha256": "f41a8fb7e1bc10366e8efcc7a31644d4c8356bc4eca8adda9ca949c951de4fb4",
+    "object_schema": 7,
+    "license": "GPL-3",
+    "frozen_manifest": "ARCHIVE-IDENTITY.json",
+    "frozen_manifest_sha256": "c700453936d88bf4d66f531fd4fe7366a11ee4c189a8e871e4d5b67404cc68aa",
+    "admission_receipt": "ROOT-ADMISSION.json",
+    "qualification_status": "Selected local schema-7 package RC; pipeline container/hosted CI/HPC qualification separate and pending"
+  },
+  "image": "sha256:b51c1cdaef908f6386b3313bd787f5d46dcc7b3f08c5fe28b271d2e5c85cd6c9",
+  "platform": "linux/arm64",
+  "R": "4.5.1",
+  "bioconductor": "3.22",
+  "nextflow": "25.10.4",
+  "checks": {
+    "direct_cases": 9,
+    "distributed_cases": 11,
+    "native_HDF5": [
+      "permutations",
+      "CRT"
+    ],
+    "startup": "fresh namespace-only RAM/HDF5 import, no package attachment",
+    "post_bootstrap_matrix_warnings": 0,
+    "actual_nextflow": [
+      "reference plus full resume/config/source/failure guards",
+      "distributed plus full resume/config/source/worker-failure guards",
+      "final-bootstrap native HDF5 CRT, calibration/power/discovery, exact public-R comparison"
+    ],
+    "final_native_HDF5_resume": {
+      "cached": 16,
+      "completed_runtime_validation": 1,
+      "task_output_files_without_stack_imbalance": 36
+    }
+  },
+  "package_only_loading_observation": "Bare first sceptre::import_data in this R4.5 image can emit a stack-imbalance warning; explicit namespace initialization prevents it. Pipeline entry points initialize eagerly; final matrices/startup and final native HDF5 tasks verified clean. Underlying cause is not established.",
+  "limits": [
+    "Local ARM64 host and Linux ARM64 Docker only; no AMD64, hosted CI, Apptainer/HPC or full-screen qualification",
+    "No new performance benchmark, image push, git push, merge or release"
+  ],
+  "production_source_sha256": {
+    "bin/diagnostics.R": "5e210725f9213c8c44e74d08a7d2ac1b11956fa68e696e6c11a3dc73991eabd8",
+    "bin/distributed.R": "d5cbf289e779de769c0c2ccf0912afdeb09577e47645739e9665afe8c0656253",
+    "bin/distributed_stage.R": "37eaffc63ce16134154bb02d6b0b9664fa110bd0bcd3cfde1944e56638edcc98",
+    "bin/export_state.R": "386f24e0052692160c7cd122526eca7e4a0765e2d5429007a09933b13ec1b0c7",
+    "bin/lock_environment.R": "c2c1206ddd12afe022c3ef7b489b2b80c842144216f6bb3eb1318a68aa71abc5",
+    "bin/pipeline.R": "8be5e0ddb5b98b82a2acb36bb10b67492e6196ceba9861a15888b75b0c41a27f",
+    "bin/prepare_input.R": "b0fd8cd30a73c84d6cae05dc8ce20809c5e559bac6614774cf159184839c50c8",
+    "bin/scientific_report.R": "0522bc0866df7a30e1fc76884d74ea04dfd665bafa93259cb340b304d66c6ead",
+    "bin/stage.R": "164dd0e65ff9c7903de8d687d491d305711a59fac6d38abc92cae6d7103bb8a7",
+    "bin/stage_backing.R": "c923221d2c0267f6f76f55c8a138a13dd4f4a12d106e783d8f0cc02d88954044",
+    "bin/validate_state.R": "12fc7693b33f8aa50e0690387e1e8460ba12557847178f37944395610dae451b",
+    "bin/versions.R": "6c6b04911d0a5f45c1866273f707c5086a17790547a843d24af22720ed570a9d",
+    "conf/base.config": "01a6e08b5a978037c0981a070ddb40685bd4d9da9884dd30e9ec00a76d8c7013",
+    "conf/slurm.config": "e8e5f6b726f9072d7f55c0400af21ed5208c7aaaf508f46ce53e1d281652d056",
+    "conf/test.config": "d5dee69e2671c529401af413d502555af21e5a79a1cf8519d61d3e2b648865da",
+    "main.nf": "aa3645d0750eeed1688133b8e2f8c5a789e851c03e68c99439ab531005105de8",
+    "modules/local/sceptre_collect/main.nf": "1227e23a6b675b38edf2bf77c07ebd206409f10787e33b4ee101378fefb9b50f",
+    "modules/local/sceptre_export/main.nf": "6f07a737fe24b0903b75a81a11e06b133ff646e1666b45cf102ca7af559c40ca",
+    "modules/local/sceptre_prepare/main.nf": "a3c9cbf4ca0b9059b7e018d16b6b45e8850a5b894e55cede86823323f539724f",
+    "modules/local/sceptre_stage/main.nf": "9507013bc1db82e206379f3f871400aa0b7407bc3ef54cb34654dbba391976f2",
+    "modules/local/sceptre_validate/main.nf": "6f51a7b4901e011e763eff9bcbdd3af317eaf030d13583b4215b2e36793e40d9",
+    "modules/local/sceptre_worker/main.nf": "ad64ae1ee05851663b3a7d39810d36118f730f5b06f4d2683b50bd4da2f72a94",
+    "nextflow.config": "b87c657c85e3bf2f30e69b04f56ebd9452fd4e85c0d2af855b3d1d15419bb4e3",
+    "nextflow_schema.json": "7335b0e4348c6c103696e29239d95dace3f4cdb2f0ed4582e87f146b94a3463e",
+    "subworkflows/local/sceptre/main.nf": "b555cbdf661b4d69ba68e21ec10d6537bc2c61038373b546854a72fec3d3568a",
+    "subworkflows/local/sceptre_analysis/main.nf": "c3c01697dc71c38f64373280063559c103720638b9e8a6372d33398573b5845f"
+  },
+  "copied_artifact_sha256": {
+    "build.log.gz": "3264b136da283896de036d2fbe97274bf8d307ecaeded29021d6aa95284cfce5",
+    "container-validation.json": "e4d14450b325efc0ce7ccffb57a366da81c2bc71c67c0e75a260849f083b8071",
+    "direct.log": "31c59c820199576f23563ec7b77910a5844ebe7187e0bbd56b2a50e83a0d52d3",
+    "direct.rds": "fa40852bda6222fe100bd19d79ce0a099b41513a4df32e8198c399a06aae4913",
+    "distributed.log": "3d94f59021feb6168ec3a753ed17618f643b240f6efaae1ec5c5dba7e1fa730b",
+    "distributed.rds": "a251a0ec44d3d7a504af28ac7132e1cc78d1547b2b8bd9d35d104c25ff2c4fc6",
+    "image-inspect.json": "899fa59ee8cf8980e27a54c63634af5e69ce41cadafbac84157648f07fc7c902",
+    "nextflow-distributed.log": "924e90f59f9a410793c6a687e9b9cf8b4524b44aa0a6a14bab27d273f1e82f32",
+    "nextflow-hdf5-crt-comparison.log": "8e652625cd1f71874af15dbbaf82a6371746748bbaa249316fb96914af293aa6",
+    "nextflow-hdf5-crt-resume-trace.tsv": "c3e458734e805806392beba1db2b6b7e3e08824d9ab58acd1c1e4d3632a0e3cf",
+    "nextflow-hdf5-crt-resume.log": "d84540c9d699202f575567f29cb0e251fde7469c742944302415f3a4082989cd",
+    "nextflow-hdf5-crt.log": "f33c951d8d69dde94a37255461ed00c617e155b1d3e05466ad7ed565fbb02eb3",
+    "nextflow-reference.log": "83ff39421fa221a4acf7def34f6d9622b88e32785e7232187c52b81e101e54d3",
+    "runtime-provenance.txt": "ad7d1e749cd28cbac4dd3ae3bc1fcd971c1a8f2a9353f8434a2c21524fdb7a3c",
+    "source-sha256.json": "78feda6a71437f14acb0399966e082a277bb06867c115f69e51381e32b675c56",
+    "startup.log": "1822a1796088ba1937e3ac99c8990224c1492c4736b4d1f825011716f4b529f0"
+  },
+  "uncompressed_build_log_sha256": "98521e558de4e4bf0e766e21f325fdf1129c0de099170968f2e9e0f414445d9e"
+}

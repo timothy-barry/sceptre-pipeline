@@ -12,8 +12,8 @@ for (stage in c("parameters", "assignment", "qc", "calibration", "power", "disco
 }
 path <- file.path(args[3], "discovery", "state")
 object <- readRDS(file.path(path, "sceptre_object.rds"))
-stopifnot("run_discovery_analysis" %in% names(object@results@records))
-object@results@records[["run_discovery_analysis"]] <- NULL
+stopifnot("discovery_analysis" %in% names(Filter(Negate(is.null), object@results)))
+object@results["discovery_analysis"] <- list(NULL)
 saveRDS(object, file.path(path, "sceptre_object.rds"))
 manifest <- readRDS(file.path(path, "manifest.rds"))
 manifest$object_sha256 <- hash_file(file.path(path, "sceptre_object.rds"))

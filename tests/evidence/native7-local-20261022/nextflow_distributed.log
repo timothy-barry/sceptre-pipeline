@@ -1,0 +1,65 @@
+Nextflow 26.10.3 is available - Please consider updating your version to it
+N E X T F L O W  ~  version 25.10.4
+Launching `/Users/ekatsevi/Documents/Codex/2026-10-22/new-realtime-voice-chat-6/sceptre-pipeline/main.nf` [scruffy_payne] DSL2 - revision: cefe792796
+Selected profiles: test; scientific execution mode: distributed.
+The default task executor is local. Distributed mode partitions scientific work; scheduler selection comes from profiles/site configuration. Verify executor overrides before running on a cluster login node (docs/hpc.md, docs/recovery.md).
+WARN: Task runtime metrics are not reported when using macOS without a container engine
+[6f/f1684d] Submitted process > SCEPTRE:SCEPTRE_VALIDATE (screen:validate)
+[1c/d6900a] Submitted process > SCEPTRE:PARAMETERS (screen:parameters)
+[01/e1ebf7] Submitted process > SCEPTRE:ASSIGNMENT (screen:assignment)
+[8b/fa6573] Submitted process > SCEPTRE:QC (screen:qc)
+[64/539c8d] Submitted process > SCEPTRE:CALIBRATION:SCEPTRE_PREPARE (screen:calibration:prepare)
+[1f/76ed5b] Submitted process > SCEPTRE:CALIBRATION:SCEPTRE_WORKER (screen:calibration:unit-000001)
+[8f/710267] Submitted process > SCEPTRE:CALIBRATION:SCEPTRE_WORKER (screen:calibration:unit-000002)
+[c3/66599d] Submitted process > SCEPTRE:CALIBRATION:SCEPTRE_WORKER (screen:calibration:unit-000003)
+[1d/b2bfa9] Submitted process > SCEPTRE:CALIBRATION:SCEPTRE_COLLECT (screen:calibration:collect)
+[e7/5e5658] Submitted process > SCEPTRE:POWER:SCEPTRE_PREPARE (screen:power:prepare)
+[9c/584843] Submitted process > SCEPTRE:POWER:SCEPTRE_WORKER (screen:power:unit-000001)
+[41/4a89a3] Submitted process > SCEPTRE:POWER:SCEPTRE_WORKER (screen:power:unit-000002)
+[a5/f4e824] Submitted process > SCEPTRE:POWER:SCEPTRE_COLLECT (screen:power:collect)
+[ca/6d6fc4] Submitted process > SCEPTRE:DISCOVERY:SCEPTRE_PREPARE (screen:discovery:prepare)
+[cb/3dc94f] Submitted process > SCEPTRE:DISCOVERY:SCEPTRE_WORKER (screen:discovery:unit-000002)
+[c5/8591a0] Submitted process > SCEPTRE:DISCOVERY:SCEPTRE_WORKER (screen:discovery:unit-000001)
+WARN: Task runtime metrics are not reported when using macOS without a container engine
+[65/88b634] Submitted process > SCEPTRE:DISCOVERY:SCEPTRE_COLLECT (screen:discovery:collect)
+[76/9c6dc6] Submitted process > SCEPTRE:SCEPTRE_EXPORT (screen:export)
+Note: If you are on a Mac laptop or desktop, consider setting `parallel = TRUE` to improve speed. Otherwise, keep `parallel = FALSE`.
+Constructing negative control pairs.
+ ✓
+Note: If you are on a Mac laptop or desktop, consider setting `parallel = TRUE` to improve speed. Otherwise, keep `parallel = FALSE`.
+Note: If you are on a Mac laptop or desktop, consider setting `parallel = TRUE` to improve speed. Otherwise, keep `parallel = FALSE`.
+PASS real nf-test workflow semantics: parameters, assignment, qc, calibration, power, discovery; exact families/tables/plans/fits/design/pairQC/metrics/assignments/RNG and absent excluded stages
+PASS actual Nextflow vs same-runtime uninterrupted public R: exact complete tables/global plans/budgets/assignments/QC/fits/RNG
+Nextflow 26.10.3 is available - Please consider updating your version to it
+N E X T F L O W  ~  version 25.10.4
+Launching `/Users/ekatsevi/Documents/Codex/2026-10-22/new-realtime-voice-chat-6/sceptre-pipeline/main.nf` [stupefied_cori] DSL2 - revision: cefe792796
+Selected profiles: test; scientific execution mode: distributed.
+The default task executor is local. Distributed mode partitions scientific work; scheduler selection comes from profiles/site configuration. Verify executor overrides before running on a cluster login node (docs/hpc.md, docs/recovery.md).
+WARN: Task runtime metrics are not reported when using macOS without a container engine
+[58/2eda89] Submitted process > SCEPTRE:SCEPTRE_VALIDATE (screen:validate)
+[1c/d6900a] Cached process > SCEPTRE:PARAMETERS (screen:parameters)
+[01/e1ebf7] Cached process > SCEPTRE:ASSIGNMENT (screen:assignment)
+[8b/fa6573] Cached process > SCEPTRE:QC (screen:qc)
+[64/539c8d] Cached process > SCEPTRE:CALIBRATION:SCEPTRE_PREPARE (screen:calibration:prepare)
+[c3/66599d] Cached process > SCEPTRE:CALIBRATION:SCEPTRE_WORKER (screen:calibration:unit-000003)
+[1f/76ed5b] Cached process > SCEPTRE:CALIBRATION:SCEPTRE_WORKER (screen:calibration:unit-000001)
+[8f/710267] Cached process > SCEPTRE:CALIBRATION:SCEPTRE_WORKER (screen:calibration:unit-000002)
+[1d/b2bfa9] Cached process > SCEPTRE:CALIBRATION:SCEPTRE_COLLECT (screen:calibration:collect)
+[e7/5e5658] Cached process > SCEPTRE:POWER:SCEPTRE_PREPARE (screen:power:prepare)
+[9c/584843] Cached process > SCEPTRE:POWER:SCEPTRE_WORKER (screen:power:unit-000001)
+[41/4a89a3] Cached process > SCEPTRE:POWER:SCEPTRE_WORKER (screen:power:unit-000002)
+[a5/f4e824] Cached process > SCEPTRE:POWER:SCEPTRE_COLLECT (screen:power:collect)
+[ca/6d6fc4] Cached process > SCEPTRE:DISCOVERY:SCEPTRE_PREPARE (screen:discovery:prepare)
+[c5/8591a0] Cached process > SCEPTRE:DISCOVERY:SCEPTRE_WORKER (screen:discovery:unit-000001)
+[cb/3dc94f] Cached process > SCEPTRE:DISCOVERY:SCEPTRE_WORKER (screen:discovery:unit-000002)
+[65/88b634] Cached process > SCEPTRE:DISCOVERY:SCEPTRE_COLLECT (screen:discovery:collect)
+[76/9c6dc6] Cached process > SCEPTRE:SCEPTRE_EXPORT (screen:export)
+PASS resume: runtime validation reran, all scientific tasks and export cached
+PASS nested configuration change rejected; unchanged nested configuration resumed with cached science
+PASS unsupported dynamic configuration include rejected before tasks
+PASS missing and cyclic includes fail during native config parsing before tasks
+PASS unknown/legacy parameter rejected
+PASS fresh-run collision and changed-seed resume rejected before scientific tasks
+PASS changed array batching cannot reuse prior publication paths
+PASS altered .nf source resume rejected; original source identical resume passed
+PASS actual failed worker prevents collection and completed family publication

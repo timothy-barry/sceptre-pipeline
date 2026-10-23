@@ -37,7 +37,7 @@ for (name in c("low_nt_permutation", "high_empirical_crt")) {
         parallel = FALSE, output_amount = f$config$execution$output_amount)
     expected_rng <- list(kind = RNGkind(), state = .Random.seed)
     family <- "run_discovery_analysis"
-    assert_empirical_budget(direct@results@records[[family]]$provenance$plan, "discovery", f$config)
+    assert_empirical_budget(direct@results[[sub("^run_", "", family)]]$provenance$plan, "discovery", f$config)
     rows <- list()
     for (n_units in c(1L, 2L, 3L, 99L)) {
         label <- paste0("units-", n_units)
@@ -61,9 +61,9 @@ for (name in c("low_nt_permutation", "high_empirical_crt")) {
         collect_distributed(f$config, input, plan, proposals, output, "discovery", seed,
             backing = NULL, lock = lock)
         actual <- read_bundle(output, f$config, lock)
-        same(sceptre::get_result(actual$object, family), sceptre::get_result(direct, family), paste(name, label, "table"))
-        same(actual$object@results@records[[family]]$provenance$plan,
-            direct@results@records[[family]]$provenance$plan, paste(name, label, "global plan"))
+        same(sceptre::get_result(actual$object, paste0("run_", sub("^run_", "", family))), sceptre::get_result(direct, paste0("run_", sub("^run_", "", family))), paste(name, label, "table"))
+        same(actual$object@results[[sub("^run_", "", family)]]$provenance$plan,
+            direct@results[[sub("^run_", "", family)]]$provenance$plan, paste(name, label, "global plan"))
         same(actual$object@fits, direct@fits, paste(name, label, "fits"))
         same(actual$manifest$rng_kind, expected_rng$kind, paste(name, label, "RNG kind"))
         same(actual$manifest$rng_state, expected_rng$state, paste(name, label, "RNG state"))

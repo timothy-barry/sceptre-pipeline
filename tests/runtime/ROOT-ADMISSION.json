@@ -1,0 +1,86 @@
+{
+  "status": "ROOT_ADMITTED_SELECTED_LOCAL_RC_NOT_MERGED_RELEASED_OR_BENCHMARKED",
+  "source_commit": "1e4d5459ab229255694f9217d7cd4ed51a4bf1b8",
+  "archive_sha256": "f41a8fb7e1bc10366e8efcc7a31644d4c8356bc4eca8adda9ca949c951de4fb4",
+  "R_CMD_check": "Status OK",
+  "full_suite_assertions": 8109,
+  "BiocCheck": {
+    "error": 0,
+    "warning": 0,
+    "note": 5
+  },
+  "BiocCheck_defaults": true,
+  "disabled_checks": [],
+  "focused_assertions": 1330,
+  "exact_supported_workflows": 22,
+  "original_observer_RAW_workflows": 18,
+  "vector_observer_RAW_workflows": 4,
+  "exact_assignment_methods": 2,
+  "exact_populated_RAM_HDF_migrations": 2,
+  "coverage_percent": {
+    "overall": 92.6939,
+    "R": 92.1295,
+    "native": 95.4119
+  },
+  "coverage_metric": "covr executable line records; not branch coverage",
+  "coverage_gaps_retained": [
+    {
+      "file": "R/aa_screen_experiment.R",
+      "lines": [
+        318,
+        333
+      ],
+      "significance": "New rejection returns for malformed annotation-order metadata and inconsistent guide rowData mapping were not exercised; successful valid-object traversal is covered. Line coverage does not resolve each predicate within the compound guards."
+    },
+    {
+      "file": "R/schema_migration.R",
+      "lines": [
+        575
+      ],
+      "significance": "New rejection of non-list historical result entries was not exercised."
+    },
+    {
+      "file": "R/schema_migration.R",
+      "lines": [
+        596
+      ],
+      "significance": "New analysis-versus-plan mismatch rejection within complete-family legacy result admission was not exercised. Other complete-family validation paths were exercised; coverage alone does not establish correctness."
+    },
+    {
+      "file": "R/schema_migration.R",
+      "lines": [
+        525
+      ],
+      "significance": "New non-S4 previous-results fallback in backing-anchor migration was not exercised; this is a compatibility fallback, rather than scientific computation."
+    }
+  ],
+  "independent_byte_readbacks": {
+    "archive_members": 269,
+    "archived_R_native_test_help_source_members": 234,
+    "private_install_members": 53,
+    "full_check_install_members": 54,
+    "coverage_receipt_artifacts": 116,
+    "all_match": true
+  },
+  "receipt_sha256": {
+    "/tmp/sceptre-object-layout-final-plotfix-20261022/terminal.json": "59a76b4200163bd8f766dc1d73750d0c5c5aaad9bdccf0a9217b1b98b7919228",
+    "/tmp/sceptre-object-layout-final-plotfix-20261022/ARCHIVE-IDENTITY.json": "c700453936d88bf4d66f531fd4fe7366a11ee4c189a8e871e4d5b67404cc68aa",
+    "/tmp/sceptre-object-layout-final-plotfix-20261022/END-GUARDS.json": "033bf35bc2872a95ef9f16fe7dcff62d5e83b38b5570021a90b48f52327d571f",
+    "/tmp/sceptre-object-layout-final-plotfix-20261022/FOCUSED-FINAL.json": "24dd67553241e687f1ccf9eafcc590c541c11bbe1873e211e05ea09789475084",
+    "/tmp/sceptre-object-layout-final-plotfix-20261022/SCIENCE-FINAL.json": "1cfab38cf12d7050a0f827f8ffdf2e3d23358afc3a39d7bd1c74671de42694a1",
+    "/tmp/sceptre-object-layout-final-plotfix-20261022/EXACT-COMPARISON.json": "e310df654dc8d73b76d38515ecf6f253b3d9ed644ebd8bf93000fc512534e57e",
+    "/tmp/sceptre-object-layout-final-plotfix-20261022/VECTOR-COMPARISON.json": "be2ee9b0dd2c884230f5b624786a1e20dfd53bc49fb2d8156a4ac46ba8e48027",
+    "/tmp/sceptre-object-layout-final-plotfix-20261022/MIGRATION-COMPARISON.json": "e81292576211fc6b3cd4fda2b9a98bae8478f8b34e063d6268eea3976ae3a122",
+    "/tmp/sceptre-object-layout-final-plotfix-20261022/BiocCheck-default/counts.json": "3fcccf674b56880c7cc0327c73be95823c5c8a46b267091099b70750b9ef187a",
+    "/tmp/sceptre-object-layout-final-plotfix-20261022/BiocCheck-default/invocation.json": "0cd75c9a0c395ec4485b407b9b895a2ec3adf567db5540a8344549e9c27cc7e4",
+    "/tmp/sceptre-object-layout-coverage-plotfix-20261022/FINAL-COVERAGE-RECEIPT.json": "ce434d6bb42963b69abc0c2ebcc35b4f91649c9db3cb035db86e449f7a56884e"
+  },
+  "limits": [
+    "Bounded supported-workflow exact comparisons, not full-Gasperini inference qualification for this archive.",
+    "No performance transfer: prior Gasperini timings retain be1/a747 artifact identities.",
+    "Coverage is executable-line coverage, not branch or hosted HPC qualification; recorded uncovered malformed/compatibility paths remain.",
+    "Duplicate guide annotation rows including identical repeats and conflicting per-vector optional annotations require explicit resolution.",
+    "Historical failed/interrupted qualification attempts remain separate and unqualified."
+  ],
+  "scope": "Read-only independent archive/install/source/counter/raw receipt admission. No package checks, coverage or scientific inference rerun by root. Report publication is owned by the voice/report chat."
+}

@@ -2,7 +2,7 @@
 
 This repository applies nf-core engineering principles to its existing SCEPTRE
 workflow. It is not an nf-core community pipeline or a claim of full template
-lint compliance. The scientific owner remains the schema-3 SCEPTRE package;
+lint compliance. The scientific owner remains the schema-7 SCEPTRE package;
 Nextflow owns scheduling, serialized artifacts and execution provenance.
 
 ## Implementation and checks
@@ -12,7 +12,7 @@ Nextflow owns scheduling, serialized artifacts and execution provenance.
 | Modular DSL2 | `SCEPTRE_VALIDATE`, `SCEPTRE_STAGE` and `SCEPTRE_EXPORT`, composed by the `SCEPTRE` subworkflow | `meta.yml` contracts; real module and pipeline nf-test cases |
 | Explicit channel contracts | `(meta, state directory)` plus value channels for config, runtime lock and backing directory; stage and seed are separate inputs | Module metadata; preparation dependency and branch tests |
 | Validate early | Pinned nf-schema 2.6.1 validates parameters; R validates configuration, schema, manifest checksums, prerequisites and actual runtime | nf-core schema lint; invalid-stage/duplicate-family nf-test; direct artifact failures |
-| Reproducible environments | Exact package archive and source SHA, pinned base-image digest, dependency snapshot, ondisc commit; immutable runtime image digest | `container/prepare-context.py`, Dockerfile, environment lock; same-runtime direct comparison |
+| Reproducible environments | Exact package archive and source SHA, pinned base-image digest, dependency snapshot, Bioconductor 3.22 dependencies; immutable runtime image digest | `container/prepare-context.py`, Dockerfile, environment lock; same-runtime direct comparison |
 | Resource/profile separation | `process_single`/`process_medium` resource labels in config; local test, Docker and Apptainer profiles | Config review and real local test profile; unrun profiles require separate qualification |
 | Deliberate errors and retries | Scientific errors terminate with zero automatic retries; successful bundle publication is atomic | Real package failure tests verify no finalized output artifact |
 | Resume correctness | Runtime validation always reruns; a published run signature binds session, input, config, runtime, production workflow/helper source bytes, literal-local external configuration include closure and execution options; successful validation gates the original input path | `tests/run-nextflow.sh` asserts six cached scientific stages, cached export and one fresh validation on resume |
@@ -102,7 +102,7 @@ explicit `workflow_dispatch` requiring a full 40-character package commit that
 is available from the package repository. Until the hardened local package is
 published, there is no valid remote revision to substitute. Dispatch checks out
 that exact source, creates a narrow build context, builds a local image, runs
-direct comparisons with required ondisc support, then real Nextflow and nf-test.
+direct comparisons with required native HDF5 support, then real Nextflow and nf-test.
 It uploads source identity and diagnostics; it does not push a registry image.
 
 Full nf-core template lint is not the acceptance criterion for this existing

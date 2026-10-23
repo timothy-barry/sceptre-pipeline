@@ -1,5 +1,5 @@
 name: sceptre_validate
-description: Validate the actual runtime and versioned schema-3 input artifact on every launch, including resume.
+description: Validate the actual runtime and versioned schema-7 input artifact on every launch, including resume.
 keywords: [sceptre, validation, provenance]
 tools:
   - sceptre:
@@ -12,7 +12,7 @@ input:
         description: Pipeline metadata with a stable screen id; contains no scientific settings.
     - state:
         type: directory
-        description: Imported versioned input bundle with manifest and closed serialized object.
+        description: Imported versioned input bundle with manifest and native serialized object.
   - config:
       type: file
       description: Validated scientific configuration RDS.
