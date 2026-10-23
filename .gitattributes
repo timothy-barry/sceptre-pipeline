@@ -21,3 +21,6 @@ docs/evidence/ci-cleaned-runtime-20261019/** -text -whitespace
 docs/evidence/voice-final-review-20261019/** -text -whitespace
 docs/evidence/scale-inventory-20261019/** -text -whitespace
 docs/evidence/amd64-build-20261019/** -text -whitespace
+
+# Preserve native schema-7 qualification receipts and their recorded hashes.
+tests/evidence/native7-*/** -text -whitespace
